@@ -1,0 +1,130 @@
+{
+	"info": {
+		"_postman_id": "b6a3b99c-553e-4ecd-a2b5-9624684a8127",
+		"name": "Draft restAPI",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "14869995"
+	},
+	"item": [
+		{
+			"name": "api",
+			"item": [
+				{
+					"name": "request drafts",
+					"item": [
+						{
+							"name": "index",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "http://localhost:8080/api/draft"
+							},
+							"response": []
+						},
+						{
+							"name": "error",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "http://localhost:8080/api/draft/error"
+							},
+							"response": []
+						},
+						{
+							"name": "param",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/api/draft/param?id=1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"draft",
+										"param"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "path",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "http://localhost:8080/api/draft/path/key/2"
+							},
+							"response": []
+						},
+						{
+							"name": "post",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"key\": 1,\r\n    \"field\": \"str\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:8080/api/draft/post"
+							},
+							"response": []
+						},
+						{
+							"name": "audit",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "http://localhost:8080/api/draft/audit"
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080"
+		}
+	]
+}
