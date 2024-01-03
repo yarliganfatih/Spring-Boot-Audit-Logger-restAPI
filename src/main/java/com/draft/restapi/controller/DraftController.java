@@ -15,20 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class DraftController {
 
     public static class ReqData {
-        private Integer key;
         private String field;
 
-        public ReqData(Integer key, String field) {
-            this.key = key;
+        public ReqData(String field) {
             this.field = field;
-        }
-
-        public Integer getKey() {
-            return key;
-        }
-
-        public void setKey(Integer key) {
-            this.key = key;
         }
 
         public String getField() {
@@ -82,7 +72,7 @@ public class DraftController {
 
     @PostMapping("/post")
     public ResponseEntity<ResData> post(@RequestBody ReqData req) {
-        ResData response = new ResData("key is " + req.getKey() + ", field is " + req.getField());
+        ResData response = new ResData("field is " + req.getField());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

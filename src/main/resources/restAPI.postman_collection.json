@@ -73,7 +73,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"key\": 1,\r\n    \"field\": \"str\"\r\n}",
+									"raw": "{\r\n    \"field\": \"str\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
