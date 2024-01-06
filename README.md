@@ -8,3 +8,6 @@ Clone repository and run this command :
 
 #### Import Postman Collection
 Import the collection output from resources into postman so you can test the endpoints
+
+#### Create a Database
+Create a Database named "restapi"
