@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "b6a3b99c-553e-4ecd-a2b5-9624684a8127",
 		"name": "Draft restAPI",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "14869995"
 	},
 	"item": [
@@ -17,7 +17,18 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"url": "http://localhost:8080/api/draft"
+								"url": {
+									"raw": "http://localhost:8080/api/draft",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"draft"
+									]
+								}
 							},
 							"response": []
 						},
@@ -26,7 +37,19 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"url": "http://localhost:8080/api/draft/error"
+								"url": {
+									"raw": "http://localhost:8080/api/draft/error",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"draft",
+										"error"
+									]
+								}
 							},
 							"response": []
 						},
@@ -62,7 +85,21 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"url": "http://localhost:8080/api/draft/path/key/2"
+								"url": {
+									"raw": "http://localhost:8080/api/draft/path/key/2",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"draft",
+										"path",
+										"key",
+										"2"
+									]
+								}
 							},
 							"response": []
 						},
@@ -80,7 +117,19 @@
 										}
 									}
 								},
-								"url": "http://localhost:8080/api/draft/post"
+								"url": {
+									"raw": "http://localhost:8080/api/draft/post",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"draft",
+										"post"
+									]
+								}
 							},
 							"response": []
 						},
@@ -89,9 +138,170 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"url": "http://localhost:8080/api/draft/audit"
+								"url": {
+									"raw": "http://localhost:8080/api/draft/audit",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"draft",
+										"audit"
+									]
+								}
 							},
 							"response": []
+						}
+					]
+				},
+				{
+					"name": "users",
+					"item": [
+						{
+							"name": "createUser",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"user\",\r\n    \"email\": \"user@gmail.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/users",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getAllUsers",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/api/users",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getUserById",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/api/users/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"users",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "updateUser",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"user2\",\r\n    \"email\": \"user2@gmail.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/users/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"users",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteUser",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/api/users/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"users",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "noauth"
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
 						}
 					]
 				}

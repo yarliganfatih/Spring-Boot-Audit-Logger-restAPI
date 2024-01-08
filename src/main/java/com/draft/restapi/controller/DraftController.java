@@ -69,13 +69,13 @@ public class DraftController {
     }
 
     @GetMapping({ "/param", "/query" }) // multi mapping
-    public ResponseEntity<ResData> param(@RequestParam Long id) {
+    public ResponseEntity<ResData> param(@RequestParam Integer id) {
         ResData response = new ResData("param is " + id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/path/{slug}/{id}")
-    public ResponseEntity<ResData> path(@PathVariable("slug") String slug, @PathVariable("id") Long id) {
+    public ResponseEntity<ResData> path(@PathVariable("slug") String slug, @PathVariable("id") Integer id) {
         ResData response = new ResData(slug + " is " + id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

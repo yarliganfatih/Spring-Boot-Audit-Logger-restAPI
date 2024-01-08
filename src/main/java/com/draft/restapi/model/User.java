@@ -1,6 +1,7 @@
 package com.draft.restapi.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
 
 @Entity
 @Table(name = "users")
@@ -9,10 +10,13 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@Column(name = "username")
+    @NotNull
+	@Column(name = "username", unique = true)
 	private String username;
 
-	@Column(name = "email")
+    @Email
+    @NotNull
+	@Column(name = "email", unique = true)
 	private String email;
 
 	public User() {
