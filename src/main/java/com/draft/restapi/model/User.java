@@ -24,11 +24,16 @@ public class User {
 	@Column(name = "email", unique = true)
 	private String email;
 
+    @NotNull
+    @Column(name = "password")
+    private String password;
+
 	public User() {
 	}
 
 	public User(User user) {
 		this.username = user.getUsername();
 		this.email = user.getEmail();
+        this.password = user.getPassword();
 	}
 }
