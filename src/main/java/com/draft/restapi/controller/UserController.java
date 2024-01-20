@@ -6,6 +6,7 @@ import com.draft.restapi.model.User;
 import com.draft.restapi.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -47,6 +48,7 @@ public class UserController {
         return updatedUser;
     }
 
+    @PreAuthorize("hasRole('ROLE_mod')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable("id") Integer userId) {
         User user = userRepository.findById(userId)

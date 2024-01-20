@@ -32,3 +32,19 @@ Now we can verify our identity using endpoint
 Define the access_token we received from the auth/login endpoint in Postman as Bearer Token to the api collection. So all endpoints below the api collection will inherit
 
 ![access_token](docs/assets/access_token.png)
+
+#### Role Hierarchy
+
+Firstly insert roles
+```sql
+INSERT INTO roles(name) VALUES ('user');
+INSERT INTO roles(name) VALUES ('mod');
+INSERT INTO roles(name) VALUES ('admin');
+INSERT INTO roles(name) VALUES ('chosen');
+```
+then assign a role for a user
+```sql
+INSERT INTO user_roles (user_id, role_id) VALUES ('1', '1');
+```
+
+Now you can determine who can access what

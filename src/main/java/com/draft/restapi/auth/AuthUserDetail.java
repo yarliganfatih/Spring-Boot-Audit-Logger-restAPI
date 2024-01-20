@@ -1,6 +1,7 @@
 package com.draft.restapi.auth;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.draft.restapi.auth.entity.SignedUser;
@@ -22,7 +23,9 @@ public class AuthUserDetail extends SignedUser implements UserDetails {
 
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
         
-        // TODO for hasRole
+        getRoles().forEach(role -> {
+            grantedAuthorities.add(new SimpleGrantedAuthority(role.getRoleName()));
+        });
         
         return grantedAuthorities;
     }

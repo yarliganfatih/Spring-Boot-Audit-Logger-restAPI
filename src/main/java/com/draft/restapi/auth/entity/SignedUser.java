@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Getter
 @Setter
@@ -49,6 +50,11 @@ public class SignedUser implements Serializable {
     @Column(name = "accountNonLocked", columnDefinition = "boolean default true")
     private boolean accountNonLocked = true;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_roles", joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
+            inverseJoinColumns = {
+                    @JoinColumn(name = "role_id", referencedColumnName = "id")})
+    private List<Role> roles;
 	
     public SignedUser() {
     }
@@ -61,5 +67,6 @@ public class SignedUser implements Serializable {
         this.accountNonExpired = user.isAccountNonExpired();
         this.credentialsNonExpired = user.isCredentialsNonExpired();
         this.accountNonLocked = user.isAccountNonLocked();
-    }
+		this.roles = user.getRoles();
+	}
 }

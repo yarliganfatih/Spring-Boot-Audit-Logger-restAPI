@@ -384,6 +384,94 @@
 							}
 						}
 					]
+				},
+				{
+					"name": "role drafts",
+					"item": [
+						{
+							"name": "admin",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/api/draft/admin",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"draft",
+										"admin"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "mod",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/api/draft/mod",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"draft",
+										"mod"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "chosen",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/api/draft/chosen",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"draft",
+										"chosen"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
 				}
 			],
 			"auth": {
@@ -391,7 +479,7 @@
 				"bearer": [
 					{
 						"key": "token",
-						"value": "0e405eb7-0dd8-4461-a72d-b63ac167c1cf",
+						"value": "12d97cf7-c74f-4468-8de9-4fbfd06b4882",
 						"type": "string"
 					}
 				]
