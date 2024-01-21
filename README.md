@@ -37,10 +37,11 @@ Define the access_token we received from the auth/login endpoint in Postman as B
 
 Firstly insert roles
 ```sql
-INSERT INTO roles(name) VALUES ('user');
-INSERT INTO roles(name) VALUES ('mod');
-INSERT INTO roles(name) VALUES ('admin');
-INSERT INTO roles(name) VALUES ('chosen');
+INSERT INTO roles(name, level) VALUES ('user', 1);
+INSERT INTO roles(name, level) VALUES ('mod', 5);
+INSERT INTO roles(name, level) VALUES ('alternative_mod', 5); -- at the same level, for different authorization from mod
+INSERT INTO roles(name, level) VALUES ('admin', 10);
+INSERT INTO roles(name) VALUES ('chosen'); -- independent of level hierarchy
 ```
 then assign a role for a user
 ```sql

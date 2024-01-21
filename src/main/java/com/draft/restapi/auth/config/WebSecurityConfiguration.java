@@ -16,6 +16,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 
+import java.util.List;
+
+import com.draft.restapi.auth.entity.Role;
 import com.draft.restapi.auth.repository.RoleRepository;
 
 @Configuration
@@ -48,13 +51,27 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         daoAuthenticationProvider.setUserDetailsService(this.userDetailsService);
         return daoAuthenticationProvider;
     }
+    
+    public static String generateRoleHierarchyByLevel(List<Role> roles) {
+        StringBuilder hierarchy = new StringBuilder();
+        for (Role role : roles) {
+            for (Role subRole : roles) {
+                if (role.getLevel() > subRole.getLevel()) {
+                    hierarchy.append(role.getRoleName()).append(" > ").append(subRole.getRoleName()).append("\n");
+                }
+            }
+        }
+        return hierarchy.toString();
+    }
 
     @Autowired
     RoleRepository roleRepository;
     @Bean
     public RoleHierarchyImpl roleHierarchy() {
+        String roleHierarchyStr = generateRoleHierarchyByLevel(roleRepository.getRoleHierarchyQuery());
+        System.out.println(roleHierarchyStr);
         RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
-        roleHierarchy.setHierarchy("ROLE_admin > ROLE_mod\n" + "ROLE_mod > ROLE_user\n");
+        roleHierarchy.setHierarchy(roleHierarchyStr);
         return roleHierarchy;
     }
 
