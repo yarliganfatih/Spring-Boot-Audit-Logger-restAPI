@@ -1,7 +1,6 @@
 package com.draft.restapi.auth.entity;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -20,8 +19,7 @@ public class Role implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@NotNull
-	@Column(name = "name", unique = true)
+	@Column(name = "name", nullable = false, unique = true)
 	private String name;
 	
 	@Column(name = "level")

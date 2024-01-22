@@ -21,33 +21,26 @@ public class SignedUser implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @NotNull
-    @Column(name = "username", unique = true)
+    @Column(name = "username", nullable = false, unique = true)
     private String username;
     
-    @NotNull
     @Column(name = "password")
     private String password;
 
     @Email
-    @NotNull
-    @Column(name = "email", unique = true)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @NotNull
-    @Column(name = "enabled", columnDefinition = "boolean default true")
+    @Column(name = "enabled", nullable = false, columnDefinition = "boolean default true")
     private boolean enabled = true;
     
-    @NotNull
-    @Column(name = "accountNonExpired", columnDefinition = "boolean default true")
+    @Column(name = "accountNonExpired", nullable = false, columnDefinition = "boolean default true")
     private boolean accountNonExpired = true;
     
-    @NotNull
-    @Column(name = "credentialsNonExpired", columnDefinition = "boolean default true")
+    @Column(name = "credentialsNonExpired", nullable = false, columnDefinition = "boolean default true")
     private boolean credentialsNonExpired = true;
     
-    @NotNull
-    @Column(name = "accountNonLocked", columnDefinition = "boolean default true")
+    @Column(name = "accountNonLocked", nullable = false, columnDefinition = "boolean default true")
     private boolean accountNonLocked = true;
 
     @ManyToMany(fetch = FetchType.EAGER)
