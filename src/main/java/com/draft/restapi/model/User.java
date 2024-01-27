@@ -6,11 +6,15 @@ import javax.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import com.draft.restapi.audit.entity.AuditorBaseEntity;
+import com.draft.restapi.audit.AuditListener;
+
 @Getter
 @Setter
 @Entity
+@EntityListeners(AuditListener.class)
 @Table(name = "users")
-public class User {
+public class User extends AuditorBaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;

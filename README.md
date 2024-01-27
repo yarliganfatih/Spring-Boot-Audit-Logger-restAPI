@@ -49,3 +49,13 @@ INSERT INTO user_roles (user_id, role_id) VALUES ('1', '1');
 ```
 
 Now you can determine who can access what
+
+## Audit Logger
+
+Records CRUD operations made to entities defined in AuditListener and when and by whom (with authentication)
+
+Since recording READ operations would overload the database, I disabled it. You can use it if you wish
+
+In update operations, all detected changes are recorded in order to see the old versions
+
+![audit](docs/assets/audit.png)
