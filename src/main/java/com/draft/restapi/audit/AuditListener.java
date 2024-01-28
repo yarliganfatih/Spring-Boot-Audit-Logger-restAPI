@@ -2,6 +2,8 @@ package com.draft.restapi.audit;
 
 import javax.persistence.PostLoad;
 import javax.persistence.PostPersist;
+import javax.persistence.PostRemove;
+import javax.persistence.PostUpdate;
 import javax.persistence.PrePersist;
 import javax.persistence.PreRemove;
 import javax.persistence.PreUpdate;
@@ -80,10 +82,13 @@ public class AuditListener {
         return entity;
     }
 
+    @PostUpdate
+    @PostRemove
     @PostPersist
     @Transactional
     public void postOperation(AuditorBaseEntity entity) {
         EntityLog entityLog = entity.getEntityLog();
+        entityLog.setCompleted(true); // TODO does not work on PostUpdate and PostRemove
         entityLog.setEntity_id(entity.getId()); // for PostPersist
         entityLog = entityLogRepository.save(entityLog);
     }

@@ -45,6 +45,9 @@ public class EntityLog implements Serializable {
 	@CreationTimestamp
 	private java.util.Date operated_at;
 
+    @Column(name = "completed", nullable = false)
+	private Boolean completed;
+
 	@OneToMany(mappedBy = "entityLog", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<UpdateLog> updateLogs = new HashSet<>();
 
@@ -53,5 +56,6 @@ public class EntityLog implements Serializable {
 		this.entity_id = entity_id;
 		this.operation = operation;
 		this.operated_by = operated_by;
+		this.completed = false; // by default
     }
 }
