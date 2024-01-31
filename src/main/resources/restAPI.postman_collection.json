@@ -192,27 +192,6 @@
 								}
 							},
 							"response": []
-						},
-						{
-							"name": "audit",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "http://localhost:8080/api/draft/audit",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "8080",
-									"path": [
-										"api",
-										"draft",
-										"audit"
-									]
-								}
-							},
-							"response": []
 						}
 					],
 					"auth": {
@@ -472,6 +451,81 @@
 							}
 						}
 					]
+				},
+				{
+					"name": "logs",
+					"item": [
+						{
+							"name": "Get All Entity Logs",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/api/logs/entity/",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"logs",
+										"entity",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Spesific Entity Logs",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/api/logs/entity/users/2",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"logs",
+										"entity",
+										"users",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Spesific Update Logs",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/api/logs/entity/users/2/updates/password",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"logs",
+										"entity",
+										"users",
+										"2",
+										"updates",
+										"password"
+									]
+								}
+							},
+							"response": []
+						}
+					]
 				}
 			],
 			"auth": {
@@ -479,7 +533,7 @@
 				"bearer": [
 					{
 						"key": "token",
-						"value": "12d97cf7-c74f-4468-8de9-4fbfd06b4882",
+						"value": "0542a6ba-6005-4240-914e-2bb97201383e",
 						"type": "string"
 					}
 				]
