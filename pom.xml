@@ -14,8 +14,11 @@
 	<name>restapi</name>
 	<description>Draft RestAPI project for Spring Boot</description>
 	<properties>
-		<java.version>11</java.version>
+		<java.version>1.8</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
+	<packaging>war</packaging>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -40,6 +43,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
+			<version>1.18.20</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -69,9 +73,16 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope>
+		 </dependency>
 	</dependencies>
 
 	<build>
+		<finalName>restapi_draft</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

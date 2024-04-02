@@ -1,5 +1,7 @@
 # Spring Boot Draft Rest API
 
+Postman Documentation => https://documenter.getpostman.com/view/14869995/2sA35JyzJ9
+
 ## Get Started
 Clone repository and run this command :
 ```
@@ -50,7 +52,7 @@ INSERT INTO user_roles (user_id, role_id) VALUES ('1', '1');
 
 Now you can determine who can access what
 
-## Audit Logger
+### Audit Logger
 
 Records CRUD operations made to entities defined in AuditListener and when and by whom (with authentication)
 
@@ -59,3 +61,15 @@ Since recording READ operations would overload the database, I disabled it. You 
 In update operations, all detected changes are recorded in order to see the old versions
 
 ![audit](docs/assets/audit.png)
+
+
+## Build & Deploy
+
+run this command to build
+```
+mvn clean install
+```
+
+Then you can deploy the restapi_draft.war package that appears in the target folder.
+
+Also don't forget to connect database to your server before building. Otherwise you may get an error during build.

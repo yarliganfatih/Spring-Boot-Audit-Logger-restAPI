@@ -2,10 +2,573 @@
 	"info": {
 		"_postman_id": "b6a3b99c-553e-4ecd-a2b5-9624684a8127",
 		"name": "Draft restAPI",
+		"description": "Source Code : [https://github.com/yarliganfatih/Spring-Boot-Audit-Logger-restAPI](https://github.com/yarliganfatih/Spring-Boot-Audit-Logger-restAPI)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "14869995"
 	},
 	"item": [
+		{
+			"name": "request drafts",
+			"item": [
+				{
+					"name": "index",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/draft",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"draft"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "index",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/draft",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"draft"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 02 Apr 2024 16:02:36 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=20"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Hello World!\"\n}"
+						}
+					]
+				},
+				{
+					"name": "error",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/draft/error",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"draft",
+								"error"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "error",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/draft/error",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"draft",
+										"error"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 02 Apr 2024 16:26:24 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Bad Request\"\n}"
+						}
+					]
+				},
+				{
+					"name": "param",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/draft/param?id=1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"draft",
+								"param"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "param",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/draft/param?id=1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"draft",
+										"param"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 02 Apr 2024 16:26:36 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=20"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"param is 1\"\n}"
+						}
+					]
+				},
+				{
+					"name": "path",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/draft/path/key/2",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"draft",
+								"path",
+								"key",
+								"2"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "path",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/draft/path/key/2",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"draft",
+										"path",
+										"key",
+										"2"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 02 Apr 2024 16:26:49 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=20"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"key is 2\"\n}"
+						}
+					]
+				},
+				{
+					"name": "post",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"key\": 1,\r\n    \"field\": \"str\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/draft/post",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"draft",
+								"post"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "post",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"key\": 1,\r\n    \"field\": \"str\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/draft/post",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"draft",
+										"post"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 02 Apr 2024 16:26:59 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=20"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"key is 1, field is str\"\n}"
+						}
+					]
+				}
+			],
+			"description": "First, let's understand the working logic of restAPI",
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
 		{
 			"name": "auth",
 			"item": [
@@ -60,164 +623,320 @@
 								"oauth",
 								"token"
 							]
-						}
+						},
+						"description": "To access other API endpoints, we need to verify the user here and get the access_token"
 					},
-					"response": []
+					"response": [
+						{
+							"name": "login as user",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "grant_type",
+											"value": "password",
+											"type": "text"
+										},
+										{
+											"key": "username",
+											"value": "user",
+											"description": "[user, admin, moderator]",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "user",
+											"description": "all the same",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseUrl}}/oauth/token",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"oauth",
+										"token"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-store"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json;charset=UTF-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 02 Apr 2024 16:27:10 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=20"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"access_token\": \"b6c004c4-b54f-45db-ba96-57235fe36449\",\n    \"token_type\": \"bearer\",\n    \"refresh_token\": \"e6376a19-4626-4578-885e-cf92c6f70432\",\n    \"expires_in\": 3599,\n    \"scope\": \"READ WRITE\"\n}"
+						},
+						{
+							"name": "login as mod",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "grant_type",
+											"value": "password",
+											"type": "text"
+										},
+										{
+											"key": "username",
+											"value": "moderator",
+											"description": "[user, admin, moderator]",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "user",
+											"description": "all the same",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseUrl}}/oauth/token",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"oauth",
+										"token"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "JSESSIONID=09691B1A3D8BD949B9CB813C61C5F230; Path=/restapi_draft; HttpOnly"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-store"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json;charset=UTF-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 02 Apr 2024 16:37:34 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=20"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"access_token\": \"8c4a1e91-8db0-4d61-8ead-6362f58b0ccc\",\n    \"token_type\": \"bearer\",\n    \"refresh_token\": \"0b7a8249-f65e-4c48-b738-ed5a081f6eaf\",\n    \"expires_in\": 3599,\n    \"scope\": \"READ WRITE\"\n}"
+						},
+						{
+							"name": "login as admin",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "grant_type",
+											"value": "password",
+											"type": "text"
+										},
+										{
+											"key": "username",
+											"value": "admin",
+											"description": "[user, admin, moderator]",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "user",
+											"description": "all the same",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseUrl}}/oauth/token",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"oauth",
+										"token"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "JSESSIONID=113CF67109719303FBD75D2703283E7A; Path=/restapi_draft; HttpOnly"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-store"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json;charset=UTF-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 02 Apr 2024 16:38:09 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=20"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"access_token\": \"88542b9d-2d40-4d0e-8c12-99149ef1ff20\",\n    \"token_type\": \"bearer\",\n    \"refresh_token\": \"4f708210-a76e-4ec9-b823-7e48adcbdf74\",\n    \"expires_in\": 3599,\n    \"scope\": \"READ WRITE\"\n}"
+						}
+					]
 				}
-			]
+			],
+			"description": "Public endpoints"
 		},
 		{
 			"name": "api",
 			"item": [
-				{
-					"name": "request drafts",
-					"item": [
-						{
-							"name": "index",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "http://localhost:8080/api/draft",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "8080",
-									"path": [
-										"api",
-										"draft"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "error",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "http://localhost:8080/api/draft/error",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "8080",
-									"path": [
-										"api",
-										"draft",
-										"error"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "param",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "http://localhost:8080/api/draft/param?id=1",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "8080",
-									"path": [
-										"api",
-										"draft",
-										"param"
-									],
-									"query": [
-										{
-											"key": "id",
-											"value": "1"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "path",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "http://localhost:8080/api/draft/path/key/2",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "8080",
-									"path": [
-										"api",
-										"draft",
-										"path",
-										"key",
-										"2"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "post",
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"key\": 1,\r\n    \"field\": \"str\"\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://localhost:8080/api/draft/post",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "8080",
-									"path": [
-										"api",
-										"draft",
-										"post"
-									]
-								}
-							},
-							"response": []
-						}
-					],
-					"auth": {
-						"type": "noauth"
-					},
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									""
-								]
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									""
-								]
-							}
-						}
-					]
-				},
 				{
 					"name": "users",
 					"item": [
@@ -228,7 +947,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"username\": \"user\",\r\n    \"email\": \"user@gmail.com\",\r\n    \"password\": \"{bcrypt}$2a$12$udISUXbLy9ng5wuFsrCMPeQIYzaKtAEXNJqzeprSuaty86N4m6emW\"\r\n}",
+									"raw": "{\r\n    \"username\": \"test\",\r\n    \"email\": \"test@gmail.com\",\r\n    \"password\": \"{bcrypt}$2a$12$udISUXbLy9ng5wuFsrCMPeQIYzaKtAEXNJqzeprSuaty86N4m6emW\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -236,19 +955,245 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:8080/api/users",
-									"protocol": "http",
+									"raw": "{{baseUrl}}/api/users",
 									"host": [
-										"localhost"
+										"{{baseUrl}}"
 									],
-									"port": "8080",
 									"path": [
 										"api",
 										"users"
 									]
 								}
 							},
-							"response": []
+							"response": [
+								{
+									"name": "createUser",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"test\",\r\n    \"email\": \"test@gmail.com\",\r\n    \"password\": \"{bcrypt}$2a$12$udISUXbLy9ng5wuFsrCMPeQIYzaKtAEXNJqzeprSuaty86N4m6emW\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/users",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"users"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "1; mode=block"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, no-store, max-age=0, must-revalidate"
+										},
+										{
+											"key": "Pragma",
+											"value": "no-cache"
+										},
+										{
+											"key": "Expires",
+											"value": "0"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 02 Apr 2024 16:40:31 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=20"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"id\": 8,\n    \"username\": \"test\",\n    \"email\": \"test@gmail.com\",\n    \"password\": \"{bcrypt}$2a$12$udISUXbLy9ng5wuFsrCMPeQIYzaKtAEXNJqzeprSuaty86N4m6emW\",\n    \"tableName\": \"users\"\n}"
+								},
+								{
+									"name": "error",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"test\",\r\n    \"email\": \"test@gmail.com\",\r\n    \"password\": \"{bcrypt}$2a$12$udISUXbLy9ng5wuFsrCMPeQIYzaKtAEXNJqzeprSuaty86N4m6emW\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/users",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"users"
+											]
+										}
+									},
+									"status": "Internal Server Error",
+									"code": 500,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 02 Apr 2024 16:40:38 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"timestamp\": \"2024-04-02T16:40:38.586+00:00\",\n    \"status\": 500,\n    \"error\": \"Internal Server Error\",\n    \"message\": \"\",\n    \"path\": \"/restapi_draft/api/users\"\n}"
+								},
+								{
+									"name": "invalid_token",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"test\",\r\n    \"email\": \"test@gmail.com\",\r\n    \"password\": \"{bcrypt}$2a$12$udISUXbLy9ng5wuFsrCMPeQIYzaKtAEXNJqzeprSuaty86N4m6emW\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/users",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"users"
+											]
+										}
+									},
+									"status": "Unauthorized",
+									"code": 401,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-store"
+										},
+										{
+											"key": "Pragma",
+											"value": "no-cache"
+										},
+										{
+											"key": "WWW-Authenticate",
+											"value": "Bearer realm=\"microservice\", error=\"invalid_token\", error_description=\"Invalid access token: 88542b9d-2d40-4d0e-8c12-99149ef1ff2\""
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "1; mode=block"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 02 Apr 2024 16:40:55 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=20"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"error\": \"invalid_token\",\n    \"error_description\": \"Invalid access token: 88542b9d-2d40-4d0e-8c12-99149ef1ff2\"\n}"
+								}
+							]
 						},
 						{
 							"name": "getAllUsers",
@@ -256,19 +1201,98 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:8080/api/users",
-									"protocol": "http",
+									"raw": "{{baseUrl}}/api/users",
 									"host": [
-										"localhost"
+										"{{baseUrl}}"
 									],
-									"port": "8080",
 									"path": [
 										"api",
 										"users"
 									]
 								}
 							},
-							"response": []
+							"response": [
+								{
+									"name": "getAllUsers",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/users",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"users"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "1; mode=block"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, no-store, max-age=0, must-revalidate"
+										},
+										{
+											"key": "Pragma",
+											"value": "no-cache"
+										},
+										{
+											"key": "Expires",
+											"value": "0"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 02 Apr 2024 16:41:22 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=20"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "[\n    {\n        \"id\": 1,\n        \"username\": \"user\",\n        \"email\": \"user@gmail.com\",\n        \"password\": \"{bcrypt}$2a$12$udISUXbLy9ng5wuFsrCMPeQIYzaKtAEXNJqzeprSuaty86N4m6emW\",\n        \"tableName\": \"users\"\n    },\n    {\n        \"id\": 2,\n        \"username\": \"admin\",\n        \"email\": \"admin@gmail.com\",\n        \"password\": \"{bcrypt}$2a$12$udISUXbLy9ng5wuFsrCMPeQIYzaKtAEXNJqzeprSuaty86N4m6emW\",\n        \"tableName\": \"users\"\n    },\n    {\n        \"id\": 3,\n        \"username\": \"moderator\",\n        \"email\": \"moderator@gmail.com\",\n        \"password\": \"{bcrypt}$2a$12$udISUXbLy9ng5wuFsrCMPeQIYzaKtAEXNJqzeprSuaty86N4m6emW\",\n        \"tableName\": \"users\"\n    },\n    {\n        \"id\": 8,\n        \"username\": \"test\",\n        \"email\": \"test@gmail.com\",\n        \"password\": \"{bcrypt}$2a$12$udISUXbLy9ng5wuFsrCMPeQIYzaKtAEXNJqzeprSuaty86N4m6emW\",\n        \"tableName\": \"users\"\n    }\n]"
+								}
+							]
 						},
 						{
 							"name": "getUserById",
@@ -276,20 +1300,100 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:8080/api/users/1",
-									"protocol": "http",
+									"raw": "{{baseUrl}}/api/users/8",
 									"host": [
-										"localhost"
+										"{{baseUrl}}"
 									],
-									"port": "8080",
 									"path": [
 										"api",
 										"users",
-										"1"
+										"8"
 									]
 								}
 							},
-							"response": []
+							"response": [
+								{
+									"name": "getUserById",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/users/8",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"users",
+												"8"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "1; mode=block"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, no-store, max-age=0, must-revalidate"
+										},
+										{
+											"key": "Pragma",
+											"value": "no-cache"
+										},
+										{
+											"key": "Expires",
+											"value": "0"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 02 Apr 2024 16:41:33 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=20"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"id\": 8,\n    \"username\": \"test\",\n    \"email\": \"test@gmail.com\",\n    \"password\": \"{bcrypt}$2a$12$udISUXbLy9ng5wuFsrCMPeQIYzaKtAEXNJqzeprSuaty86N4m6emW\",\n    \"tableName\": \"users\"\n}"
+								}
+							]
 						},
 						{
 							"name": "updateUser",
@@ -298,7 +1402,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"username\": \"user2\",\r\n    \"email\": \"user2@gmail.com\"\r\n}",
+									"raw": "{\r\n    \"username\": \"test2\",\r\n    \"email\": \"test@gmail.com\",\r\n    \"password\": \"{bcrypt}$2a$12$udISUXbLy9ng5wuFsrCMPeQIYzaKtAEXNJqzeprSuaty86N4m6emW\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -306,20 +1410,111 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:8080/api/users/1",
-									"protocol": "http",
+									"raw": "{{baseUrl}}/api/users/8",
 									"host": [
-										"localhost"
+										"{{baseUrl}}"
 									],
-									"port": "8080",
 									"path": [
 										"api",
 										"users",
-										"1"
+										"8"
 									]
 								}
 							},
-							"response": []
+							"response": [
+								{
+									"name": "updateUser",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"test2\",\r\n    \"email\": \"test@gmail.com\",\r\n    \"password\": \"{bcrypt}$2a$12$udISUXbLy9ng5wuFsrCMPeQIYzaKtAEXNJqzeprSuaty86N4m6emW\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8080/api/users/8",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"users",
+												"8"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "1; mode=block"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, no-store, max-age=0, must-revalidate"
+										},
+										{
+											"key": "Pragma",
+											"value": "no-cache"
+										},
+										{
+											"key": "Expires",
+											"value": "0"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 02 Apr 2024 16:41:58 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=20"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"id\": 8,\n    \"username\": \"test2\",\n    \"email\": \"test@gmail.com\",\n    \"password\": \"{bcrypt}$2a$12$udISUXbLy9ng5wuFsrCMPeQIYzaKtAEXNJqzeprSuaty86N4m6emW\",\n    \"tableName\": \"users\"\n}"
+								}
+							]
 						},
 						{
 							"name": "deleteUser",
@@ -327,22 +1522,178 @@
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:8080/api/users/1",
-									"protocol": "http",
+									"raw": "{{baseUrl}}/api/users/8",
 									"host": [
-										"localhost"
+										"{{baseUrl}}"
 									],
-									"port": "8080",
 									"path": [
 										"api",
 										"users",
-										"1"
+										"8"
 									]
 								}
 							},
-							"response": []
+							"response": [
+								{
+									"name": "access_denied for user role",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8080/api/users/8",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"users",
+												"8"
+											]
+										}
+									},
+									"status": "Forbidden",
+									"code": 403,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-store"
+										},
+										{
+											"key": "Pragma",
+											"value": "no-cache"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "1; mode=block"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 02 Apr 2024 16:42:20 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=20"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"error\": \"access_denied\",\n    \"error_description\": \"Access is denied\"\n}"
+								},
+								{
+									"name": "deletable by mod",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/users/8",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"users",
+												"8"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "plain",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "1; mode=block"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, no-store, max-age=0, must-revalidate"
+										},
+										{
+											"key": "Pragma",
+											"value": "no-cache"
+										},
+										{
+											"key": "Expires",
+											"value": "0"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 02 Apr 2024 16:43:19 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=20"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": null
+								}
+							]
 						}
 					],
+					"description": "CRUD operations",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -373,20 +1724,257 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:8080/api/draft/admin",
-									"protocol": "http",
+									"raw": "{{baseUrl}}/api/draft/admin",
 									"host": [
-										"localhost"
+										"{{baseUrl}}"
 									],
-									"port": "8080",
 									"path": [
 										"api",
 										"draft",
 										"admin"
 									]
-								}
+								},
+								"description": "only admins can use this endpoint"
 							},
-							"response": []
+							"response": [
+								{
+									"name": "can i access as a user",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8080/api/draft/admin",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"draft",
+												"admin"
+											]
+										}
+									},
+									"status": "Forbidden",
+									"code": 403,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-store"
+										},
+										{
+											"key": "Pragma",
+											"value": "no-cache"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "1; mode=block"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 02 Apr 2024 21:39:04 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=60"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"error\": \"access_denied\",\n    \"error_description\": \"Access is denied\"\n}"
+								},
+								{
+									"name": "can i access as a mod",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/draft/admin",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"draft",
+												"admin"
+											]
+										}
+									},
+									"status": "Forbidden",
+									"code": 403,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-store"
+										},
+										{
+											"key": "Pragma",
+											"value": "no-cache"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "1; mode=block"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 02 Apr 2024 16:43:47 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=20"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"error\": \"access_denied\",\n    \"error_description\": \"Access is denied\"\n}"
+								},
+								{
+									"name": "can i access as a admin",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/draft/admin",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"draft",
+												"admin"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "1; mode=block"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, no-store, max-age=0, must-revalidate"
+										},
+										{
+											"key": "Pragma",
+											"value": "no-cache"
+										},
+										{
+											"key": "Expires",
+											"value": "0"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 02 Apr 2024 16:45:18 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=20"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"Hello admin\"\n}"
+								}
+							]
 						},
 						{
 							"name": "mod",
@@ -394,20 +1982,265 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:8080/api/draft/mod",
-									"protocol": "http",
+									"raw": "{{baseUrl}}/api/draft/mod",
 									"host": [
-										"localhost"
+										"{{baseUrl}}"
 									],
-									"port": "8080",
 									"path": [
 										"api",
 										"draft",
 										"mod"
 									]
-								}
+								},
+								"description": "According to the hierarchy, both admin and mod can,  \nbut alternative_mod cannot access even though it is at the same level"
 							},
-							"response": []
+							"response": [
+								{
+									"name": "can i access as a user",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8080/api/draft/mod",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"draft",
+												"mod"
+											]
+										}
+									},
+									"status": "Forbidden",
+									"code": 403,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-store"
+										},
+										{
+											"key": "Pragma",
+											"value": "no-cache"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "1; mode=block"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 02 Apr 2024 21:39:21 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=60"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"error\": \"access_denied\",\n    \"error_description\": \"Access is denied\"\n}"
+								},
+								{
+									"name": "can i access as a mod",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/draft/mod",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"draft",
+												"mod"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "1; mode=block"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, no-store, max-age=0, must-revalidate"
+										},
+										{
+											"key": "Pragma",
+											"value": "no-cache"
+										},
+										{
+											"key": "Expires",
+											"value": "0"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 02 Apr 2024 16:44:16 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=20"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"Hello mod\"\n}"
+								},
+								{
+									"name": "can i access as a admin",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/draft/mod",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"draft",
+												"mod"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "1; mode=block"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, no-store, max-age=0, must-revalidate"
+										},
+										{
+											"key": "Pragma",
+											"value": "no-cache"
+										},
+										{
+											"key": "Expires",
+											"value": "0"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Set-Cookie",
+											"value": "JSESSIONID=84F03BDEF245A2C9555876B34278F0C9; Path=/; HttpOnly"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 02 Apr 2024 21:36:34 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=60"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"Hello mod\"\n}"
+								}
+							]
 						},
 						{
 							"name": "chosen",
@@ -415,22 +2248,260 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:8080/api/draft/chosen",
-									"protocol": "http",
+									"raw": "{{baseUrl}}/api/draft/chosen",
 									"host": [
-										"localhost"
+										"{{baseUrl}}"
 									],
-									"port": "8080",
 									"path": [
 										"api",
 										"draft",
 										"chosen"
 									]
-								}
+								},
+								"description": "This endpoint is only for chosen ones (has no level)"
 							},
-							"response": []
+							"response": [
+								{
+									"name": "can i access as a chosen user",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8080/api/draft/chosen",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"draft",
+												"chosen"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "1; mode=block"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, no-store, max-age=0, must-revalidate"
+										},
+										{
+											"key": "Pragma",
+											"value": "no-cache"
+										},
+										{
+											"key": "Expires",
+											"value": "0"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 02 Apr 2024 21:40:47 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=60"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"Hello chosen one\"\n}"
+								},
+								{
+									"name": "can i access as a mod",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/draft/chosen",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"draft",
+												"chosen"
+											]
+										}
+									},
+									"status": "Forbidden",
+									"code": 403,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-store"
+										},
+										{
+											"key": "Pragma",
+											"value": "no-cache"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "1; mode=block"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 02 Apr 2024 16:44:33 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=20"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"error\": \"access_denied\",\n    \"error_description\": \"Access is denied\"\n}"
+								},
+								{
+									"name": "can i access as a admin",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/draft/chosen",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"draft",
+												"chosen"
+											]
+										}
+									},
+									"status": "Forbidden",
+									"code": 403,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-store"
+										},
+										{
+											"key": "Pragma",
+											"value": "no-cache"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "1; mode=block"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 02 Apr 2024 21:38:14 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=60"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"error\": \"access_denied\",\n    \"error_description\": \"Access is denied\"\n}"
+								}
+							]
 						}
 					],
+					"description": "You can test here whether the user you are logged in with can access the role.",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -461,12 +2532,10 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:8080/api/logs/entity/",
-									"protocol": "http",
+									"raw": "{{baseUrl}}/api/logs/entity/",
 									"host": [
-										"localhost"
+										"{{baseUrl}}"
 									],
-									"port": "8080",
 									"path": [
 										"api",
 										"logs",
@@ -475,7 +2544,92 @@
 									]
 								}
 							},
-							"response": []
+							"response": [
+								{
+									"name": "Get All Entity Logs",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8080/api/logs/entity/",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"logs",
+												"entity",
+												""
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "1; mode=block"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, no-store, max-age=0, must-revalidate"
+										},
+										{
+											"key": "Pragma",
+											"value": "no-cache"
+										},
+										{
+											"key": "Expires",
+											"value": "0"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 02 Apr 2024 21:46:40 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=20"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "[\n    {\n        \"id\": 14,\n        \"entity_name\": \"users\",\n        \"entity_id\": 8,\n        \"operation\": \"CREATE\",\n        \"operated_by\": \"admin\",\n        \"operated_at\": \"2024-04-02T16:40:31.000+00:00\",\n        \"updateLogs\": []\n    },\n    {\n        \"id\": 16,\n        \"entity_name\": \"users\",\n        \"entity_id\": 8,\n        \"operation\": \"UPDATE\",\n        \"operated_by\": \"admin\",\n        \"operated_at\": \"2024-04-02T16:41:58.000+00:00\",\n        \"updateLogs\": [\n            {\n                \"id\": 17,\n                \"op\": \"replace\",\n                \"path\": \"username\",\n                \"previousValue\": \"test\"\n            }\n        ]\n    },\n    {\n        \"id\": 18,\n        \"entity_name\": \"users\",\n        \"entity_id\": 8,\n        \"operation\": \"DELETE\",\n        \"operated_by\": \"moderator\",\n        \"operated_at\": \"2024-04-02T16:43:19.000+00:00\",\n        \"updateLogs\": []\n    },\n    {\n        \"id\": 19,\n        \"entity_name\": \"users\",\n        \"entity_id\": 10,\n        \"operation\": \"CREATE\",\n        \"operated_by\": \"admin\",\n        \"operated_at\": \"2024-04-02T21:44:28.000+00:00\",\n        \"updateLogs\": []\n    },\n    {\n        \"id\": 20,\n        \"entity_name\": \"users\",\n        \"entity_id\": 10,\n        \"operation\": \"UPDATE\",\n        \"operated_by\": \"admin\",\n        \"operated_at\": \"2024-04-02T21:45:01.000+00:00\",\n        \"updateLogs\": [\n            {\n                \"id\": 21,\n                \"op\": \"replace\",\n                \"path\": \"username\",\n                \"previousValue\": \"test2\"\n            },\n            {\n                \"id\": 22,\n                \"op\": \"replace\",\n                \"path\": \"email\",\n                \"previousValue\": \"test2@gmail.com\"\n            }\n        ]\n    },\n    {\n        \"id\": 23,\n        \"entity_name\": \"users\",\n        \"entity_id\": 10,\n        \"operation\": \"UPDATE\",\n        \"operated_by\": \"admin\",\n        \"operated_at\": \"2024-04-02T21:46:22.000+00:00\",\n        \"updateLogs\": [\n            {\n                \"id\": 24,\n                \"op\": \"replace\",\n                \"path\": \"username\",\n                \"previousValue\": \"test3\"\n            }\n        ]\n    }\n]"
+								}
+							]
 						},
 						{
 							"name": "Get Spesific Entity Logs",
@@ -483,22 +2637,187 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:8080/api/logs/entity/users/2",
-									"protocol": "http",
+									"raw": "{{baseUrl}}/api/logs/entity/users/8",
 									"host": [
-										"localhost"
+										"{{baseUrl}}"
 									],
-									"port": "8080",
 									"path": [
 										"api",
 										"logs",
 										"entity",
 										"users",
-										"2"
+										"8"
 									]
 								}
 							},
-							"response": []
+							"response": [
+								{
+									"name": "Get Entity Logs of users(8)",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/logs/entity/users/8",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"logs",
+												"entity",
+												"users",
+												"8"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "1; mode=block"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, no-store, max-age=0, must-revalidate"
+										},
+										{
+											"key": "Pragma",
+											"value": "no-cache"
+										},
+										{
+											"key": "Expires",
+											"value": "0"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 02 Apr 2024 21:46:56 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=20"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "[\n    {\n        \"id\": 14,\n        \"entity_name\": \"users\",\n        \"entity_id\": 8,\n        \"operation\": \"CREATE\",\n        \"operated_by\": \"admin\",\n        \"operated_at\": \"2024-04-02T16:40:31.000+00:00\",\n        \"updateLogs\": []\n    },\n    {\n        \"id\": 16,\n        \"entity_name\": \"users\",\n        \"entity_id\": 8,\n        \"operation\": \"UPDATE\",\n        \"operated_by\": \"admin\",\n        \"operated_at\": \"2024-04-02T16:41:58.000+00:00\",\n        \"updateLogs\": [\n            {\n                \"id\": 17,\n                \"op\": \"replace\",\n                \"path\": \"username\",\n                \"previousValue\": \"test\"\n            }\n        ]\n    },\n    {\n        \"id\": 18,\n        \"entity_name\": \"users\",\n        \"entity_id\": 8,\n        \"operation\": \"DELETE\",\n        \"operated_by\": \"moderator\",\n        \"operated_at\": \"2024-04-02T16:43:19.000+00:00\",\n        \"updateLogs\": []\n    }\n]"
+								},
+								{
+									"name": "Get Entity Logs of users(10)",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/logs/entity/users/10",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"logs",
+												"entity",
+												"users",
+												"10"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "1; mode=block"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, no-store, max-age=0, must-revalidate"
+										},
+										{
+											"key": "Pragma",
+											"value": "no-cache"
+										},
+										{
+											"key": "Expires",
+											"value": "0"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 02 Apr 2024 21:57:14 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=20"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "[\n    {\n        \"id\": 19,\n        \"entity_name\": \"users\",\n        \"entity_id\": 10,\n        \"operation\": \"CREATE\",\n        \"operated_by\": \"admin\",\n        \"operated_at\": \"2024-04-02T21:44:28.000+00:00\",\n        \"updateLogs\": []\n    },\n    {\n        \"id\": 20,\n        \"entity_name\": \"users\",\n        \"entity_id\": 10,\n        \"operation\": \"UPDATE\",\n        \"operated_by\": \"admin\",\n        \"operated_at\": \"2024-04-02T21:45:01.000+00:00\",\n        \"updateLogs\": [\n            {\n                \"id\": 22,\n                \"op\": \"replace\",\n                \"path\": \"email\",\n                \"previousValue\": \"test2@gmail.com\"\n            },\n            {\n                \"id\": 21,\n                \"op\": \"replace\",\n                \"path\": \"username\",\n                \"previousValue\": \"test2\"\n            }\n        ]\n    },\n    {\n        \"id\": 23,\n        \"entity_name\": \"users\",\n        \"entity_id\": 10,\n        \"operation\": \"UPDATE\",\n        \"operated_by\": \"admin\",\n        \"operated_at\": \"2024-04-02T21:46:22.000+00:00\",\n        \"updateLogs\": [\n            {\n                \"id\": 24,\n                \"op\": \"replace\",\n                \"path\": \"username\",\n                \"previousValue\": \"test3\"\n            }\n        ]\n    }\n]"
+								}
+							]
 						},
 						{
 							"name": "Get Spesific Update Logs",
@@ -506,34 +2825,205 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:8080/api/logs/entity/users/2/updates/password",
-									"protocol": "http",
+									"raw": "{{baseUrl}}/api/logs/entity/users/10/updates/username",
 									"host": [
-										"localhost"
+										"{{baseUrl}}"
 									],
-									"port": "8080",
 									"path": [
 										"api",
 										"logs",
 										"entity",
 										"users",
-										"2",
+										"10",
 										"updates",
-										"password"
+										"username"
 									]
 								}
 							},
-							"response": []
+							"response": [
+								{
+									"name": "Get Update Logs of users(10)' username field",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/logs/entity/users/10/updates/username",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"logs",
+												"entity",
+												"users",
+												"10",
+												"updates",
+												"username"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "1; mode=block"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, no-store, max-age=0, must-revalidate"
+										},
+										{
+											"key": "Pragma",
+											"value": "no-cache"
+										},
+										{
+											"key": "Expires",
+											"value": "0"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 02 Apr 2024 21:47:03 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=20"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "[\n    {\n        \"id\": 21,\n        \"op\": \"replace\",\n        \"path\": \"username\",\n        \"previousValue\": \"test2\"\n    },\n    {\n        \"id\": 24,\n        \"op\": \"replace\",\n        \"path\": \"username\",\n        \"previousValue\": \"test3\"\n    }\n]"
+								},
+								{
+									"name": "Get Update Logs of users(10)' email field",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/logs/entity/users/10/updates/email",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"logs",
+												"entity",
+												"users",
+												"10",
+												"updates",
+												"email"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "1; mode=block"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, no-store, max-age=0, must-revalidate"
+										},
+										{
+											"key": "Pragma",
+											"value": "no-cache"
+										},
+										{
+											"key": "Expires",
+											"value": "0"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 02 Apr 2024 21:59:09 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=20"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "[\n    {\n        \"id\": 22,\n        \"op\": \"replace\",\n        \"path\": \"email\",\n        \"previousValue\": \"test2@gmail.com\"\n    }\n]"
+								}
+							]
 						}
-					]
+					],
+					"description": "Recommended that only admins or mods have access"
 				}
 			],
+			"description": "Endpoints that require user authentication.  \n  \nWe will define the access_token we received above as beaer_token for each request.  \nBy defining it in the API folder in Postman, all endpoints under it can be inherited.",
 			"auth": {
 				"type": "bearer",
 				"bearer": [
 					{
 						"key": "token",
-						"value": "0542a6ba-6005-4240-914e-2bb97201383e",
+						"value": "9e5cd88c-b3fa-4ab3-99de-5668adf82e07",
 						"type": "string"
 					}
 				]
@@ -560,10 +3050,38 @@
 			]
 		}
 	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
 	"variable": [
 		{
 			"key": "baseUrl",
 			"value": "http://localhost:8080"
+		},
+		{
+			"key": "baseUrl",
+			"value": "http://34.41.245.140:8082/restapi_draft",
+			"type": "string",
+			"disabled": true
 		}
 	]
 }
