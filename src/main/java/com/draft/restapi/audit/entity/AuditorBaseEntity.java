@@ -14,7 +14,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AuditorBaseEntity {
-	private Integer id;
+	private Integer id = 0; // must be assignable to Serializable!
 
 	@JsonIgnore
 	private Integer logId;

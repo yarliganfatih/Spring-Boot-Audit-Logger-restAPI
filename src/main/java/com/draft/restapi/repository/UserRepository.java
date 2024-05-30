@@ -1,9 +1,11 @@
 package com.draft.restapi.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import com.draft.restapi.model.User;
 
-public interface UserRepository extends JpaRepository<User, Integer>{
+@RepositoryRestResource
+public interface UserRepository extends PagingAndSortingRepository<User, Integer> {
 
 }

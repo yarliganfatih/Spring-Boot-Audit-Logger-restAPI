@@ -1437,12 +1437,10 @@
 											}
 										},
 										"url": {
-											"raw": "http://localhost:8080/api/users/8",
-											"protocol": "http",
+											"raw": "{{baseUrl}}/api/users/8",
 											"host": [
-												"localhost"
+												"{{baseUrl}}"
 											],
-											"port": "8080",
 											"path": [
 												"api",
 												"users",
@@ -1517,6 +1515,125 @@
 							]
 						},
 						{
+							"name": "updateUser",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"test2\",\r\n    \"email\": \"test2@gmail.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/users/2",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"2"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "updateUser",
+									"originalRequest": {
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"test2\",\r\n    \"email\": \"test2@gmail.com\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/users/2",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"users",
+												"2"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "1; mode=block"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, no-store, max-age=0, must-revalidate"
+										},
+										{
+											"key": "Pragma",
+											"value": "no-cache"
+										},
+										{
+											"key": "Expires",
+											"value": "0"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/hal+json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 30 May 2024 23:10:06 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=60"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"username\": \"test2\",\n    \"email\": \"test2@gmail.com\",\n    \"password\": \"{bcrypt}$2a$12$udISUXbLy9ng5wuFsrCMPeQIYzaKtAEXNJqzeprSuaty86N4m6emW\",\n    \"tableName\": \"users\",\n    \"_links\": {\n        \"self\": {\n            \"href\": \"http://localhost:8080/api/users/0\"\n        },\n        \"user\": {\n            \"href\": \"http://localhost:8080/api/users/0\"\n        }\n    }\n}"
+								}
+							]
+						},
+						{
 							"name": "deleteUser",
 							"request": {
 								"method": "DELETE",
@@ -1540,12 +1657,10 @@
 										"method": "DELETE",
 										"header": [],
 										"url": {
-											"raw": "http://localhost:8080/api/users/8",
-											"protocol": "http",
+											"raw": "{{baseUrl}}/api/users/8",
 											"host": [
-												"localhost"
+												"{{baseUrl}}"
 											],
-											"port": "8080",
 											"path": [
 												"api",
 												"users",
@@ -1743,12 +1858,10 @@
 										"method": "GET",
 										"header": [],
 										"url": {
-											"raw": "http://localhost:8080/api/draft/admin",
-											"protocol": "http",
+											"raw": "{{baseUrl}}/api/draft/admin",
 											"host": [
-												"localhost"
+												"{{baseUrl}}"
 											],
-											"port": "8080",
 											"path": [
 												"api",
 												"draft",
@@ -2001,12 +2114,10 @@
 										"method": "GET",
 										"header": [],
 										"url": {
-											"raw": "http://localhost:8080/api/draft/mod",
-											"protocol": "http",
+											"raw": "{{baseUrl}}/api/draft/mod",
 											"host": [
-												"localhost"
+												"{{baseUrl}}"
 											],
-											"port": "8080",
 											"path": [
 												"api",
 												"draft",
@@ -2267,12 +2378,10 @@
 										"method": "GET",
 										"header": [],
 										"url": {
-											"raw": "http://localhost:8080/api/draft/chosen",
-											"protocol": "http",
+											"raw": "{{baseUrl}}/api/draft/chosen",
 											"host": [
-												"localhost"
+												"{{baseUrl}}"
 											],
-											"port": "8080",
 											"path": [
 												"api",
 												"draft",
@@ -2551,12 +2660,10 @@
 										"method": "GET",
 										"header": [],
 										"url": {
-											"raw": "http://localhost:8080/api/logs/entity/",
-											"protocol": "http",
+											"raw": "{{baseUrl}}/api/logs/entity/",
 											"host": [
-												"localhost"
+												"{{baseUrl}}"
 											],
-											"port": "8080",
 											"path": [
 												"api",
 												"logs",
@@ -3023,7 +3130,7 @@
 				"bearer": [
 					{
 						"key": "token",
-						"value": "9e5cd88c-b3fa-4ab3-99de-5668adf82e07",
+						"value": "24cc5399-5de7-42f4-9813-75fb54ece42c",
 						"type": "string"
 					}
 				]
@@ -3075,13 +3182,13 @@
 	"variable": [
 		{
 			"key": "baseUrl",
-			"value": "http://localhost:8080"
+			"value": "http://localhost:8080",
+			"disabled": true
 		},
 		{
 			"key": "baseUrl",
 			"value": "http://34.41.245.140:8082/restapi_draft",
-			"type": "string",
-			"disabled": true
+			"type": "string"
 		}
 	]
 }
