@@ -1396,6 +1396,121 @@
 							]
 						},
 						{
+							"name": "findByUsername",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/users/search/findByUsername?username=user",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"search",
+										"findByUsername"
+									],
+									"query": [
+										{
+											"key": "username",
+											"value": "user"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "findByUsername",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/users/search/findByUsername?username=user",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"users",
+												"search",
+												"findByUsername"
+											],
+											"query": [
+												{
+													"key": "username",
+													"value": "user"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "1; mode=block"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, no-store, max-age=0, must-revalidate"
+										},
+										{
+											"key": "Pragma",
+											"value": "no-cache"
+										},
+										{
+											"key": "Expires",
+											"value": "0"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/hal+json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 30 May 2024 23:31:47 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=60"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"_embedded\": {\n        \"users\": [\n            {\n                \"username\": \"user\",\n                \"email\": \"user@gmail.com\",\n                \"password\": \"{bcrypt}$2a$12$udISUXbLy9ng5wuFsrCMPeQIYzaKtAEXNJqzeprSuaty86N4m6emW\",\n                \"tableName\": \"users\",\n                \"_links\": {\n                    \"self\": {\n                        \"href\": \"http://localhost:8080/api/users/0\"\n                    },\n                    \"user\": {\n                        \"href\": \"http://localhost:8080/api/users/0\"\n                    }\n                }\n            }\n        ]\n    },\n    \"_links\": {\n        \"self\": {\n            \"href\": \"http://localhost:8080/api/users/search/findByUsername?username=user&page=0&size=20\"\n        }\n    },\n    \"page\": {\n        \"size\": 20,\n        \"totalElements\": 1,\n        \"totalPages\": 1,\n        \"number\": 0\n    }\n}"
+								}
+							]
+						},
+						{
 							"name": "updateUser",
 							"request": {
 								"method": "PUT",
@@ -3130,7 +3245,7 @@
 				"bearer": [
 					{
 						"key": "token",
-						"value": "24cc5399-5de7-42f4-9813-75fb54ece42c",
+						"value": "7c6a9311-0ec1-4b7c-9c75-9662b5de3b55",
 						"type": "string"
 					}
 				]
