@@ -30,6 +30,10 @@ public class AuthUserDetail extends SignedUser implements UserDetails {
         return grantedAuthorities;
     }
     
+    public Integer getId() {
+        return super.getId();
+    }
+    
     @Override
     public String getPassword() {
         return super.getPassword();

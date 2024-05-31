@@ -6,8 +6,6 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreRemove;
 import javax.persistence.PreUpdate;
 
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.flipkart.zjsonpatch.JsonDiff;
@@ -18,6 +16,7 @@ import com.draft.restapi.audit.entity.EntityLog;
 import com.draft.restapi.audit.entity.UpdateLog;
 import com.draft.restapi.audit.repository.EntityLogRepository;
 import com.draft.restapi.audit.repository.UpdateLogRepository;
+import com.draft.restapi.auth.entity.SignedUser;
 import com.fasterxml.jackson.databind.JsonNode;
 
 @RequiredArgsConstructor
@@ -26,15 +25,6 @@ public class AuditListener {
 	private final EntityLogRepository entityLogRepository;
 
 	private final UpdateLogRepository updateLogRepository;
-
-    public String getLoggedUserName() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof UserDetails) {
-            return ((UserDetails) principal).getUsername();  
-        } else {
-            return principal.toString();
-        }
-    }
 
     @PostLoad
     public void postRead(final AuditorBaseEntity entity){
@@ -74,7 +64,7 @@ public class AuditListener {
     }
 
     public AuditorBaseEntity preOperation(AuditorBaseEntity entity, String operation) {
-        EntityLog entityLog = new EntityLog(entity.getTableName(), entity.getId(), operation, getLoggedUserName());
+        EntityLog entityLog = new EntityLog(entity.getTableName(), entity.getId(), operation, SignedUser.getLoggedUser());
         entityLog = entityLogRepository.save(entityLog);
         entity.setEntityLog(entityLog); // for usable on postOperation
         return entity;
