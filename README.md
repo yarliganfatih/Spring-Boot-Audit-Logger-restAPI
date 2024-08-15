@@ -5,14 +5,14 @@ Postman Documentation => https://documenter.getpostman.com/view/14869995/2sA35Jy
 ## Get Started
 Clone repository and run this command :
 ```
-./mvnw spring-boot:run
+docker compose up
 ```
 
 #### Import Postman Collection
 Import the collection output from resources into postman so you can test the endpoints
 
 #### Create a Database
-Create a Database named "restapi"
+Create a Database named "restapi_db" (Docker will create)
 
 All necessary tables are created with generate-ddl from entities/models
 

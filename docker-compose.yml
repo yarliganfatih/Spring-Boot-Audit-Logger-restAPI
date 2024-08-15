@@ -1,0 +1,60 @@
+version: '2'
+volumes:
+  mysql-persistence:
+    driver: local
+services:
+  mysql_db:
+    container_name: mysql_db
+    image: mysql/mysql-server:8.0
+    volumes:
+      - /mnt/c/mysql:/var/lib/mysql8
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: 1234
+      MYSQL_DATABASE: restapi_db
+    command:
+      --server-id=1
+      --log-bin=mysql-bin
+      --max-binlog-size=8192
+      --binlog_row_image=FULL
+      --default-authentication-plugin=mysql_native_password
+    ports:
+      - 3306:3306
+
+  # http://localhost:8888 for access phpmyadmin
+  db_admin:
+    container_name: db_admin
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - 8888:80
+    restart: "on-failure"
+    depends_on:
+      - mysql_db
+    links:
+      - mysql_db
+    environment:
+      PMA_HOST: mysql_db
+      PMA_PORT: 3306
+      PMA_USER: admin
+      PMA_PASSWORD: 1234
+
+  # http://localhost:8080 for access restapi
+  restapi_app:
+    container_name: restapi_app
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - .:/app
+      - ~/.m2:/root/.m2
+    ports:
+      - "8080:8080"
+    restart: "on-failure"
+    depends_on:
+      - mysql_db
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql_db:3306/restapi_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: 1234
