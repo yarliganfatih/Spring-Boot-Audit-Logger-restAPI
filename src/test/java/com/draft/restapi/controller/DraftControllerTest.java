@@ -2,96 +2,144 @@ package com.draft.restapi.controller;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.skyscreamer.jsonassert.JSONAssert;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
+import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
+import org.springframework.test.web.servlet.MockMvc;
 
-import com.draft.restapi.RestapiApplication;
+import com.draft.restapi.auth.repository.RoleRepository;
+
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = RestapiApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@WebMvcTest(value = DraftController.class)
+@MockBean(JpaMetamodelMappingContext.class) // Override EnableJpaAuditing on the main class
 public class DraftControllerTest {
 
-    @LocalServerPort
-    private int port;
-
-    private String createURLWithPort(String uri) {
-        return "http://localhost:" + port + uri;
+    @TestConfiguration
+    static class RoleHierarchyTestConfig {
+        @Bean
+        @Primary
+        public RoleHierarchy roleHierarchy() {
+            RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+            roleHierarchy.setHierarchy("ROLE_admin > ROLE_mod");
+            return roleHierarchy;
+        }
     }
 
-    TestRestTemplate restTemplate = new TestRestTemplate();
+    @Autowired
+    private MockMvc mockMvc;
 
-    HttpHeaders headers = new HttpHeaders();
+    @MockBean
+    private UserDetailsService userDetailsService;
+
+    @MockBean
+    private RoleRepository roleRepository;
 
     @Test
+    @WithMockUser
     public void testIndexEndpoint() throws Exception {
-        HttpEntity<String> entity = new HttpEntity<>(null, headers);
-        ResponseEntity<String> response = restTemplate.exchange(
-                createURLWithPort("/api/draft"),
-                HttpMethod.GET, entity, String.class);
-        String expected = "{\"message\":\"Hello World!\"}";
-        JSONAssert.assertEquals(expected, response.getBody(), false);
+        mockMvc.perform(get("/api/draft"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"message\":\"Hello World!\"}"));
     }
 
     @Test
+    @WithMockUser
     public void testErrorEndpoint() throws Exception {
-        HttpEntity<String> entity = new HttpEntity<>(null, headers);
-        ResponseEntity<String> response = restTemplate.exchange(
-                createURLWithPort("/api/draft/error"),
-                HttpMethod.GET, entity, String.class);
-        String expected = "{\"message\":\"Bad Request\"}";
-        JSONAssert.assertEquals(expected, response.getBody(), false);
+        mockMvc.perform(get("/api/draft/error"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().json("{\"message\":\"Bad Request\"}"));
     }
 
     @Test
+    @WithMockUser
     public void testParamEndpoint() throws Exception {
-        HttpEntity<String> entity = new HttpEntity<>(null, headers);
-        ResponseEntity<String> response = restTemplate.exchange(
-                createURLWithPort("/api/draft/param?id=5"),
-                HttpMethod.GET, entity, String.class);
-        String expected = "{\"message\":\"param is 5\"}";
-        JSONAssert.assertEquals(expected, response.getBody(), false);
+        mockMvc.perform(get("/api/draft/param?id=5"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"message\":\"param is 5\"}"));
     }
 
     @Test
+    @WithMockUser
     public void testPathEndpoint() throws Exception {
-        HttpEntity<String> entity = new HttpEntity<>(null, headers);
-        ResponseEntity<String> response = restTemplate.exchange(
-                createURLWithPort("/api/draft/path/sample/10"),
-                HttpMethod.GET, entity, String.class);
-        String expected = "{\"message\":\"sample is 10\"}";
-        JSONAssert.assertEquals(expected, response.getBody(), false);
+        mockMvc.perform(get("/api/draft/path/sample/10"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"message\":\"sample is 10\"}"));
     }
 
     @Test
+    @WithMockUser
     public void testPostEndpoint() throws Exception {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Content-Type", "application/json");
-
         String reqBody = "{\"key\":\"1\",\"field\":\"value\"}";
-        HttpEntity<String> entity = new HttpEntity<>(reqBody, headers);
 
-        ResponseEntity<String> response = restTemplate.exchange(
-                createURLWithPort("/api/draft/post"),
-                HttpMethod.POST, entity, String.class);
-
-        String expected = "{\"message\":\"key is 1, field is value\"}";
-        JSONAssert.assertEquals(expected, response.getBody(), false);
+        mockMvc.perform(post("/api/draft/post")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(reqBody))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"message\":\"key is 1, field is value\"}"));
     }
-    
+
     @Test
+    // No user -> Unauthorized
     public void testPreAuthorizedEndpoint() throws Exception {
-        HttpEntity<String> entity = new HttpEntity<>(null, headers);
-        ResponseEntity<String> response = restTemplate.exchange(
-                createURLWithPort("/api/draft/admin"),
-                HttpMethod.GET, entity, String.class);
-        String expected = "{\"error\":\"unauthorized\",\"error_description\":\"Full authentication is required to access this resource\"}";
-        JSONAssert.assertEquals(expected, response.getBody(), false);
+        mockMvc.perform(get("/api/draft/admin"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    // Wrong role -> Forbidden
+    @WithMockUser(username = "mod", authorities = "ROLE_mod")
+    public void testAdminEndpointWithModUser() throws Exception {
+        mockMvc.perform(get("/api/draft/admin"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "admin", authorities = "ROLE_admin")
+    public void testAdminEndpoint() throws Exception {
+        mockMvc.perform(get("/api/draft/admin"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"message\":\"Hello admin\"}"));
+    }
+
+    @Test
+    @WithMockUser(username = "mod", authorities = "ROLE_mod")
+    public void testModEndpoint() throws Exception {
+        mockMvc.perform(get("/api/draft/mod"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"message\":\"Hello mod\"}"));
+    }
+
+    @Test
+    // Through role hierarchy
+    @WithMockUser(username = "admin", authorities = "ROLE_admin")
+    public void testModEndpointWithAdminUser() throws Exception {
+        mockMvc.perform(get("/api/draft/mod"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"message\":\"Hello mod\"}"));
+    }
+
+    @Test
+    @WithMockUser(username = "chosen", authorities = "ROLE_chosen")
+    public void testChosenEndpoint() throws Exception {
+        mockMvc.perform(get("/api/draft/chosen"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"message\":\"Hello chosen one\"}"));
     }
 }
