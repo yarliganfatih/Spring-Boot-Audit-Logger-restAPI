@@ -10,10 +10,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.jdbc.Sql;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@Sql(scripts = {"classpath:db/sql/insert-user-data.sql" }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = {"classpath:db/sql/insert-user-data-rollback.sql" }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class UserControllerTest extends BaseControllerTest {
 
     @Test
@@ -32,35 +35,27 @@ public class UserControllerTest extends BaseControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
-    public JsonNode createMockUser(Integer mockId, String authToken) throws Exception {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Content-Type", "application/json");
-        headers.set("Authorization", "Bearer " + authToken);
-
-        String username = "user" + mockId;
-        String userJson = "{\"email\": \"" + username + "@example.com\", \"username\": \"" + username + "\", \"password\": \"" + username + "\"}";
-        HttpEntity<String> entity = new HttpEntity<>(userJson, headers);
-
-        ResponseEntity<String> response = restTemplate.exchange(
-                createURLWithPort("/api/users"),
-                HttpMethod.POST, entity, String.class);
-
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode createdUser = mapper.readTree(response.getBody());
-        return createdUser;
-    }
-
     @Test
     public void testCreateUser() throws Exception {
         // given
         int uniqueNum = new Random().nextInt(1000);
+        String authToken = logInAsUserAndGetBearerToken();
+        String username = "user" + uniqueNum;
 
         // when
-        String authToken = logInAsUserAndGetBearerToken();
-        JsonNode mockUser = createMockUser(uniqueNum, authToken);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+        headers.set("Authorization", "Bearer " + authToken);
+        String userJson = "{\"email\": \"" + username + "@example.com\", \"username\": \"" + username + "\", \"password\": \"" + username + "\"}";
+        HttpEntity<String> entity = new HttpEntity<>(userJson, headers);
+        ResponseEntity<String> response = restTemplate.exchange(
+                createURLWithPort("/api/users"),
+                HttpMethod.POST, entity, String.class);
 
         // then
-        String username = "user" + uniqueNum;
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode mockUser = mapper.readTree(response.getBody());
         Integer userId = mockUser.get("id").asInt();
         assertEquals(username + "@example.com", mockUser.get("email").asText());
         assertEquals(username, mockUser.get("username").asText());
@@ -70,11 +65,9 @@ public class UserControllerTest extends BaseControllerTest {
     @Test
     public void testGetUser() throws Exception {
         // given
-        int uniqueNum = new Random().nextInt(1000);
         String authToken = logInAsUserAndGetBearerToken();
-        JsonNode mockUser = createMockUser(uniqueNum, authToken);
-        String username = "user" + uniqueNum;
-        Integer userId = mockUser.get("id").asInt();
+        String username = "mockUser";
+        Integer userId = 2;
 
         // when
         HttpHeaders headers = new HttpHeaders();
@@ -99,9 +92,8 @@ public class UserControllerTest extends BaseControllerTest {
         // given
         int uniqueNum = new Random().nextInt(1000);
         String authToken = logInAsUserAndGetBearerToken();
-        JsonNode mockUser = createMockUser(uniqueNum, authToken);
         String username = "updateduser" + uniqueNum;
-        Integer userId = mockUser.get("id").asInt();
+        Integer userId = 2;
 
         // when
         HttpHeaders headers = new HttpHeaders();
@@ -126,10 +118,8 @@ public class UserControllerTest extends BaseControllerTest {
     @Test
     public void testDeleteUser() throws Exception {
         // given
-        int uniqueNum = new Random().nextInt(1000);
         String authToken = logInAsUserAndGetBearerToken();
-        JsonNode mockUser = createMockUser(uniqueNum, authToken);
-        Integer userId = mockUser.get("id").asInt();
+        Integer userId = 2;
 
         // when
         HttpHeaders headers = new HttpHeaders();
