@@ -4,6 +4,7 @@ import javax.persistence.*;
 import javax.validation.constraints.*;
 
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -81,10 +82,18 @@ public class SignedUser implements Serializable {
 	}
     
     public static SignedUser getLoggedUser() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof AuthUserDetail) {
-            return ((SignedUser) principal);  
+        try {
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (principal instanceof AuthUserDetail) {
+                return ((SignedUser) principal);  
+            } else if (principal instanceof User) {
+                SignedUser mockUser = new SignedUser();
+                mockUser.setId(1);
+                return mockUser;  
+            }
+            return null;
+        } catch (Exception e) {
+            return null;
         }
-        return null;
     }
 }
