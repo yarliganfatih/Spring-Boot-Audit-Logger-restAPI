@@ -5,6 +5,7 @@ Postman Documentation => https://documenter.getpostman.com/view/14869995/2sA35Jy
 ## Get Started
 Clone repository and run this command :
 ```
+docker-compose up -d mysqldb
 ./mvnw spring-boot:run
 ```
 
@@ -14,7 +15,9 @@ Import the collection output from resources into postman so you can test the end
 #### Create a Database
 Create a Database named "restapi"
 
+Docker will make your MySQL database ready on port:3307 locally
 All necessary tables are created with generate-ddl from entities/models
+Also src/main/resources/data.sql will be executed for initialize data
 
 #### Authentication
 Firstly we need a Client
@@ -65,6 +68,11 @@ In update operations, all detected changes are recorded in order to see the old 
 
 ## Build & Deploy
 
+### with Docker Image
+
+Follow the instructions in [DEPLOY.md](DEPLOY.md).
+
+### with Tomcat Servlet
 run this command to build
 ```
 mvn clean install
