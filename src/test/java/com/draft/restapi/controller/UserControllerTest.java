@@ -36,12 +36,12 @@ public class UserControllerTest extends BaseControllerTest {
         MvcResult result = mockMvc.perform(post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userJson))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.email").value(username + "@example.com"))
-                .andExpect(jsonPath("$.username").value(username))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.data.email").value(username + "@example.com"))
+                .andExpect(jsonPath("$.data.username").value(username))
                 .andReturn();
         String responseContent = result.getResponse().getContentAsString();
-        Integer userId = JsonPath.read(responseContent, "$.id");
+        Integer userId = JsonPath.read(responseContent, "$.data.id");
         assertAuditLogs("users", userId.longValue(), "CREATE");
     }
 
@@ -52,9 +52,9 @@ public class UserControllerTest extends BaseControllerTest {
 
         mockMvc.perform(get("/api/users/" + userId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(userId))
-                .andExpect(jsonPath("$.email").value("mockUser@example.com"))
-                .andExpect(jsonPath("$.username").value("mockUser"));
+                .andExpect(jsonPath("$.data.id").value(userId))
+                .andExpect(jsonPath("$.data.email").value("mockUser@example.com"))
+                .andExpect(jsonPath("$.data.username").value("mockUser"));
     }
 
     @Test
@@ -68,9 +68,9 @@ public class UserControllerTest extends BaseControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userJson))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(userId))
-                .andExpect(jsonPath("$.email").value(username + "@example.com"))
-                .andExpect(jsonPath("$.username").value(username));
+                .andExpect(jsonPath("$.data.id").value(userId))
+                .andExpect(jsonPath("$.data.email").value(username + "@example.com"))
+                .andExpect(jsonPath("$.data.username").value(username));
         assertAuditLogs("users", userId.longValue(), "UPDATE");
     }
 

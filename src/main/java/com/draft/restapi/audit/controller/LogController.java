@@ -12,6 +12,8 @@ import com.draft.restapi.audit.entity.EntityLog;
 import com.draft.restapi.audit.entity.UpdateLog;
 import com.draft.restapi.audit.service.LogService;
 
+import com.draft.restapi.common.payload.ApiResponse;
+
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -22,17 +24,17 @@ public class LogController {
 	private final LogService logService;
 
 	@GetMapping("/entity/")
-	public ResponseEntity<List<EntityLog>> getEntities() {
-		return ResponseEntity.ok(logService.getEntities());
+	public ResponseEntity<ApiResponse<List<EntityLog>>> getEntities() {
+		return ResponseEntity.ok(ApiResponse.success(logService.getEntities()));
 	}
 
 	@GetMapping("/entity/{entity_name}/{entity_id}")
-	public ResponseEntity<List<EntityLog>> getEntitiyLogs(@PathVariable(name = "entity_name") String entityName, @PathVariable(name = "entity_id") Long entityId) {
-		return ResponseEntity.ok(logService.getEntitiyLogs(entityName, entityId));
+	public ResponseEntity<ApiResponse<List<EntityLog>>> getEntitiyLogs(@PathVariable(name = "entity_name") String entityName, @PathVariable(name = "entity_id") Long entityId) {
+		return ResponseEntity.ok(ApiResponse.success(logService.getEntitiyLogs(entityName, entityId)));
 	}
 
 	@GetMapping("/entity/{entity_name}/{entity_id}/updates/{path}")
-	public ResponseEntity<List<UpdateLog>> getEntitiyPathUpdateLogs(@PathVariable(name = "entity_name") String entityName, @PathVariable(name = "entity_id") Long entityId, @PathVariable(name = "path") String path) {
-		return ResponseEntity.ok(logService.getEntitiyPathUpdateLogs(entityName, entityId, path));
+	public ResponseEntity<ApiResponse<List<UpdateLog>>> getEntitiyPathUpdateLogs(@PathVariable(name = "entity_name") String entityName, @PathVariable(name = "entity_id") Long entityId, @PathVariable(name = "path") String path) {
+		return ResponseEntity.ok(ApiResponse.success(logService.getEntitiyPathUpdateLogs(entityName, entityId, path)));
 	}
 }
