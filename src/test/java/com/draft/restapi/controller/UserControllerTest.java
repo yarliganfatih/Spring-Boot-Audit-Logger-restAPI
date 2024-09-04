@@ -59,6 +59,16 @@ public class UserControllerTest extends BaseControllerTest {
 
     @Test
     @WithMockUser(username = "user", roles = { "user" })
+    public void testGetUser_caseNotFound() throws Exception {
+        Integer userId = -1;
+
+        mockMvc.perform(get("/api/users/" + userId))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("User not found with id : '" + userId + "'"));
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = { "user" })
     public void testUpdateUser() throws Exception {
         String username = "updatedUser";
         Integer userId = 2;
@@ -76,11 +86,57 @@ public class UserControllerTest extends BaseControllerTest {
 
     @Test
     @WithMockUser(username = "user", roles = { "user" })
+    public void testUpdateUser_caseNotFound() throws Exception {
+        String username = "updatedUser";
+        Integer userId = -1;
+        String userJson = "{\"email\": \"" + username + "@example.com\", \"username\": \"" + username + "\", \"password\": \"" + username + "\"}";
+
+        mockMvc.perform(put("/api/users/" + userId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(userJson))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("User not found with id : '" + userId + "'"));
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = { "user" })
+    public void testUpdateUser_caseNullId() throws Exception {
+        String username = "updatedUser";
+        Integer userId = null;
+        String userJson = "{\"email\": \"" + username + "@example.com\", \"username\": \"" + username + "\", \"password\": \"" + username + "\"}";
+
+        mockMvc.perform(put("/api/users/" + userId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(userJson))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = { "user" })
     public void testDeleteUser() throws Exception {
         Integer userId = 2;
 
         mockMvc.perform(delete("/api/users/" + userId))
                 .andExpect(status().isOk());
         assertAuditLogs("users", userId.longValue(), "DELETE");
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = { "user" })
+    public void testDeleteUser_caseNotFound() throws Exception {
+        Integer userId = -1;
+
+        mockMvc.perform(delete("/api/users/" + userId))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("User not found with id : '" + userId + "'"));
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = { "user" })
+    public void testDeleteUser_caseNullId() throws Exception {
+        Integer userId = null;
+
+        mockMvc.perform(delete("/api/users/" + userId))
+                .andExpect(status().isBadRequest());
     }
 }
