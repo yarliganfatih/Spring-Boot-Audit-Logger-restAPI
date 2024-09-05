@@ -1,19 +1,20 @@
 package com.draft.restapi.common.exception;
 
 import com.draft.restapi.common.payload.ApiResponse;
+
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @ControllerAdvice
-public class GlobalExceptionHandler {
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(ResourceNotFoundException.class)
@@ -28,10 +29,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler({ MethodArgumentTypeMismatchException.class, HttpRequestMethodNotSupportedException.class })
-    public ResponseEntity<ApiResponse<Object>> handleBadRequestExceptions(Exception ex, WebRequest request) {
-        ApiResponse<Object> response = ApiResponse.error("Invalid request, Please check your input and try again");
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    @Override
+    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        LOGGER.warn(ex.getMessage());
+        String errorMessage = ErrorMessageConstants.EXCEPTION_MESSAGES.getOrDefault(
+                ex.getClass().getSimpleName(),
+                "Invalid request, Please check your input and try again.");
+        ApiResponse<Object> response = ApiResponse.error(errorMessage);
+        return new ResponseEntity<>(response, status);
     }
 
     @ExceptionHandler(Exception.class) // rest of unhandled exceptions
