@@ -12,10 +12,12 @@ import java.util.UUID;
 
 import org.slf4j.MDC;
 
+import org.springframework.web.util.ContentCachingRequestWrapper;
+
 @Component
 public class TraceFilter extends OncePerRequestFilter {
 
-    private static final String TRACE_ID = "x-traceId";
+    public static final String TRACE_ID = "x-traceId";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -26,8 +28,10 @@ public class TraceFilter extends OncePerRequestFilter {
 
         MDC.put(TRACE_ID, traceId);
 
+        ContentCachingRequestWrapper wrappedRequest = new ContentCachingRequestWrapper(request);
+
         try {
-            filterChain.doFilter(request, response);
+            filterChain.doFilter(wrappedRequest, response);
         } finally {
             MDC.remove(TRACE_ID);
         }

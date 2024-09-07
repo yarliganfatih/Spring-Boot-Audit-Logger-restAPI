@@ -1,6 +1,8 @@
 package com.draft.restapi.common.exception;
 
+import com.draft.restapi.common.filter.TraceFilter;
 import com.draft.restapi.common.payload.ApiResponse;
+import com.draft.restapi.common.helper.RequestHelper;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -13,9 +15,24 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.draft.restapi.audit.entity.ErrorLog;
+import com.draft.restapi.audit.repository.ErrorLogRepository;
+import com.draft.restapi.auth.entity.SignedUser;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
+import org.slf4j.MDC;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    @Autowired
+    private ErrorLogRepository errorLogRepository;
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiResponse<Object>> handleResourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
@@ -40,9 +57,55 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class) // rest of unhandled exceptions
-    public ResponseEntity<ApiResponse<Object>> handleExceptions(Exception ex, WebRequest request) {
+    public ResponseEntity<ApiResponse<Object>> handleExceptions(Exception ex, WebRequest request, HttpServletRequest servletRequest) {
         LOGGER.error("An unexpected error occurred: {}", ex.getMessage());
         ApiResponse<Object> response = ApiResponse.error("An unexpected error occurred, Please try again later");
+        saveErrorLog(ex, servletRequest, response, HttpStatus.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private void saveErrorLog(Exception ex, HttpServletRequest servletRequest, Object responseObj, HttpStatus status) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            ErrorLog errorLog = new ErrorLog();
+            errorLog.setEndpointUrl(servletRequest.getRequestURI());
+            errorLog.setHttpMethod(servletRequest.getMethod());
+            errorLog.setErrorMessage(ex.getMessage());
+            errorLog.setErrorType(ex.getClass().getName());
+            errorLog.setHttpStatusCode(status.value());
+            errorLog.setXTraceId(MDC.get(TraceFilter.TRACE_ID));
+            errorLog.setOccurredBy(SignedUser.getLoggedUser());
+            errorLog.setRequestParams(servletRequest.getQueryString());
+
+            try {
+                errorLog.setResponseBody(mapper.writeValueAsString(responseObj));
+            } catch (Exception ignore) {
+                LOGGER.warn("Failed to serialize response body: {}", ignore.getMessage());
+                errorLog.setResponseBody("[Unserializable Response]");
+            }
+
+            try {
+                errorLog.setRequestHeaders(mapper.writeValueAsString(RequestHelper.getRequestHeaders(servletRequest)));
+            } catch (Exception ignore) {
+                LOGGER.warn("Failed to serialize request headers: {}", ignore.getMessage());
+                errorLog.setRequestHeaders("[Unserializable Headers]");
+            }
+
+            try {
+                errorLog.setRequestBody(RequestHelper.getRequestBody(servletRequest));
+            } catch (Exception ignore) {
+                LOGGER.warn("Failed to serialize request body: {}", ignore.getMessage());
+                errorLog.setRequestBody("[Unsupported Encoding]");
+            }
+
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            errorLog.setErrorStackTrace(sw.toString());
+
+            errorLogRepository.save(errorLog);
+        } catch (Exception e) { // do not affect main flow if errorLog saving fails
+            LOGGER.error("Failed to save ErrorLog to Database: {}", e.getMessage());
+        }
     }
 }
