@@ -2,11 +2,17 @@ package com.draft.restapi.service.impl;
 
 import com.draft.restapi.common.exception.ResourceNotFoundException;
 import com.draft.restapi.model.User;
+import com.draft.restapi.model.dto.UserDto;
 import com.draft.restapi.repository.UserRepository;
 import com.draft.restapi.service.UserService;
+import com.draft.restapi.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -17,37 +23,48 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private UserMapper userMapper;
+
     @Override
-    public Iterable<User> getAllUsers() {
-        return userRepository.findAll();
+    public Iterable<UserDto> getAllUsers() {
+        return StreamSupport.stream(userRepository.findAll().spliterator(), false)
+                .map(userMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public User getUserById(Integer userId) {
+    public UserDto getUserById(Integer userId) {
         if (userId == null)
             throw new IllegalArgumentException("Id cannot be null");
         return userRepository.findById(userId)
+                .map(userMapper::toDto)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
     }
 
     @Override
-    public User createUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+    public UserDto createUser(UserDto userDto) {
+        User user = userMapper.toEntity(userDto);
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+
+        User savedUser = userRepository.save(user);
+        return userMapper.toDto(savedUser);
     }
 
     @Override
-    public User updateUser(Integer userId, User userDetails) {
+    public UserDto updateUser(Integer userId, UserDto userDto) {
         if (userId == null)
             throw new IllegalArgumentException("Id cannot be null");
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 
-        user.setEmail(userDetails.getEmail());
-        user.setUsername(userDetails.getUsername());
-        user.setPassword(passwordEncoder.encode(userDetails.getPassword()));
+        userMapper.updateUserFromDto(userDto, user);
+        if (!StringUtils.isEmpty(userDto.getPassword())) {
+            user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        }
 
-        return userRepository.save(user);
+        User updatedUser = userRepository.save(user);
+        return userMapper.toDto(updatedUser);
     }
 
     @Override

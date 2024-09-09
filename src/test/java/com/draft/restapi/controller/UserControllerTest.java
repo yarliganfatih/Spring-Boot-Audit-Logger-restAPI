@@ -31,13 +31,15 @@ public class UserControllerTest extends BaseControllerTest {
     @WithMockUser(username = "user", roles = { "user" })
     public void testCreateUser() throws Exception {
         String username = "createdUser";
-        String userJson = "{\"email\": \"" + username + "@example.com\", \"username\": \"" + username + "\", \"password\": \"" + username + "\"}";
+        String email = username + "@example.com";
+        String password = username + "123";
+        String userJson = "{\"email\": \"" + email + "\", \"username\": \"" + username + "\", \"password\": \"" + password + "\"}";
 
         MvcResult result = mockMvc.perform(post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userJson))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.data.email").value(username + "@example.com"))
+                .andExpect(jsonPath("$.data.email").value(email))
                 .andExpect(jsonPath("$.data.username").value(username))
                 .andReturn();
         String responseContent = result.getResponse().getContentAsString();
@@ -71,15 +73,17 @@ public class UserControllerTest extends BaseControllerTest {
     @WithMockUser(username = "user", roles = { "user" })
     public void testUpdateUser() throws Exception {
         String username = "updatedUser";
+        String email = username + "@example.com";
+        String password = username + "123";
         Integer userId = 2;
-        String userJson = "{\"email\": \"" + username + "@example.com\", \"username\": \"" + username + "\", \"password\": \"" + username + "\"}";
+        String userJson = "{\"email\": \"" + email + "\", \"username\": \"" + username + "\", \"password\": \"" + password + "\"}";
 
         mockMvc.perform(put("/api/users/" + userId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.id").value(userId))
-                .andExpect(jsonPath("$.data.email").value(username + "@example.com"))
+                .andExpect(jsonPath("$.data.email").value(email))
                 .andExpect(jsonPath("$.data.username").value(username));
         assertAuditLogs("users", userId.longValue(), "UPDATE");
     }
@@ -88,8 +92,10 @@ public class UserControllerTest extends BaseControllerTest {
     @WithMockUser(username = "user", roles = { "user" })
     public void testUpdateUser_caseNotFound() throws Exception {
         String username = "updatedUser";
+        String email = username + "@example.com";
+        String password = username + "123";
         Integer userId = -1;
-        String userJson = "{\"email\": \"" + username + "@example.com\", \"username\": \"" + username + "\", \"password\": \"" + username + "\"}";
+        String userJson = "{\"email\": \"" + email + "\", \"username\": \"" + username + "\", \"password\": \"" + password + "\"}";
 
         mockMvc.perform(put("/api/users/" + userId)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -102,8 +108,10 @@ public class UserControllerTest extends BaseControllerTest {
     @WithMockUser(username = "user", roles = { "user" })
     public void testUpdateUser_caseNullId() throws Exception {
         String username = "updatedUser";
+        String email = username + "@example.com";
+        String password = username + "123";
         Integer userId = null;
-        String userJson = "{\"email\": \"" + username + "@example.com\", \"username\": \"" + username + "\", \"password\": \"" + username + "\"}";
+        String userJson = "{\"email\": \"" + email + "\", \"username\": \"" + username + "\", \"password\": \"" + password + "\"}";
 
         mockMvc.perform(put("/api/users/" + userId)
                 .contentType(MediaType.APPLICATION_JSON)

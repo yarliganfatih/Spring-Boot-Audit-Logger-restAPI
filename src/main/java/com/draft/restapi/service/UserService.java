@@ -1,15 +1,15 @@
 package com.draft.restapi.service;
 
-import com.draft.restapi.model.User;
+import com.draft.restapi.model.dto.UserDto;
 
 public interface UserService {
-    Iterable<User> getAllUsers();
+    Iterable<UserDto> getAllUsers();
 
-    User getUserById(Integer userId);
+    UserDto getUserById(Integer userId);
 
-    User createUser(User user);
+    UserDto createUser(UserDto userDto);
 
-    User updateUser(Integer userId, User userDetails);
+    UserDto updateUser(Integer userId, UserDto userDetails);
 
     void deleteUser(Integer userId);
 }

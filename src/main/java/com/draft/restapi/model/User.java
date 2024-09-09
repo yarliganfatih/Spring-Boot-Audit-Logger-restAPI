@@ -1,7 +1,6 @@
 package com.draft.restapi.model;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -22,7 +21,6 @@ public class User extends AuditorBaseEntity {
 	@Column(name = "username", nullable = false, unique = true)
 	private String username;
 
-    @Email
 	@Column(name = "email", nullable = false, unique = true)
 	private String email;
 

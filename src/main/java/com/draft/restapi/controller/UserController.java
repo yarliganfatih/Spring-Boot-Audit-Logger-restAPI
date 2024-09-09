@@ -1,6 +1,6 @@
 package com.draft.restapi.controller;
 
-import com.draft.restapi.model.User;
+import com.draft.restapi.model.dto.UserDto;
 import com.draft.restapi.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,22 +19,22 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("")
-    public ResponseEntity<ApiResponse<Iterable<User>>> getAllUsers() {
+    public ResponseEntity<ApiResponse<Iterable<UserDto>>> getAllUsers() {
         return ResponseEntity.ok(ApiResponse.success(userService.getAllUsers()));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<User>> getUserById(@PathVariable("id") Integer userId) {
+    public ResponseEntity<ApiResponse<UserDto>> getUserById(@PathVariable("id") Integer userId) {
         return ResponseEntity.ok(ApiResponse.success(userService.getUserById(userId)));
     }
 
     @PostMapping("")
-    public ResponseEntity<ApiResponse<User>> createUser(@Valid @RequestBody User user) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(userService.createUser(user), "User created successfully"));
+    public ResponseEntity<ApiResponse<UserDto>> createUser(@Valid @RequestBody UserDto userDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(userService.createUser(userDto), "User created successfully"));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<User>> updateUser(@PathVariable("id") Integer userId, @Valid @RequestBody User userDetails) {
+    public ResponseEntity<ApiResponse<UserDto>> updateUser(@PathVariable("id") Integer userId, @Valid @RequestBody UserDto userDetails) {
         return ResponseEntity.ok(ApiResponse.success(userService.updateUser(userId, userDetails), "User updated successfully"));
     }
 
