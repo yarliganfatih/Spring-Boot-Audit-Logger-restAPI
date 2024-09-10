@@ -49,6 +49,21 @@ public class UserControllerTest extends BaseControllerTest {
 
     @Test
     @WithMockUser(username = "user", roles = { "user" })
+    public void testCreateUser_caseValidationError() throws Exception {
+        String username = "created-user"; // because of using hyphen which is invalid pattern
+        String email = ""; // because of sending empty value
+        String userJson = "{\"email\": \"" + email + "\", \"username\": \"" + username + "\"}"; // because of missing password field
+
+        mockMvc.perform(post("/api/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(userJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.validationErrors").isArray())
+                .andExpect(jsonPath("$.validationErrors.length()").value(3));
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = { "user" })
     public void testGetUser() throws Exception {
         Integer userId = 2;
 

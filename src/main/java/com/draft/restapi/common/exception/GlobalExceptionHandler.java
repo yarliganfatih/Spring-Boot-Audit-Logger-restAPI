@@ -2,12 +2,14 @@ package com.draft.restapi.common.exception;
 
 import com.draft.restapi.common.filter.TraceFilter;
 import com.draft.restapi.common.payload.ApiResponse;
+import com.draft.restapi.common.payload.ValidationError;
 import com.draft.restapi.common.helper.RequestHelper;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -26,6 +28,8 @@ import java.io.StringWriter;
 
 import org.slf4j.MDC;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
@@ -53,6 +57,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 ex.getClass().getSimpleName(),
                 "Invalid request, Please check your input and try again.");
         ApiResponse<Object> response = ApiResponse.error(errorMessage);
+        if (ex instanceof MethodArgumentNotValidException) {
+            MethodArgumentNotValidException validationEx = (MethodArgumentNotValidException) ex;
+            List<ValidationError> validationErrors = validationEx.getBindingResult().getFieldErrors().stream()
+                    .map(fieldError -> new ValidationError(fieldError)).collect(Collectors.toList());
+            response.setValidationErrors(validationErrors);
+        }
         return new ResponseEntity<>(response, status);
     }
 
