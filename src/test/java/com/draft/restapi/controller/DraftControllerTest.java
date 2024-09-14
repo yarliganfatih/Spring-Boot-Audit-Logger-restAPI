@@ -24,6 +24,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -80,10 +81,29 @@ public class DraftControllerTest {
 
     @Test
     @WithMockUser
+    public void testQueryEndpoint_caseMissingParam() throws Exception {
+        mockMvc.perform(get("/api/draft/query?id="))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.validationErrors[0].field").value("param.id"))
+                .andExpect(jsonPath("$.validationErrors[0].code").value("NotNull"));
+    }
+
+    @Test
+    @WithMockUser
     public void testPathEndpoint() throws Exception {
         mockMvc.perform(get("/api/draft/path/sample/10"))
                 .andExpect(status().isOk())
                 .andExpect(content().json("{\"message\":\"sample is 10\"}"));
+    }
+
+    @Test
+    @WithMockUser
+    public void testPathEndpoint_caseInvalidSlug() throws Exception {
+        mockMvc.perform(get("/api/draft/path/sa/-1"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.validationErrors").isArray())
+                .andExpect(jsonPath("$.validationErrors.length()").value(2));
+
     }
 
     @Test

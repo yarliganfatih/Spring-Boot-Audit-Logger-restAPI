@@ -2,6 +2,8 @@ package com.draft.restapi.common.payload;
 
 import org.springframework.validation.FieldError;
 
+import javax.validation.ConstraintViolation;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,5 +20,12 @@ public class ValidationError {
         this.rejectedValue = fieldError.getRejectedValue();
         this.code = fieldError.getCode();
         this.message = fieldError.getDefaultMessage();
+    }
+
+    public ValidationError(ConstraintViolation<?> violation) {
+        this.field = violation.getPropertyPath().toString();
+        this.rejectedValue = violation.getInvalidValue();
+        this.code = violation.getConstraintDescriptor().getAnnotation().annotationType().getSimpleName();
+        this.message = violation.getMessage();
     }
 }

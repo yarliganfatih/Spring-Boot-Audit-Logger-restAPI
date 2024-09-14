@@ -11,7 +11,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.springframework.validation.annotation.Validated;
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 @RestController
+@Validated
 @RequestMapping("/api/draft")
 public class DraftController {
 
@@ -70,13 +77,13 @@ public class DraftController {
     }
 
     @GetMapping({ "/param", "/query" }) // multi mapping
-    public ResponseEntity<ResData> param(@RequestParam Integer id) {
+    public ResponseEntity<ResData> param(@NotNull @RequestParam Integer id) {
         ResData response = new ResData("param is " + id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/path/{slug}/{id}")
-    public ResponseEntity<ResData> path(@PathVariable("slug") String slug, @PathVariable("id") Integer id) {
+    public ResponseEntity<ResData> path(@Size(min = 3, max = 100) @PathVariable("slug") String slug, @Min(1) @PathVariable("id") Integer id) {
         ResData response = new ResData(slug + " is " + id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -95,8 +102,8 @@ public class DraftController {
         ResData response = new ResData("Hello admin");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-    
-    // According to the hierarchy, both admin and mod can access, 
+
+    // According to the hierarchy, both admin and mod can access,
     // but alternative_mod cannot access even though it is at the same level
     @PreAuthorize("hasRole('ROLE_mod')")
     @GetMapping("/mod")

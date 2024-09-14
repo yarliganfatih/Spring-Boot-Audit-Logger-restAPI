@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+
+import javax.validation.ConstraintViolationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -48,6 +50,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ApiResponse<Object>> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
         ApiResponse<Object> response = ApiResponse.error("Access Denied, You don't have permission to access this resource");
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiResponse<Object>> handleConstraintViolationException(ConstraintViolationException ex, WebRequest request) {
+        LOGGER.warn(ex.getMessage());
+        ApiResponse<Object> response = ApiResponse.error("Invalid request, Please check your input and try again.");
+        List<ValidationError> validationErrors = ex.getConstraintViolations().stream()
+                .map(ValidationError::new).collect(Collectors.toList());
+        response.setValidationErrors(validationErrors);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @Override

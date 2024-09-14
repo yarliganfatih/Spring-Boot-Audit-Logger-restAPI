@@ -7,11 +7,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.validation.annotation.Validated;
+
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 import com.draft.restapi.common.payload.ApiResponse;
 
 @RestController
+@Validated
 @RequestMapping("/api/users")
 public class UserController {
 
@@ -24,7 +29,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<UserDto>> getUserById(@PathVariable("id") Integer userId) {
+    public ResponseEntity<ApiResponse<UserDto>> getUserById(@Min(1) @PathVariable("id") Integer userId) {
         return ResponseEntity.ok(ApiResponse.success(userService.getUserById(userId)));
     }
 
@@ -34,12 +39,12 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<UserDto>> updateUser(@PathVariable("id") Integer userId, @Valid @RequestBody UserDto userDetails) {
+    public ResponseEntity<ApiResponse<UserDto>> updateUser(@NotNull @Min(1) @PathVariable("id") Integer userId, @Valid @RequestBody UserDto userDetails) {
         return ResponseEntity.ok(ApiResponse.success(userService.updateUser(userId, userDetails), "User updated successfully"));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable("id") Integer userId) {
+    public ResponseEntity<ApiResponse<Void>> deleteUser(@NotNull @Min(1) @PathVariable("id") Integer userId) {
         userService.deleteUser(userId);
         return ResponseEntity.ok(ApiResponse.success(null, "User deleted successfully"));
     }

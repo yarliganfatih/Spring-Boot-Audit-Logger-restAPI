@@ -77,7 +77,7 @@ public class UserControllerTest extends BaseControllerTest {
     @Test
     @WithMockUser(username = "user", roles = { "user" })
     public void testGetUser_caseNotFound() throws Exception {
-        Integer userId = -1;
+        Integer userId = 999;
 
         mockMvc.perform(get("/api/users/" + userId))
                 .andExpect(status().isNotFound())
@@ -109,7 +109,7 @@ public class UserControllerTest extends BaseControllerTest {
         String username = "updatedUser";
         String email = username + "@example.com";
         String password = username + "123";
-        Integer userId = -1;
+        Integer userId = 999;
         String userJson = "{\"email\": \"" + email + "\", \"username\": \"" + username + "\", \"password\": \"" + password + "\"}";
 
         mockMvc.perform(put("/api/users/" + userId)
@@ -147,7 +147,7 @@ public class UserControllerTest extends BaseControllerTest {
     @Test
     @WithMockUser(username = "user", roles = { "user" })
     public void testDeleteUser_caseNotFound() throws Exception {
-        Integer userId = -1;
+        Integer userId = 999;
 
         mockMvc.perform(delete("/api/users/" + userId))
                 .andExpect(status().isNotFound())
