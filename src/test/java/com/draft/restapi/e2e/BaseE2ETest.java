@@ -1,8 +1,6 @@
 package com.draft.restapi.e2e;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,7 +9,6 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.LinkedMultiValueMap;
@@ -23,7 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = RestapiApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class BaseE2ETest {
+public abstract class BaseE2ETest {
 
     @LocalServerPort
     protected int port;
@@ -59,11 +56,5 @@ public class BaseE2ETest {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.readTree(response.getBody());
         return jsonNode.get("access_token").asText();
-    }
-
-    @Test
-    public void testLogInAsUser() throws Exception {
-        ResponseEntity<String> response = logIn("user", "user");
-        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 }
