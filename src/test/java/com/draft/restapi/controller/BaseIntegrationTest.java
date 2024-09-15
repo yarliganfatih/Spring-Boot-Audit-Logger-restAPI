@@ -19,7 +19,7 @@ import com.draft.restapi.RestapiApplication;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = RestapiApplication.class)
 @AutoConfigureMockMvc
-public abstract class BaseControllerTest {
+public abstract class BaseIntegrationTest {
 
     @Autowired
     protected MockMvc mockMvc;

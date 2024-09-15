@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(value = DraftController.class)
 @MockBean(JpaMetamodelMappingContext.class) // Override EnableJpaAuditing on the main class
-public class DraftControllerTest {
+public class DraftControllerSliceTest {
 
     @TestConfiguration
     static class RoleHierarchyTestConfig {

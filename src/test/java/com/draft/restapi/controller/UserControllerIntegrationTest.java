@@ -18,7 +18,7 @@ import com.jayway.jsonpath.JsonPath;
 
 @Sql(scripts = {"classpath:db/sql/insert-user-data.sql" }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(scripts = {"classpath:db/sql/insert-user-data-rollback.sql" }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-public class UserControllerTest extends BaseControllerTest {
+public class UserControllerIntegrationTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(username = "user", roles = { "user" })

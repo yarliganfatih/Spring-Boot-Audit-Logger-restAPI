@@ -1,4 +1,4 @@
-package com.draft.restapi.controller;
+package com.draft.restapi.e2e;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = RestapiApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AuthControllerTest {
+public class BaseE2ETest {
 
     @LocalServerPort
     protected int port;
