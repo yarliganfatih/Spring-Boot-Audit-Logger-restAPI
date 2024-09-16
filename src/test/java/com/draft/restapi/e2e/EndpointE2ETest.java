@@ -40,12 +40,12 @@ public class EndpointE2ETest extends BaseE2ETest {
     }
 
     @Test
-    // FilterChainProxy (OncePerRequestFilter) => StrictHttpFirewall => RequestRejectedException => Response (500)
+    // FilterChainProxy (OncePerRequestFilter) -> StrictHttpFirewall -> GlobalExceptionHandler (RequestRejectedException) => Response (400)
     public void testEndpoint_caseInvalidUrl() throws Exception {
         ResponseEntity<String> response = restTemplate
                 .exchange(
                         createURLWithPort("/api/../"),
                         HttpMethod.GET, null, String.class);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 }
