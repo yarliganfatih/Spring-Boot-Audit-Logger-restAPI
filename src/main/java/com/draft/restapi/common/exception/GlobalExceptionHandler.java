@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 
 import javax.validation.ConstraintViolationException;
 import org.springframework.security.web.firewall.RequestRejectedException;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -80,6 +81,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             MethodArgumentNotValidException validationEx = (MethodArgumentNotValidException) ex;
             List<ValidationError> validationErrors = validationEx.getBindingResult().getFieldErrors().stream()
                     .map(fieldError -> new ValidationError(fieldError)).collect(Collectors.toList());
+            response.setValidationErrors(validationErrors);
+        } else if (ex instanceof BindException) {
+            BindException bindEx = (BindException) ex;
+            List<ValidationError> validationErrors = bindEx.getBindingResult().getFieldErrors().stream()
+                    .map(ValidationError::new).collect(Collectors.toList());
             response.setValidationErrors(validationErrors);
         }
         return new ResponseEntity<>(response, status);

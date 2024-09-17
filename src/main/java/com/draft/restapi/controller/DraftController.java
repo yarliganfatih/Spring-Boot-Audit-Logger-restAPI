@@ -4,15 +4,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -23,7 +26,10 @@ import javax.validation.constraints.Size;
 public class DraftController {
 
     public static class ReqData {
+        @Min(1)
         private Integer key;
+        
+        @Size(min = 3, max = 100)
         private String field;
 
         public ReqData(Integer key, String field) {
@@ -88,12 +94,18 @@ public class DraftController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("/post")
-    public ResponseEntity<ResData> post(@RequestBody ReqData req) {
+    @PostMapping("/form")
+    public ResponseEntity<ResData> form(@Valid @ModelAttribute ReqData req) {
         ResData response = new ResData("key is " + req.getKey() + ", field is " + req.getField());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-      
+
+    @PostMapping("/post")
+    public ResponseEntity<ResData> post(@Valid @RequestBody ReqData req) {
+        ResData response = new ResData("key is " + req.getKey() + ", field is " + req.getField());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     // endpoints specific to roles
 
     @PreAuthorize("hasRole('ROLE_admin')")

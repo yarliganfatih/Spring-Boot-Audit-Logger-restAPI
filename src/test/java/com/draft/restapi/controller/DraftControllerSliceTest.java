@@ -103,7 +103,31 @@ public class DraftControllerSliceTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.validationErrors").isArray())
                 .andExpect(jsonPath("$.validationErrors.length()").value(2));
+    }
 
+    @Test
+    @WithMockUser
+    public void testFormEndpoint() throws Exception {
+        mockMvc.perform(post("/api/draft/form")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("key", "1")
+                .param("field", "value")
+                .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"message\":\"key is 1, field is value\"}"));
+    }
+
+    @Test
+    @WithMockUser
+    public void testFormEndpoint_caseInvalidInput() throws Exception {
+        mockMvc.perform(post("/api/draft/form")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("key", "0")
+                .param("field", "v")
+                .with(csrf()))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.validationErrors").isArray())
+                .andExpect(jsonPath("$.validationErrors.length()").value(2));
     }
 
     @Test
@@ -117,6 +141,20 @@ public class DraftControllerSliceTest {
                 .content(reqBody))
                 .andExpect(status().isOk())
                 .andExpect(content().json("{\"message\":\"key is 1, field is value\"}"));
+    }
+
+    @Test
+    @WithMockUser
+    public void testPostEndpoint_caseInvalidInput() throws Exception {
+        String reqBody = "{\"key\":\"0\",\"field\":\"v\"}";
+
+        mockMvc.perform(post("/api/draft/post")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(reqBody))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.validationErrors").isArray())
+                .andExpect(jsonPath("$.validationErrors.length()").value(2));
     }
 
     @Test
