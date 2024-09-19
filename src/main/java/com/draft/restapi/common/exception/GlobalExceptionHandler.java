@@ -17,6 +17,7 @@ import org.springframework.security.web.firewall.RequestRejectedException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +33,8 @@ import java.io.StringWriter;
 
 import org.slf4j.MDC;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -87,6 +90,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             List<ValidationError> validationErrors = bindEx.getBindingResult().getFieldErrors().stream()
                     .map(ValidationError::new).collect(Collectors.toList());
             response.setValidationErrors(validationErrors);
+        } else if (ex instanceof MethodArgumentTypeMismatchException) {
+            MethodArgumentTypeMismatchException typeEx = (MethodArgumentTypeMismatchException) ex;
+            response.setValidationErrors(Collections.singletonList(new ValidationError(typeEx)));
         }
         return new ResponseEntity<>(response, status);
     }

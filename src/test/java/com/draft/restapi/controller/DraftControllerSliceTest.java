@@ -90,6 +90,15 @@ public class DraftControllerSliceTest {
 
     @Test
     @WithMockUser
+    public void testQueryEndpoint_caseInvalidType() throws Exception {
+        mockMvc.perform(get("/api/draft/query?id=abc"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.validationErrors[0].field").value("id"))
+                .andExpect(jsonPath("$.validationErrors[0].code").value("typeMismatch"));
+    }
+
+    @Test
+    @WithMockUser
     public void testPathEndpoint() throws Exception {
         mockMvc.perform(get("/api/draft/path/sample/10"))
                 .andExpect(status().isOk())
@@ -128,6 +137,19 @@ public class DraftControllerSliceTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.validationErrors").isArray())
                 .andExpect(jsonPath("$.validationErrors.length()").value(2));
+    }
+
+    @Test
+    @WithMockUser
+    public void testFormEndpoint_caseInvalidType() throws Exception {
+        mockMvc.perform(post("/api/draft/form")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("key", "abc")
+                .param("field", "value")
+                .with(csrf()))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.validationErrors[0].field").value("key"))
+                .andExpect(jsonPath("$.validationErrors[0].code").value("typeMismatch"));
     }
 
     @Test
