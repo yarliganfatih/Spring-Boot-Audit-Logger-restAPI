@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 
 import javax.validation.ConstraintViolationException;
@@ -18,6 +19,7 @@ import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,6 +92,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             List<ValidationError> validationErrors = bindEx.getBindingResult().getFieldErrors().stream()
                     .map(ValidationError::new).collect(Collectors.toList());
             response.setValidationErrors(validationErrors);
+        } else if (ex instanceof MissingServletRequestParameterException) {
+            MissingServletRequestParameterException paramEx = (MissingServletRequestParameterException) ex;
+            response.setValidationErrors(Collections.singletonList(new ValidationError(paramEx)));
+        } else if (ex instanceof MissingServletRequestPartException) {
+            MissingServletRequestPartException partEx = (MissingServletRequestPartException) ex;
+            response.setValidationErrors(Collections.singletonList(new ValidationError(partEx)));
         } else if (ex instanceof MethodArgumentTypeMismatchException) {
             MethodArgumentTypeMismatchException typeEx = (MethodArgumentTypeMismatchException) ex;
             response.setValidationErrors(Collections.singletonList(new ValidationError(typeEx)));

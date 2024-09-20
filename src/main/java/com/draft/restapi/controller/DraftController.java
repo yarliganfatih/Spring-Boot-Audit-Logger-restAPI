@@ -100,6 +100,12 @@ public class DraftController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PostMapping(value = "/upload", consumes = "multipart/form-data")
+    public ResponseEntity<ResData> upload(@RequestParam("file") MultipartFile file, @RequestParam("description") String description) {
+        ResData response = new ResData("File " + file.getOriginalFilename() + " uploaded with description: " + description);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @PostMapping("/post")
     public ResponseEntity<ResData> post(@Valid @RequestBody ReqData req) {
         ResData response = new ResData("key is " + req.getKey() + ", field is " + req.getField());

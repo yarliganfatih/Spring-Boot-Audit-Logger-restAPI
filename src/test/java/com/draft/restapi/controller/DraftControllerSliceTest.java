@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -23,6 +24,7 @@ import com.draft.restapi.auth.repository.RoleRepository;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -150,6 +152,51 @@ public class DraftControllerSliceTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.validationErrors[0].field").value("key"))
                 .andExpect(jsonPath("$.validationErrors[0].code").value("typeMismatch"));
+    }
+
+    @Test
+    @WithMockUser
+    public void testUploadEndpoint() throws Exception {
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "test.txt",
+                MediaType.TEXT_PLAIN_VALUE,
+                "Hello, World!".getBytes());
+
+        mockMvc.perform(multipart("/api/draft/upload")
+                .file(file)
+                .param("description", "A text file")
+                .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"message\":\"File test.txt uploaded with description: A text file\"}"));
+    }
+
+    @Test
+    @WithMockUser
+    public void testUploadEndpoint_caseMissingParam() throws Exception {
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "test.txt",
+                MediaType.TEXT_PLAIN_VALUE,
+                "Hello, World!".getBytes());
+
+        mockMvc.perform(multipart("/api/draft/upload")
+                .file(file)
+                .with(csrf()))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.validationErrors[0].field").value("description"))
+                .andExpect(jsonPath("$.validationErrors[0].code").value("missingParam"));
+    }
+
+    @Test
+    @WithMockUser
+    public void testUploadEndpoint_caseMissingPart() throws Exception {
+        mockMvc.perform(multipart("/api/draft/upload")
+                .param("description", "A text file")
+                .with(csrf()))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.validationErrors[0].field").value("file"))
+                .andExpect(jsonPath("$.validationErrors[0].code").value("missingPart"));
     }
 
     @Test

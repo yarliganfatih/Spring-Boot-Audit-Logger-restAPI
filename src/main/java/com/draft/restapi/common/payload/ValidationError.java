@@ -2,7 +2,9 @@ package com.draft.restapi.common.payload;
 
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 import javax.validation.ConstraintViolation;
 
@@ -32,6 +34,18 @@ public class ValidationError {
         this.rejectedValue = violation.getInvalidValue();
         this.code = violation.getConstraintDescriptor().getAnnotation().annotationType().getSimpleName();
         this.message = violation.getMessage();
+    }
+
+    public ValidationError(MissingServletRequestParameterException paramEx) {
+        this.setField(paramEx.getParameterName());
+        this.setCode("missingParam");
+        this.setMessage("Missing required parameter");
+    }
+
+    public ValidationError(MissingServletRequestPartException partEx) {
+        this.setField(partEx.getRequestPartName());
+        this.setCode("missingPart");
+        this.setMessage("Missing required part");
     }
 
     public ValidationError(MethodArgumentTypeMismatchException typeEx) {
