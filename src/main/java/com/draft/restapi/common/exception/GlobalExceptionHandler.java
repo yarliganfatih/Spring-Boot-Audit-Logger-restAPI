@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import com.draft.restapi.audit.entity.ErrorLog;
 import com.draft.restapi.audit.repository.ErrorLogRepository;
 import com.draft.restapi.auth.entity.SignedUser;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
@@ -73,6 +74,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .map(ValidationError::new).collect(Collectors.toList());
         response.setValidationErrors(validationErrors);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiResponse<Object>> handleDataIntegrityViolationException(DataIntegrityViolationException ex, WebRequest request) {
+        LOGGER.warn(ex.getMessage());
+        ApiResponse<Object> response = ApiResponse.error("Invalid request, There is data integrity violation.");
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        return new ResponseEntity<>(response, status);
     }
 
     @Override
