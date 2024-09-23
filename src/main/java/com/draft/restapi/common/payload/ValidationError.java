@@ -1,12 +1,15 @@
 package com.draft.restapi.common.payload;
 
 import org.springframework.beans.TypeMismatchException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 import javax.validation.ConstraintViolation;
+
+import com.draft.restapi.common.helper.RegexHelper;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -36,6 +39,13 @@ public class ValidationError {
         this.message = violation.getMessage();
     }
 
+    public ValidationError(DuplicateKeyException duplicateKeyEx) {
+        this.setFieldByEx(duplicateKeyEx);
+        this.setRejectedValueByEx(duplicateKeyEx);
+        this.setCode("duplicate");
+        this.setMessage("Value already exists");
+    }
+
     public ValidationError(MissingServletRequestParameterException paramEx) {
         this.setField(paramEx.getParameterName());
         this.setCode("missingParam");
@@ -59,5 +69,16 @@ public class ValidationError {
     public void customizeErrorMsg(TypeMismatchException typeEx) {
         String requiredType = typeEx.getRequiredType() != null ? typeEx.getRequiredType().getSimpleName() : "Unknown";
         this.message = "Invalid value for parameter, expected type: " + requiredType;
+    }
+
+    public void setFieldByEx(DuplicateKeyException duplicateKeyEx) {
+        org.hibernate.exception.ConstraintViolationException cvEx = (org.hibernate.exception.ConstraintViolationException) duplicateKeyEx.getCause();
+        String constraintName = cvEx.getConstraintName();
+        this.field = RegexHelper.extractKey(constraintName, "unique_(.*?)_key"); // UNIQUE_X_KEY
+    }
+
+    public void setRejectedValueByEx(DuplicateKeyException duplicateKeyEx) {
+        String dbErrorMessage = duplicateKeyEx.getMostSpecificCause().getMessage();
+        this.rejectedValue = RegexHelper.extractKey(dbErrorMessage, "Duplicate entry '(.*?)' for key");
     }
 }

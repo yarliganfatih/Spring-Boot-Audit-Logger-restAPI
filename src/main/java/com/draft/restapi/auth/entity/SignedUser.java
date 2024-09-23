@@ -20,7 +20,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @Getter
 @Setter
 @Entity
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = { // UNIQUE_X_KEY to able to extract field
+		@UniqueConstraint(name = "\"uk_users_unique_username_key\"", columnNames = "username"),
+		@UniqueConstraint(name = "\"uk_users_unique_email_key\"", columnNames = "email")
+})
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY) // to avoid infinite loop
 public class SignedUser implements Serializable {
    
@@ -30,7 +33,7 @@ public class SignedUser implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @Column(name = "username", nullable = false, unique = true)
+    @Column(name = "username", nullable = false)
     private String username;
 
     @JsonIgnore
@@ -38,7 +41,7 @@ public class SignedUser implements Serializable {
     private String password;
 
     @Email
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(name = "email", nullable = false)
     private String email;
 
     @JsonIgnore

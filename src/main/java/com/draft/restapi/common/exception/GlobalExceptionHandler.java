@@ -28,6 +28,7 @@ import com.draft.restapi.audit.entity.ErrorLog;
 import com.draft.restapi.audit.repository.ErrorLogRepository;
 import com.draft.restapi.auth.entity.SignedUser;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
@@ -81,6 +82,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         LOGGER.warn(ex.getMessage());
         ApiResponse<Object> response = ApiResponse.error("Invalid request, There is data integrity violation.");
         HttpStatus status = HttpStatus.BAD_REQUEST;
+        String lowerMessage = ex.getMessage() != null ? ex.getMessage().toLowerCase() : "";
+        if (ex.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
+            if (lowerMessage.contains("duplicate") || lowerMessage.contains("unique") || lowerMessage.contains("constraint")) {
+                DuplicateKeyException duplicateKeyEx = new DuplicateKeyException(ex.getMessage(), ex.getCause());
+                ValidationError validationError = new ValidationError(duplicateKeyEx);
+                response.setValidationErrors(Collections.singletonList(validationError));
+                status = HttpStatus.CONFLICT;
+            }
+        }
         return new ResponseEntity<>(response, status);
     }
 

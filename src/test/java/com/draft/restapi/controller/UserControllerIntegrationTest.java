@@ -49,6 +49,24 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(username = "user", roles = { "user" })
+    public void testCreateUser_caseDuplicateError() throws Exception {
+        String username = "mockUser"; // because of sending existing value
+        String email = username + "2@example.com"; // unique
+        String password = username + "123";
+        String userJson = "{\"email\": \"" + email + "\", \"username\": \"" + username + "\", \"password\": \"" + password + "\"}";
+
+        mockMvc.perform(post("/api/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(userJson))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.validationErrors").isArray())
+                .andExpect(jsonPath("$.validationErrors.length()").value(1))
+                .andExpect(jsonPath("$.validationErrors[0].code").value("duplicate"))
+                .andExpect(jsonPath("$.validationErrors[0].field").value("username"));
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = { "user" })
     public void testCreateUser_caseValidationError() throws Exception {
         String username = "created-user"; // because of using hyphen which is invalid pattern
         String email = ""; // because of sending empty value
