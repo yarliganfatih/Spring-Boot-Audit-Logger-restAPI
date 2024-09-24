@@ -9,6 +9,7 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 
 import javax.validation.ConstraintViolation;
 
+import com.draft.restapi.common.enums.ConstraintPattern;
 import com.draft.restapi.common.helper.RegexHelper;
 
 import lombok.Getter;
@@ -73,12 +74,11 @@ public class ValidationError {
 
     public void setFieldByEx(DuplicateKeyException duplicateKeyEx) {
         org.hibernate.exception.ConstraintViolationException cvEx = (org.hibernate.exception.ConstraintViolationException) duplicateKeyEx.getCause();
-        String constraintName = cvEx.getConstraintName();
-        this.field = RegexHelper.extractKey(constraintName, "unique_(.*?)_key"); // UNIQUE_X_KEY
+        this.field = RegexHelper.extractKey(cvEx.getConstraintName(), ConstraintPattern.UNIQUE_KEY.getRegexPattern(), 2);
     }
 
     public void setRejectedValueByEx(DuplicateKeyException duplicateKeyEx) {
         String dbErrorMessage = duplicateKeyEx.getMostSpecificCause().getMessage();
-        this.rejectedValue = RegexHelper.extractKey(dbErrorMessage, "Duplicate entry '(.*?)' for key");
+        this.rejectedValue = RegexHelper.extractKey(dbErrorMessage, "Duplicate entry '(.*?)' for key", 1);
     }
 }

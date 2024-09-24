@@ -13,12 +13,12 @@ public class RegexHelper {
         // Private constructor to prevent instantiation of static helper class
     }
 
-    public static String extractKey(String fullText, String regex) {
+    public static String extractKey(String fullText, String regex, Integer groupIndex) {
         try {
             Pattern pattern = Pattern.compile(regex);
             Matcher matcher = pattern.matcher(fullText);
             if (matcher.find()) {
-                return matcher.group(1);
+                return matcher.group(groupIndex != null ? groupIndex : 1);
             }
             return null;
         } catch (Exception e) {

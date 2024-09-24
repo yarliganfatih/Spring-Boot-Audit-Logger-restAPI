@@ -10,7 +10,12 @@ import java.io.Serializable;
 @Getter
 @Setter
 @Entity
-@Table(name = "roles")
+@Table(
+    name = "roles",
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = "name")
+    }
+)
 public class Role implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -19,7 +24,7 @@ public class Role implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@Column(name = "name", nullable = false, unique = true)
+	@Column(name = "name", nullable = false)
 	private String name;
 	
 	@Column(name = "level")

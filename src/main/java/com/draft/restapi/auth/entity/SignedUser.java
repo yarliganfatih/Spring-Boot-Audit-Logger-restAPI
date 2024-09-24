@@ -20,10 +20,13 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @Getter
 @Setter
 @Entity
-@Table(name = "users", uniqueConstraints = { // UNIQUE_X_KEY to able to extract field
-		@UniqueConstraint(name = "\"uk_users_unique_username_key\"", columnNames = "username"),
-		@UniqueConstraint(name = "\"uk_users_unique_email_key\"", columnNames = "email")
-})
+@Table(
+    name = "users",
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = "username"),
+        @UniqueConstraint(columnNames = "email")
+    }
+)
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY) // to avoid infinite loop
 public class SignedUser implements Serializable {
    

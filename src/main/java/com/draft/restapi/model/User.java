@@ -12,10 +12,13 @@ import com.draft.restapi.audit.AuditListener;
 @Setter
 @Entity
 @EntityListeners(AuditListener.class)
-@Table(name = "users", uniqueConstraints = { // UNIQUE_X_KEY to able to extract field
-		@UniqueConstraint(name = "\"uk_users_unique_username_key\"", columnNames = "username"),
-		@UniqueConstraint(name = "\"uk_users_unique_email_key\"", columnNames = "email")
-})
+@Table(
+    name = "users",
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = "username"),
+        @UniqueConstraint(columnNames = "email")
+    }
+)
 public class User extends AuditorBaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
