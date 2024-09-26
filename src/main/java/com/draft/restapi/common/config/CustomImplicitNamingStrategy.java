@@ -1,6 +1,7 @@
 package com.draft.restapi.common.config;
 
 import org.hibernate.boot.model.naming.Identifier;
+import org.hibernate.boot.model.naming.ImplicitForeignKeyNameSource;
 import org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl;
 import org.hibernate.boot.model.naming.ImplicitUniqueKeyNameSource;
 
@@ -13,6 +14,14 @@ public class CustomImplicitNamingStrategy extends ImplicitNamingStrategyJpaCompl
         String tableName = source.getTableName().getText();
         String columnName = source.getColumnNames().get(0).getText();
         String constraintName = String.format(ConstraintPattern.UNIQUE_KEY.getPattern(), tableName, columnName);
+        return Identifier.toIdentifier("\"" + constraintName + "\""); // to preserve case sensitivity and avoid quoting issues
+    }
+
+    @Override
+    public Identifier determineForeignKeyName(ImplicitForeignKeyNameSource source) {
+        String tableName = source.getTableName().getText();
+        String columnName = source.getColumnNames().get(0).getText();
+        String constraintName = String.format(ConstraintPattern.FOREIGN_KEY.getPattern(), tableName, columnName);
         return Identifier.toIdentifier("\"" + constraintName + "\""); // to preserve case sensitivity and avoid quoting issues
     }
 

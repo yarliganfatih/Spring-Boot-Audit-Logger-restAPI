@@ -82,11 +82,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         LOGGER.warn(ex.getMessage());
         ApiResponse<Object> response = ApiResponse.error("Invalid request, There is data integrity violation.");
         HttpStatus status = HttpStatus.BAD_REQUEST;
-        String lowerMessage = ex.getMessage() != null ? ex.getMessage().toLowerCase() : "";
+        String dbErrorMessage = ex.getMostSpecificCause().getMessage();
         if (ex.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
-            if (lowerMessage.contains("duplicate") || lowerMessage.contains("unique") || lowerMessage.contains("constraint")) {
-                DuplicateKeyException duplicateKeyEx = new DuplicateKeyException(ex.getMessage(), ex.getCause());
+            if (dbErrorMessage.contains("Duplicate") || dbErrorMessage.contains("_unique_")) {
+                DuplicateKeyException duplicateKeyEx = new DuplicateKeyException(dbErrorMessage, ex.getCause());
                 ValidationError validationError = new ValidationError(duplicateKeyEx);
+                response.setValidationErrors(Collections.singletonList(validationError));
+                status = HttpStatus.CONFLICT;
+            } else if (dbErrorMessage.contains("REFERENCES") || dbErrorMessage.contains("_foreign_")) {
+                ForeignKeyException foreignKeyEx = new ForeignKeyException(dbErrorMessage, ex.getCause());
+                ValidationError validationError = new ValidationError(foreignKeyEx);
                 response.setValidationErrors(Collections.singletonList(validationError));
                 status = HttpStatus.CONFLICT;
             }

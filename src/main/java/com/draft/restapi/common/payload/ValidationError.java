@@ -10,6 +10,7 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import javax.validation.ConstraintViolation;
 
 import com.draft.restapi.common.enums.ConstraintPattern;
+import com.draft.restapi.common.exception.ForeignKeyException;
 import com.draft.restapi.common.helper.RegexHelper;
 
 import lombok.Getter;
@@ -47,6 +48,12 @@ public class ValidationError {
         this.setMessage("Value already exists");
     }
 
+    public ValidationError(ForeignKeyException foreignKeyEx) {
+        this.setFieldByEx(foreignKeyEx);
+        this.setCode("referenceViolation");
+        this.setMessage("Cannot be performed because of reference");
+    }
+
     public ValidationError(MissingServletRequestParameterException paramEx) {
         this.setField(paramEx.getParameterName());
         this.setCode("missingParam");
@@ -75,6 +82,17 @@ public class ValidationError {
     public void setFieldByEx(DuplicateKeyException duplicateKeyEx) {
         org.hibernate.exception.ConstraintViolationException cvEx = (org.hibernate.exception.ConstraintViolationException) duplicateKeyEx.getCause();
         this.field = RegexHelper.extractKey(cvEx.getConstraintName(), ConstraintPattern.UNIQUE_KEY.getRegexPattern(), 2);
+    }
+
+    public void setFieldByEx(ForeignKeyException foreignKeyEx) {
+        org.hibernate.exception.ConstraintViolationException cvEx = (org.hibernate.exception.ConstraintViolationException) foreignKeyEx.getCause();
+        String constraintName = cvEx.getConstraintName();
+        if (constraintName == null) { // Fallback to parsing the message if constraintName is not available
+            constraintName = RegexHelper.extractKey(foreignKeyEx.getMessage(), "CONSTRAINT `(.+?)` FOREIGN KEY", 1);
+        }
+        String tableName = RegexHelper.extractKey(constraintName, ConstraintPattern.FOREIGN_KEY.getRegexPattern(), 1);
+        String fieldName = RegexHelper.extractKey(constraintName, ConstraintPattern.FOREIGN_KEY.getRegexPattern(), 2);
+        this.field = tableName + "." + fieldName;
     }
 
     public void setRejectedValueByEx(DuplicateKeyException duplicateKeyEx) {
