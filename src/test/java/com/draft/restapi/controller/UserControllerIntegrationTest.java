@@ -9,6 +9,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Collections;
+
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
@@ -150,6 +152,25 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userJson))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = { "user" })
+    public void testUpdateUser_caseTruncationError() throws Exception {
+        String username = String.join("", Collections.nCopies(256, "n")); // because of exceeds maximum length (255)
+        String email = "updatedUser123@example.com";
+        String password = "updatedUser123";
+        Integer userId = 2;
+        String userJson = "{\"email\": \"" + email + "\", \"username\": \"" + username + "\", \"password\": \"" + password + "\"}";
+
+        mockMvc.perform(put("/api/users/" + userId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(userJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.validationErrors").isArray())
+                .andExpect(jsonPath("$.validationErrors.length()").value(1))
+                .andExpect(jsonPath("$.validationErrors[0].code").value("dataTruncation"))
+                .andExpect(jsonPath("$.validationErrors[0].field").value("username"));
     }
 
     @Test

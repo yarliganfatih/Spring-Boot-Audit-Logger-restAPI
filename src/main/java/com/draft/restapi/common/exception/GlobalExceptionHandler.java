@@ -95,6 +95,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 response.setValidationErrors(Collections.singletonList(validationError));
                 status = HttpStatus.CONFLICT;
             }
+        } else if (ex.getCause() instanceof org.hibernate.exception.DataException) {
+            if (dbErrorMessage.contains("truncation") || dbErrorMessage.contains("too long")) {
+                DataTruncationException truncationEx = new DataTruncationException(dbErrorMessage, ex.getCause());
+                ValidationError validationError = new ValidationError(truncationEx);
+                response.setValidationErrors(Collections.singletonList(validationError));
+            }
         }
         return new ResponseEntity<>(response, status);
     }

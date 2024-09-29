@@ -1,5 +1,6 @@
 package com.draft.restapi.common.payload;
 
+import org.hibernate.exception.DataException;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.validation.FieldError;
@@ -10,6 +11,7 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import javax.validation.ConstraintViolation;
 
 import com.draft.restapi.common.enums.ConstraintPattern;
+import com.draft.restapi.common.exception.DataTruncationException;
 import com.draft.restapi.common.exception.ForeignKeyException;
 import com.draft.restapi.common.helper.RegexHelper;
 
@@ -54,6 +56,12 @@ public class ValidationError {
         this.setMessage("Cannot be performed because of reference");
     }
 
+    public ValidationError(DataTruncationException truncationEx) {
+        this.setFieldByEx(truncationEx);
+        this.setCode("dataTruncation");
+        this.setMessage("Cannot exceed maximum length");
+    }
+
     public ValidationError(MissingServletRequestParameterException paramEx) {
         this.setField(paramEx.getParameterName());
         this.setCode("missingParam");
@@ -93,6 +101,14 @@ public class ValidationError {
         String tableName = RegexHelper.extractKey(constraintName, ConstraintPattern.FOREIGN_KEY.getRegexPattern(), 1);
         String fieldName = RegexHelper.extractKey(constraintName, ConstraintPattern.FOREIGN_KEY.getRegexPattern(), 2);
         this.field = tableName + "." + fieldName;
+    }
+
+    public void setFieldByEx(DataTruncationException truncationEx) {
+        String dbErrorMessage = truncationEx.getMostSpecificCause().getMessage();
+        this.field = RegexHelper.extractKey(dbErrorMessage, "Data too long for column '(.*?)' at row", 1); // for MySQL
+        if (this.field == null) { // Fallback to another pattern if the first one doesn't match
+            this.field = RegexHelper.extractKey(dbErrorMessage, "Value too long for column \"(.*?) ", 1); // for Hibernate
+        }
     }
 
     public void setRejectedValueByEx(DuplicateKeyException duplicateKeyEx) {

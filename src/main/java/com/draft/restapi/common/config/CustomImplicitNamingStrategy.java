@@ -14,7 +14,7 @@ public class CustomImplicitNamingStrategy extends ImplicitNamingStrategyJpaCompl
         String tableName = source.getTableName().getText();
         String columnName = source.getColumnNames().get(0).getText();
         String constraintName = String.format(ConstraintPattern.UNIQUE_KEY.getPattern(), tableName, columnName);
-        return Identifier.toIdentifier("\"" + constraintName + "\""); // to preserve case sensitivity and avoid quoting issues
+        return Identifier.toIdentifier(constraintName);
     }
 
     @Override
@@ -22,7 +22,7 @@ public class CustomImplicitNamingStrategy extends ImplicitNamingStrategyJpaCompl
         String tableName = source.getTableName().getText();
         String columnName = source.getColumnNames().get(0).getText();
         String constraintName = String.format(ConstraintPattern.FOREIGN_KEY.getPattern(), tableName, columnName);
-        return Identifier.toIdentifier("\"" + constraintName + "\""); // to preserve case sensitivity and avoid quoting issues
+        return Identifier.toIdentifier(constraintName);
     }
 
 }
