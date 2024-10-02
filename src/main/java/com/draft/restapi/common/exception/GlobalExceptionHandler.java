@@ -94,6 +94,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 ValidationError validationError = new ValidationError(foreignKeyEx);
                 response.setValidationErrors(Collections.singletonList(validationError));
                 status = HttpStatus.CONFLICT;
+            } else if (dbErrorMessage.contains("NULL") || dbErrorMessage.contains("null")) {
+                NotNullableException notNullableEx = new NotNullableException(dbErrorMessage, ex.getCause());
+                ValidationError validationError = new ValidationError(notNullableEx);
+                response.setValidationErrors(Collections.singletonList(validationError));
             }
         } else if (ex.getCause() instanceof org.hibernate.exception.DataException) {
             if (dbErrorMessage.contains("truncation") || dbErrorMessage.contains("too long")) {

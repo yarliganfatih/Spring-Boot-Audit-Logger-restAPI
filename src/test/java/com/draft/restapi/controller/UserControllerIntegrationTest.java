@@ -1,6 +1,7 @@
 package com.draft.restapi.controller;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -11,16 +12,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.Collections;
 
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MvcResult;
 
+import com.draft.restapi.mapper.UserMapper;
+import com.draft.restapi.model.User;
 import com.jayway.jsonpath.JsonPath;
 
 @Sql(scripts = {"classpath:db/sql/insert-user-data.sql" }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(scripts = {"classpath:db/sql/insert-user-data-rollback.sql" }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class UserControllerIntegrationTest extends BaseIntegrationTest {
+
+    @SpyBean
+    private UserMapper userMapper;
 
     @Test
     @WithMockUser(username = "user", roles = { "user" })
@@ -47,6 +54,30 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
         String responseContent = result.getResponse().getContentAsString();
         Integer userId = JsonPath.read(responseContent, "$.data.id");
         assertAuditLogs("users", userId.longValue(), "CREATE");
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = { "user" })
+    public void testCreateUser_caseNotNullable() throws Exception {
+        User validUser = new User();
+        validUser.setUsername("createdUser");
+        validUser.setEmail("createdUser@example.com");
+        validUser.setPassword("createdUser123");
+        String userJson = "{\"email\": \"" + validUser.getEmail() + "\", \"username\": \"" + validUser.getUsername() + "\", \"password\": \"" + validUser.getPassword() + "\"}";
+
+        // Simulate a request with a missing required field (in service layer)
+        User invalidUser = new User(validUser);
+        invalidUser.setUsername(null);
+        Mockito.when(userMapper.toEntity(Mockito.any())).thenReturn(invalidUser);
+
+        mockMvc.perform(post("/api/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(userJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.validationErrors").isArray())
+                .andExpect(jsonPath("$.validationErrors.length()").value(1))
+                .andExpect(jsonPath("$.validationErrors[0].code").value("notNullable"))
+                .andExpect(jsonPath("$.validationErrors[0].field").value("username"));
     }
 
     @Test

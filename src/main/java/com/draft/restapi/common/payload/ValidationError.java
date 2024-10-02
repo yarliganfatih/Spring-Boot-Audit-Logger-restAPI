@@ -1,6 +1,5 @@
 package com.draft.restapi.common.payload;
 
-import org.hibernate.exception.DataException;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.validation.FieldError;
@@ -13,6 +12,7 @@ import javax.validation.ConstraintViolation;
 import com.draft.restapi.common.enums.ConstraintPattern;
 import com.draft.restapi.common.exception.DataTruncationException;
 import com.draft.restapi.common.exception.ForeignKeyException;
+import com.draft.restapi.common.exception.NotNullableException;
 import com.draft.restapi.common.helper.RegexHelper;
 
 import lombok.Getter;
@@ -54,6 +54,12 @@ public class ValidationError {
         this.setFieldByEx(foreignKeyEx);
         this.setCode("referenceViolation");
         this.setMessage("Cannot be performed because of reference");
+    }
+
+    public ValidationError(NotNullableException notNullableEx) {
+        this.setFieldByEx(notNullableEx);
+        this.setCode("notNullable");
+        this.setMessage("Missing required field");
     }
 
     public ValidationError(DataTruncationException truncationEx) {
@@ -101,6 +107,14 @@ public class ValidationError {
         String tableName = RegexHelper.extractKey(constraintName, ConstraintPattern.FOREIGN_KEY.getRegexPattern(), 1);
         String fieldName = RegexHelper.extractKey(constraintName, ConstraintPattern.FOREIGN_KEY.getRegexPattern(), 2);
         this.field = tableName + "." + fieldName;
+    }
+
+    public void setFieldByEx(NotNullableException notNullableEx) {
+        String dbErrorMessage = notNullableEx.getMostSpecificCause().getMessage();
+        this.field = RegexHelper.extractKey(dbErrorMessage, "Column '(.*?)' cannot be null", 1); // for MySQL
+        if (this.field == null) { // Fallback to another pattern if the first one doesn't match
+            this.field = RegexHelper.extractKey(dbErrorMessage, "NULL not allowed for column \"(.*?)\"", 1); // for Hibernate
+        }
     }
 
     public void setFieldByEx(DataTruncationException truncationEx) {
