@@ -24,13 +24,13 @@ public class User extends AuditorBaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@Column(name = "username", nullable = false)
+	@Column(name = "username", nullable = false, length = 64)
 	private String username;
 
-	@Column(name = "email", nullable = false)
+	@Column(name = "email", nullable = false, length = 320)
 	private String email;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password", nullable = false, length = 255)
     private String password;
 
 	public User() {

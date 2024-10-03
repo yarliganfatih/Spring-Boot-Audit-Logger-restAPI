@@ -188,11 +188,19 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
     @Test
     @WithMockUser(username = "user", roles = { "user" })
     public void testUpdateUser_caseTruncationError() throws Exception {
-        String username = String.join("", Collections.nCopies(256, "n")); // because of exceeds maximum length (255)
+        String invalidUsername = String.join("", Collections.nCopies(65, "n")); // because of exceeds maximum length (64)
+        String validUsername = "updatedUser";
         String email = "updatedUser123@example.com";
         String password = "updatedUser123";
         Integer userId = 2;
-        String userJson = "{\"email\": \"" + email + "\", \"username\": \"" + username + "\", \"password\": \"" + password + "\"}";
+        String userJson = "{\"email\": \"" + email + "\", \"username\": \"" + validUsername + "\", \"password\": \"" + password + "\"}";
+        
+        // Simulate a request with a invalid field (in service layer)
+        Mockito.doAnswer(invocation -> {
+            User userArg = invocation.getArgument(1);
+            userArg.setUsername(invalidUsername); 
+            return null;
+        }).when(userMapper).updateUserFromDto(Mockito.any(), Mockito.any());
 
         mockMvc.perform(put("/api/users/" + userId)
                 .contentType(MediaType.APPLICATION_JSON)

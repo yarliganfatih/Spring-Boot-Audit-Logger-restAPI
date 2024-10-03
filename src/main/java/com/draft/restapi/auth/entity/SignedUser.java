@@ -36,15 +36,15 @@ public class SignedUser implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @Column(name = "username", nullable = false)
+    @Column(name = "username", nullable = false, length = 64)
     private String username;
 
     @JsonIgnore
-    @Column(name = "password")
+    @Column(name = "password", length = 255)
     private String password;
 
     @Email
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", nullable = false, length = 320)
     private String email;
 
     @JsonIgnore
