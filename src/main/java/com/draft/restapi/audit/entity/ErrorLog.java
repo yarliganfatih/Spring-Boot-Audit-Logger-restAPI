@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import com.draft.restapi.auth.entity.SignedUser;
+import com.draft.restapi.auth.entity.User;
 
 import java.io.Serializable;
 
@@ -67,5 +67,5 @@ public class ErrorLog implements Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "occurred_by_user_id", nullable = true)
-	private SignedUser occurredBy;
+	private User occurredBy;
 }

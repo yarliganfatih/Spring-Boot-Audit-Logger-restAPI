@@ -28,6 +28,9 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private UserDetailsService userDetailsService;
 
+    @Autowired
+    RoleRepository roleRepository;
+
 	@Bean
 	PasswordEncoder passwordEncoder() {
 		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
@@ -64,8 +67,6 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         return hierarchy.toString();
     }
 
-    @Autowired
-    RoleRepository roleRepository;
     @Bean
     public RoleHierarchyImpl roleHierarchy() {
         String roleHierarchyStr = generateRoleHierarchyByLevel(roleRepository.getRoleHierarchyQuery());

@@ -1,4 +1,4 @@
-package com.draft.restapi.auth;
+package com.draft.restapi.auth.service.impl;
 
 import java.util.Optional;
 
@@ -9,19 +9,20 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.draft.restapi.auth.entity.SignedUser;
-import com.draft.restapi.auth.repository.UserDetailRepository;
+import com.draft.restapi.auth.AuthUserDetail;
+import com.draft.restapi.auth.entity.User;
+import com.draft.restapi.auth.repository.UserRepository;
 
 @Service("userDetailsService")
 public class UserDetailServiceImpl implements UserDetailsService {
 
     @Autowired
-    private UserDetailRepository userDetailRepository;
+    private UserRepository userDetailRepository;
 
     @Override
     public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
 
-        Optional<SignedUser> optionalUser = userDetailRepository.findByUsername(name);
+        Optional<User> optionalUser = userDetailRepository.findByUsername(name);
 
         optionalUser.orElseThrow(() -> new UsernameNotFoundException("Invalid Username or password"));
 

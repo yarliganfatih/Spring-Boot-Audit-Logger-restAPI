@@ -18,8 +18,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MvcResult;
 
-import com.draft.restapi.mapper.UserMapper;
-import com.draft.restapi.model.User;
+import com.draft.restapi.auth.mapper.UserMapper;
+import com.draft.restapi.auth.entity.User;
 import com.jayway.jsonpath.JsonPath;
 
 @Sql(scripts = {"classpath:db/sql/insert-user-data.sql" }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -245,14 +245,11 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
     @WithMockUser(username = "user", roles = { "user" })
     @Sql(scripts = {"classpath:db/sql/insert-user-data.sql", "classpath:db/sql/insert-user-role-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(scripts = {"classpath:db/sql/insert-user-role-data-rollback.sql", "classpath:db/sql/insert-user-data-rollback.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void testDeleteUser_caseReferenceError() throws Exception {
+    public void testDeleteUser_caseReferenceHandling() throws Exception {
         Integer userId = 2;
 
         mockMvc.perform(delete("/api/users/" + userId))
-                .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.validationErrors").isArray())
-                .andExpect(jsonPath("$.validationErrors.length()").value(1))
-                .andExpect(jsonPath("$.validationErrors[0].code").value("referenceViolation"))
-                .andExpect(jsonPath("$.validationErrors[0].field").value("user_roles.user_id"));
+                .andExpect(status().isOk());
+        assertAuditLogs("users", userId.longValue(), "DELETE");
     }
 }

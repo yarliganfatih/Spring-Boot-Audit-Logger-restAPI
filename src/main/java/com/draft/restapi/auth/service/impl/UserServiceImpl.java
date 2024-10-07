@@ -1,11 +1,12 @@
-package com.draft.restapi.service.impl;
+package com.draft.restapi.auth.service.impl;
 
+import com.draft.restapi.auth.entity.dto.UserDto;
+import com.draft.restapi.auth.mapper.UserMapper;
+import com.draft.restapi.auth.service.UserService;
 import com.draft.restapi.common.exception.ResourceNotFoundException;
-import com.draft.restapi.model.User;
-import com.draft.restapi.model.dto.UserDto;
-import com.draft.restapi.repository.UserRepository;
-import com.draft.restapi.service.UserService;
-import com.draft.restapi.mapper.UserMapper;
+import com.draft.restapi.auth.entity.User;
+import com.draft.restapi.auth.repository.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

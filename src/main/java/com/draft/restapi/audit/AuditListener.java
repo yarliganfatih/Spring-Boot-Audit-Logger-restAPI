@@ -16,7 +16,7 @@ import com.draft.restapi.audit.entity.EntityLog;
 import com.draft.restapi.audit.entity.UpdateLog;
 import com.draft.restapi.audit.repository.EntityLogRepository;
 import com.draft.restapi.audit.repository.UpdateLogRepository;
-import com.draft.restapi.auth.entity.SignedUser;
+import com.draft.restapi.auth.entity.User;
 import com.fasterxml.jackson.databind.JsonNode;
 
 @RequiredArgsConstructor
@@ -64,7 +64,7 @@ public class AuditListener {
     }
 
     public AuditorBaseEntity preOperation(AuditorBaseEntity entity, String operation) {
-        EntityLog entityLog = new EntityLog(entity.getTableName(), entity.getId(), operation, SignedUser.getLoggedUser());
+        EntityLog entityLog = new EntityLog(entity.getTableName(), entity.getId(), operation, User.getLoggedUser());
         entityLog = entityLogRepository.save(entityLog);
         entity.setEntityLog(entityLog); // for usable on postOperation
         return entity;

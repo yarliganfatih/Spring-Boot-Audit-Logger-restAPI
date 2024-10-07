@@ -1,10 +1,6 @@
 package com.draft.restapi.auth.entity;
 
-import javax.persistence.*;
-import javax.validation.constraints.*;
-
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -12,70 +8,61 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.persistence.*;
+
+import com.draft.restapi.audit.AuditListener;
+import com.draft.restapi.audit.entity.AuditorBaseEntity;
 import com.draft.restapi.audit.entity.EntityLog;
 import com.draft.restapi.auth.AuthUserDetail;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Getter
 @Setter
 @Entity
-@Table(
-    name = "users",
-    uniqueConstraints = {
+@Table(name = "users", uniqueConstraints = {
         @UniqueConstraint(columnNames = "username"),
-        @UniqueConstraint(columnNames = "email")
-    }
-)
-@JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY) // to avoid infinite loop
-public class SignedUser implements Serializable {
-   
-	private static final long serialVersionUID = 244852266L;
+        @UniqueConstraint(columnNames = "email") })
+@EntityListeners(AuditListener.class)
+public class User extends AuditorBaseEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
 
 	@Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "username", nullable = false, length = 64)
     private String username;
 
-    @JsonIgnore
     @Column(name = "password", length = 255)
     private String password;
 
-    @Email
     @Column(name = "email", nullable = false, length = 320)
     private String email;
 
-    @JsonIgnore
     @Column(name = "enabled", nullable = false, columnDefinition = "boolean default true")
     private boolean enabled = true;
     
-    @JsonIgnore
     @Column(name = "accountNonExpired", nullable = false, columnDefinition = "boolean default true")
     private boolean accountNonExpired = true;
     
-    @JsonIgnore
     @Column(name = "credentialsNonExpired", nullable = false, columnDefinition = "boolean default true")
     private boolean credentialsNonExpired = true;
     
-    @JsonIgnore
     @Column(name = "accountNonLocked", nullable = false, columnDefinition = "boolean default true")
     private boolean accountNonLocked = true;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_roles", joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
-            inverseJoinColumns = {
-                    @JoinColumn(name = "role_id", referencedColumnName = "id")})
+    @JoinTable(name = "user_roles", 
+        joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")}, 
+        inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
     private List<Role> roles;
 
     @OneToMany(mappedBy = "operated_by", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EntityLog> entityLogs;
 	
-    public SignedUser() {
+    public User() {
     }
 
-    public SignedUser(SignedUser user) {
+    public User(User user) {
         this.id = user.getId();
         this.username = user.getUsername();
         this.password = user.getPassword();
@@ -87,13 +74,13 @@ public class SignedUser implements Serializable {
 		this.roles = user.getRoles();
 	}
     
-    public static SignedUser getLoggedUser() {
+    public static User getLoggedUser() {
         try {
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if (principal instanceof AuthUserDetail) {
-                return ((SignedUser) principal);  
-            } else if (principal instanceof User) {
-                SignedUser mockUser = new SignedUser();
+                return ((User) principal);  
+            } else if (principal instanceof org.springframework.security.core.userdetails.User) {
+                User mockUser = new User();
                 mockUser.setId(1);
                 return mockUser;  
             }

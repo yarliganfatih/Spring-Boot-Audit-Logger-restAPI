@@ -1,6 +1,6 @@
-package com.draft.restapi.service;
+package com.draft.restapi.auth.service;
 
-import com.draft.restapi.model.dto.UserDto;
+import com.draft.restapi.auth.entity.dto.UserDto;
 
 public interface UserService {
     Iterable<UserDto> getAllUsers();

@@ -1,7 +1,5 @@
-package com.draft.restapi.controller;
+package com.draft.restapi.auth.controller;
 
-import com.draft.restapi.model.dto.UserDto;
-import com.draft.restapi.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +11,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
+import com.draft.restapi.auth.entity.dto.UserDto;
+import com.draft.restapi.auth.service.UserService;
 import com.draft.restapi.common.payload.ApiResponse;
 
 @RestController

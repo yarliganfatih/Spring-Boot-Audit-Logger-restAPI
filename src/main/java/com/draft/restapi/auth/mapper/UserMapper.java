@@ -1,7 +1,8 @@
-package com.draft.restapi.mapper;
+package com.draft.restapi.auth.mapper;
 
-import com.draft.restapi.model.User;
-import com.draft.restapi.model.dto.UserDto;
+import com.draft.restapi.auth.entity.dto.UserDto;
+import com.draft.restapi.auth.entity.User;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

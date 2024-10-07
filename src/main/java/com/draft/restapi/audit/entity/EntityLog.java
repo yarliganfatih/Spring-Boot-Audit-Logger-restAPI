@@ -7,7 +7,7 @@ import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import com.draft.restapi.auth.entity.SignedUser;
+import com.draft.restapi.auth.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.io.Serializable;
@@ -48,12 +48,12 @@ public class EntityLog implements Serializable {
     @JsonIgnoreProperties("entityLogs")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "operated_by_user_id", nullable = false)
-	private SignedUser operated_by;
+	private User operated_by;
 
 	@OneToMany(mappedBy = "entityLog", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<UpdateLog> updateLogs = new HashSet<>();
 
-    public EntityLog(String entity_name, Integer entity_id, String operation, SignedUser operated_by) {
+    public EntityLog(String entity_name, Integer entity_id, String operation, User operated_by) {
 		this.entity_name = entity_name;
 		this.entity_id = entity_id;
 		this.operation = operation;

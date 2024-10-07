@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import com.draft.restapi.audit.entity.ErrorLog;
 import com.draft.restapi.audit.repository.ErrorLogRepository;
-import com.draft.restapi.auth.entity.SignedUser;
+import com.draft.restapi.auth.entity.User;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -157,7 +157,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             errorLog.setErrorType(ex.getClass().getName());
             errorLog.setHttpStatusCode(status.value());
             errorLog.setXTraceId(MDC.get(TraceFilter.TRACE_ID));
-            errorLog.setOccurredBy(SignedUser.getLoggedUser());
+            errorLog.setOccurredBy(User.getLoggedUser());
             errorLog.setRequestParams(servletRequest.getQueryString());
 
             try {

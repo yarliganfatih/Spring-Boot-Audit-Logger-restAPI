@@ -1,4 +1,4 @@
-package com.draft.restapi.model.dto;
+package com.draft.restapi.auth.entity.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
