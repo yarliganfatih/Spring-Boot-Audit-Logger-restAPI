@@ -11,6 +11,7 @@ public class ApiResponse<T> {
     private boolean success;
     private String message;
     private T data;
+    private PageDto<T> page;
     private LocalDateTime timestamp;
     private List<ValidationError> validationErrors;
 
@@ -23,6 +24,13 @@ public class ApiResponse<T> {
 
     public static <T> ApiResponse<T> success(T data) {
         return new ApiResponse<>(true, null, data);
+    }
+
+    public static <T> ApiResponse<T> success(PageDto<T> pageDto) {
+        ApiResponse response = new ApiResponse<>(true, null, pageDto.getContent());
+        pageDto.setContent(null);
+        response.setPage(pageDto);
+        return response;
     }
 
     public static <T> ApiResponse<T> success(T data, String message) {

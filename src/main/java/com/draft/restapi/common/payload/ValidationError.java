@@ -2,6 +2,7 @@ package com.draft.restapi.common.payload;
 
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -41,6 +42,13 @@ public class ValidationError {
         this.rejectedValue = violation.getInvalidValue();
         this.code = violation.getConstraintDescriptor().getAnnotation().annotationType().getSimpleName();
         this.message = violation.getMessage();
+    }
+
+    public ValidationError(PropertyReferenceException ex) {
+        this.field = "sort";
+        this.rejectedValue = ex.getPropertyName();
+        this.code = "invalidProperty";
+        this.message = ex.getMessage();
     }
 
     public ValidationError(DuplicateKeyException duplicateKeyEx) {

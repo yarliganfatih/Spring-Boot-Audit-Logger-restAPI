@@ -29,6 +29,7 @@ import com.draft.restapi.audit.repository.ErrorLogRepository;
 import com.draft.restapi.auth.entity.User;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
@@ -64,6 +65,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(RequestRejectedException.class)
     public ResponseEntity<ApiResponse<Object>> handleRequestRejectedException(RequestRejectedException ex, WebRequest request, HttpServletRequest servletRequest) {
         ApiResponse<Object> response = ApiResponse.error(ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(PropertyReferenceException.class)
+    public ResponseEntity<ApiResponse<Object>> handlePropertyReferenceException(PropertyReferenceException ex, WebRequest request) {
+        LOGGER.warn(ex.getMessage());
+        ApiResponse<Object> response = ApiResponse.error("Invalid request, Please check your input and try again.");
+        response.setValidationErrors(Collections.singletonList(new ValidationError(ex)));
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 

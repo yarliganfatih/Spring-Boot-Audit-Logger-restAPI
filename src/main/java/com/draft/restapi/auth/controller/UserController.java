@@ -14,6 +14,9 @@ import javax.validation.constraints.NotNull;
 import com.draft.restapi.auth.entity.dto.UserDto;
 import com.draft.restapi.auth.service.UserService;
 import com.draft.restapi.common.payload.ApiResponse;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.domain.Sort;
 
 @RestController
 @Validated
@@ -24,8 +27,9 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("")
-    public ResponseEntity<ApiResponse<Iterable<UserDto>>> getAllUsers() {
-        return ResponseEntity.ok(ApiResponse.success(userService.getAllUsers()));
+    public ResponseEntity<ApiResponse<UserDto>> getAllUsers(
+            @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.success(userService.getAllUsers(pageable)));
     }
 
     @GetMapping("/{id}")

@@ -4,6 +4,9 @@ import com.draft.restapi.auth.entity.dto.UserDto;
 import com.draft.restapi.auth.mapper.UserMapper;
 import com.draft.restapi.auth.service.UserService;
 import com.draft.restapi.common.exception.ResourceNotFoundException;
+import com.draft.restapi.common.payload.PageDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import com.draft.restapi.auth.entity.User;
 import com.draft.restapi.auth.repository.UserRepository;
 
@@ -11,9 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -28,10 +28,10 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     @Override
-    public Iterable<UserDto> getAllUsers() {
-        return StreamSupport.stream(userRepository.findAll().spliterator(), false)
-                .map(userMapper::toDto)
-                .collect(Collectors.toList());
+    public PageDto<UserDto> getAllUsers(Pageable pageable) {
+        Page<User> userPage = userRepository.findAll(pageable);
+        Page<UserDto> userDtoPage = userPage.map(userMapper::toDto);
+        return new PageDto<>(userDtoPage);
     }
 
     @Override

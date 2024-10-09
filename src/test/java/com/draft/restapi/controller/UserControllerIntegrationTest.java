@@ -38,6 +38,43 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(username = "user", roles = { "user" })
+    public void testGetAllUsers_withPagination() throws Exception {
+        mockMvc.perform(get("/api/users?page=0&size=1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.length()").value(1))
+                .andExpect(jsonPath("$.page.totalElements").value(2))
+                .andExpect(jsonPath("$.page.totalPages").value(2))
+                .andExpect(jsonPath("$.page.pageNumber").value(0))
+                .andExpect(jsonPath("$.page.pageSize").value(1));
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = { "user" })
+    public void testGetAllUsers_withSorting() throws Exception {
+        mockMvc.perform(get("/api/users?sort=username,asc"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data[0].username").value("mockUser"))
+                .andExpect(jsonPath("$.data[1].username").value("user"));
+        mockMvc.perform(get("/api/users?sort=username,desc"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data[0].username").value("user"))
+                .andExpect(jsonPath("$.data[1].username").value("mockUser"));
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = { "user" })
+    public void testGetAllUsers_caseSortingPropertyReference() throws Exception {
+        mockMvc.perform(get("/api/users?sort=invalidParam,asc"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.validationErrors").isArray())
+                .andExpect(jsonPath("$.validationErrors.length()").value(1))
+                .andExpect(jsonPath("$.validationErrors[0].code").value("invalidProperty"))
+                .andExpect(jsonPath("$.validationErrors[0].field").value("sort"))
+                .andExpect(jsonPath("$.validationErrors[0].rejectedValue").value("invalidParam"));
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = { "user" })
     public void testCreateUser() throws Exception {
         String username = "createdUser";
         String email = username + "@example.com";
