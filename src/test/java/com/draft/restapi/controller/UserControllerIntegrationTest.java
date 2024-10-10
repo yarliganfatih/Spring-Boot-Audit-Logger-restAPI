@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import com.draft.restapi.auth.mapper.UserMapper;
 import com.draft.restapi.auth.entity.User;
+import com.draft.restapi.auth.entity.dto.UserDto;
 import com.jayway.jsonpath.JsonPath;
 
 @Sql(scripts = {"classpath:db/sql/insert-user-data.sql" }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -75,6 +76,20 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(username = "user", roles = { "user" })
+    public void testGetAllUsers_withFilter() throws Exception {
+        mockMvc.perform(get("/api/users?email=mockUser"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data[0].email").value("mockUser@example.com"));
+        mockMvc.perform(get("/api/users?username=uSeR"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data[0].username").value("user"));
+        mockMvc.perform(get("/api/users?id=1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data[0].id").value(1));
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = { "user" })
     public void testCreateUser() throws Exception {
         String username = "createdUser";
         String email = username + "@example.com";
@@ -105,7 +120,7 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
         // Simulate a request with a missing required field (in service layer)
         User invalidUser = new User(validUser);
         invalidUser.setUsername(null);
-        Mockito.when(userMapper.toEntity(Mockito.any())).thenReturn(invalidUser);
+        Mockito.when(userMapper.toEntity(Mockito.any(UserDto.class))).thenReturn(invalidUser);
 
         mockMvc.perform(post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)

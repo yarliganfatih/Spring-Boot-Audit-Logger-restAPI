@@ -28,8 +28,9 @@ public class UserController {
 
     @GetMapping("")
     public ResponseEntity<ApiResponse<UserDto>> getAllUsers(
+            UserDto.Filter filter,
             @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
-        return ResponseEntity.ok(ApiResponse.success(userService.getAllUsers(pageable)));
+        return ResponseEntity.ok(ApiResponse.success(userService.getAllUsers(filter, pageable)));
     }
 
     @GetMapping("/{id}")

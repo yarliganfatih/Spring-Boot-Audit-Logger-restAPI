@@ -13,6 +13,8 @@ public interface UserMapper {
     @Mapping(target = "password", ignore = true)
     User toEntity(UserDto userDto);
 
+    User toEntity(UserDto.Filter filter);
+
     UserDto toDto(User entity);
 
     @Mapping(target = "password", ignore = true)

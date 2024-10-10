@@ -5,7 +5,7 @@ import com.draft.restapi.common.payload.PageDto;
 import org.springframework.data.domain.Pageable;
 
 public interface UserService {
-    PageDto<UserDto> getAllUsers(Pageable pageable);
+    PageDto<UserDto> getAllUsers(UserDto.Filter filter, Pageable pageable);
 
     UserDto getUserById(Integer userId);
 

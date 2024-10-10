@@ -7,6 +7,8 @@ import com.draft.restapi.common.exception.ResourceNotFoundException;
 import com.draft.restapi.common.payload.PageDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import com.draft.restapi.auth.entity.User;
 import com.draft.restapi.auth.repository.UserRepository;
 
@@ -28,8 +30,14 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     @Override
-    public PageDto<UserDto> getAllUsers(Pageable pageable) {
-        Page<User> userPage = userRepository.findAll(pageable);
+    public PageDto<UserDto> getAllUsers(UserDto.Filter filter, Pageable pageable) {
+        User probe = userMapper.toEntity(filter);
+        ExampleMatcher matcher = ExampleMatcher.matching()
+                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING)
+                .withIgnoreCase()
+                .withIgnoreNullValues();
+        Example<User> example = Example.of(probe, matcher);
+        Page<User> userPage = userRepository.findAll(example, pageable);
         Page<UserDto> userDtoPage = userPage.map(userMapper::toDto);
         return new PageDto<>(userDtoPage);
     }

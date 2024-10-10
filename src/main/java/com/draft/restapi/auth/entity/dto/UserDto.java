@@ -32,4 +32,12 @@ public class UserDto {
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$", message = "Password must be at least 8 characters long and contain both letters and numbers")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
+    
+    @Getter
+    @Setter
+    public static class Filter {
+        private Integer id;
+        private String username;
+        private String email;
+    }
 }
