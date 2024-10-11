@@ -25,4 +25,38 @@ public class AuthUserDetail extends User implements UserDetails {
         });
         return grantedAuthorities;
     }
+
+    public Integer getId() {
+        return super.getId();
+    }
+    
+    @Override
+    public String getPassword() {
+        return super.getPassword();
+    }
+
+    @Override
+    public String getUsername() {
+        return super.getUsername();
+    }
+    
+    @Override
+    public boolean isAccountNonExpired() {
+        return super.getAccountNonExpired() != null && super.getAccountNonExpired();
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return super.getAccountNonLocked() != null && super.getAccountNonLocked();
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return super.getCredentialsNonExpired() != null && super.getCredentialsNonExpired();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return super.getEnabled() != null && super.getEnabled();
+    }
 }

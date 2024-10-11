@@ -14,10 +14,12 @@ import com.draft.restapi.audit.AuditListener;
 import com.draft.restapi.audit.entity.AuditorBaseEntity;
 import com.draft.restapi.audit.entity.EntityLog;
 import com.draft.restapi.auth.AuthUserDetail;
+import org.hibernate.annotations.DynamicInsert;
 
 @Getter
 @Setter
 @Entity
+@DynamicInsert
 @Table(name = "users", uniqueConstraints = {
         @UniqueConstraint(columnNames = "username"),
         @UniqueConstraint(columnNames = "email") })
@@ -38,17 +40,17 @@ public class User extends AuditorBaseEntity implements Serializable {
     @Column(name = "email", nullable = false, length = 320)
     private String email;
 
-    @Column(name = "enabled", nullable = false, columnDefinition = "boolean default true")
-    private boolean enabled = true;
+    @Column(name = "enabled", columnDefinition = "boolean default true")
+    private Boolean enabled;
     
-    @Column(name = "accountNonExpired", nullable = false, columnDefinition = "boolean default true")
-    private boolean accountNonExpired = true;
+    @Column(name = "accountNonExpired", columnDefinition = "boolean default true")
+    private Boolean accountNonExpired;
     
-    @Column(name = "credentialsNonExpired", nullable = false, columnDefinition = "boolean default true")
-    private boolean credentialsNonExpired = true;
+    @Column(name = "credentialsNonExpired", columnDefinition = "boolean default true")
+    private Boolean credentialsNonExpired;
     
-    @Column(name = "accountNonLocked", nullable = false, columnDefinition = "boolean default true")
-    private boolean accountNonLocked = true;
+    @Column(name = "accountNonLocked", columnDefinition = "boolean default true")
+    private Boolean accountNonLocked;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles", 
@@ -67,10 +69,10 @@ public class User extends AuditorBaseEntity implements Serializable {
         this.username = user.getUsername();
         this.password = user.getPassword();
         this.email = user.getEmail();
-        this.enabled = user.isEnabled();
-        this.accountNonExpired = user.isAccountNonExpired();
-        this.credentialsNonExpired = user.isCredentialsNonExpired();
-        this.accountNonLocked = user.isAccountNonLocked();
+        this.enabled = user.getEnabled();
+        this.accountNonExpired = user.getAccountNonExpired();
+        this.credentialsNonExpired = user.getCredentialsNonExpired();
+        this.accountNonLocked = user.getAccountNonLocked();
 		this.roles = user.getRoles();
 	}
     
