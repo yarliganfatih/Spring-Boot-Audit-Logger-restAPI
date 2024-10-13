@@ -7,13 +7,14 @@ import org.springframework.web.bind.annotation.*;
 
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import com.draft.restapi.auth.entity.dto.UserDto;
 import com.draft.restapi.auth.service.UserService;
 import com.draft.restapi.common.payload.ApiResponse;
+import com.draft.restapi.common.validation.ValidationGroups;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.domain.Sort;
@@ -39,12 +40,12 @@ public class UserController {
     }
 
     @PostMapping("")
-    public ResponseEntity<ApiResponse<UserDto>> createUser(@Valid @RequestBody UserDto userDto) {
+    public ResponseEntity<ApiResponse<UserDto>> createUser(@Validated(ValidationGroups.OnCreate.class) @RequestBody UserDto userDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(userService.createUser(userDto), "User created successfully"));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<UserDto>> updateUser(@NotNull @Min(1) @PathVariable("id") Integer userId, @Valid @RequestBody UserDto userDetails) {
+    @PatchMapping("/{id}")
+    public ResponseEntity<ApiResponse<UserDto>> updateUser(@NotNull @Min(1) @PathVariable("id") Integer userId, @Validated(ValidationGroups.OnUpdate.class) @RequestBody UserDto userDetails) {
         return ResponseEntity.ok(ApiResponse.success(userService.updateUser(userId, userDetails), "User updated successfully"));
     }
 

@@ -15,11 +15,13 @@ import com.draft.restapi.audit.entity.AuditorBaseEntity;
 import com.draft.restapi.audit.entity.EntityLog;
 import com.draft.restapi.auth.AuthUserDetail;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
 @Setter
 @Entity
 @DynamicInsert
+@DynamicUpdate
 @Table(name = "users", uniqueConstraints = {
         @UniqueConstraint(columnNames = "username"),
         @UniqueConstraint(columnNames = "email") })

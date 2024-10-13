@@ -6,7 +6,7 @@ import org.mockito.Mockito;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -154,7 +154,7 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
     @WithMockUser(username = "user", roles = { "user" })
     public void testCreateUser_caseValidationError() throws Exception {
         String username = "created-user"; // because of using hyphen which is invalid pattern
-        String email = ""; // because of sending empty value
+        String email = ""; // because of sending empty value and size < 3
         String userJson = "{\"email\": \"" + email + "\", \"username\": \"" + username + "\"}"; // because of missing password field
 
         mockMvc.perform(post("/api/users")
@@ -162,7 +162,7 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
                 .content(userJson))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.validationErrors").isArray())
-                .andExpect(jsonPath("$.validationErrors.length()").value(3));
+                .andExpect(jsonPath("$.validationErrors.length()").value(4));
     }
 
     @Test
@@ -196,12 +196,28 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
         Integer userId = 2;
         String userJson = "{\"email\": \"" + email + "\", \"username\": \"" + username + "\", \"password\": \"" + password + "\"}";
 
-        mockMvc.perform(put("/api/users/" + userId)
+        mockMvc.perform(patch("/api/users/" + userId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.id").value(userId))
                 .andExpect(jsonPath("$.data.email").value(email))
+                .andExpect(jsonPath("$.data.username").value(username));
+        assertAuditLogs("users", userId.longValue(), "UPDATE");
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = { "user" })
+    public void testUpdateUser_withPatching() throws Exception {
+        String username = "updatedUser";
+        Integer userId = 2;
+        String userJson = "{\"username\": \"" + username + "\"}";
+
+        mockMvc.perform(patch("/api/users/" + userId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(userJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.id").value(userId))
                 .andExpect(jsonPath("$.data.username").value(username));
         assertAuditLogs("users", userId.longValue(), "UPDATE");
     }
@@ -215,11 +231,30 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
         Integer userId = 999;
         String userJson = "{\"email\": \"" + email + "\", \"username\": \"" + username + "\", \"password\": \"" + password + "\"}";
 
-        mockMvc.perform(put("/api/users/" + userId)
+        mockMvc.perform(patch("/api/users/" + userId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userJson))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("User not found with id : '" + userId + "'"));
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = { "user" })
+    public void testUpdateUser_caseValidationError() throws Exception {
+        String username = "updatedUser";
+        String email = ""; // because of size < 3
+        Integer userId = 2;
+        String userJson = "{\"email\": \"" + email + "\", \"username\": \"" + username + "\"}";
+
+        // Unlike createUser validations, no NotBlank error will occur here
+        mockMvc.perform(patch("/api/users/" + userId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(userJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.validationErrors").isArray())
+                .andExpect(jsonPath("$.validationErrors.length()").value(1))
+                .andExpect(jsonPath("$.validationErrors[0].code").value("Size"))
+                .andExpect(jsonPath("$.validationErrors[0].field").value("email"));
     }
 
     @Test
@@ -231,7 +266,7 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
         Integer userId = null;
         String userJson = "{\"email\": \"" + email + "\", \"username\": \"" + username + "\", \"password\": \"" + password + "\"}";
 
-        mockMvc.perform(put("/api/users/" + userId)
+        mockMvc.perform(patch("/api/users/" + userId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userJson))
                 .andExpect(status().isBadRequest());
@@ -254,7 +289,7 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
             return null;
         }).when(userMapper).updateUserFromDto(Mockito.any(), Mockito.any());
 
-        mockMvc.perform(put("/api/users/" + userId)
+        mockMvc.perform(patch("/api/users/" + userId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userJson))
                 .andExpect(status().isBadRequest())
