@@ -54,6 +54,9 @@ public class User extends AuditorBaseEntity implements Serializable {
     @Column(name = "accountNonLocked", columnDefinition = "boolean default true")
     private Boolean accountNonLocked;
 
+    @Column(name = "deleted", columnDefinition = "boolean default false")
+    private Boolean deleted;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles", 
         joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")}, 
@@ -75,6 +78,7 @@ public class User extends AuditorBaseEntity implements Serializable {
         this.accountNonExpired = user.getAccountNonExpired();
         this.credentialsNonExpired = user.getCredentialsNonExpired();
         this.accountNonLocked = user.getAccountNonLocked();
+        this.deleted = user.getDeleted();
 		this.roles = user.getRoles();
 	}
     

@@ -152,6 +152,57 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(username = "user", roles = { "user" })
+    public void testCreateUser_afterSoftDelete() throws Exception {
+        Integer existingUserId = 2;
+        String username = "createdUser"; // unique
+        String email = "mockUser@example.com"; // because of sending existing value
+        String password = "createdUser123";
+        String userJson = "{\"email\": \"" + email + "\", \"username\": \"" + username + "\", \"password\": \"" + password + "\"}";
+        
+        // First, delete the existing user
+        mockMvc.perform(delete("/api/users/" + existingUserId)) // soft-delete
+                .andExpect(status().isOk());
+ 
+        // Then, try to create a similar user
+        mockMvc.perform(post("/api/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(userJson))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.validationErrors").isArray())
+                .andExpect(jsonPath("$.validationErrors.length()").value(1))
+                .andExpect(jsonPath("$.validationErrors[0].code").value("duplicate"))
+                .andExpect(jsonPath("$.validationErrors[0].field").value("email"));
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = { "user" })
+    public void testCreateUser_afterHardDelete() throws Exception {
+        Integer existingUserId = 2;
+        String username = "mockUser";
+        String email = "mockUser@example.com";
+        String password = "mockUser123";
+        String userJson = "{\"email\": \"" + email + "\", \"username\": \"" + username + "\", \"password\": \"" + password + "\"}";
+
+        // First, delete the existing user with purge
+        mockMvc.perform(delete("/api/users/" + existingUserId)
+                .param("purge", "true")) // hard-delete
+                .andExpect(status().isOk());
+ 
+        // Then, try to create a similar user
+        MvcResult result = mockMvc.perform(post("/api/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(userJson))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.data.email").value(email))
+                .andExpect(jsonPath("$.data.username").value(username))
+                .andReturn();
+        String responseContent = result.getResponse().getContentAsString();
+        Integer userId = JsonPath.read(responseContent, "$.data.id");
+        assertAuditLogs("users", userId.longValue(), "CREATE");
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = { "user" })
     public void testCreateUser_caseValidationError() throws Exception {
         String username = "created-user"; // because of using hyphen which is invalid pattern
         String email = ""; // because of sending empty value and size < 3
@@ -304,9 +355,9 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
     public void testDeleteUser() throws Exception {
         Integer userId = 2;
 
-        mockMvc.perform(delete("/api/users/" + userId))
+        mockMvc.perform(delete("/api/users/" + userId)) // soft-delete
                 .andExpect(status().isOk());
-        assertAuditLogs("users", userId.longValue(), "DELETE");
+        assertAuditLogs("users", userId.longValue(), "UPDATE");
     }
 
     @Test
@@ -317,6 +368,30 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
         mockMvc.perform(delete("/api/users/" + userId))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("User not found with id : '" + userId + "'"));
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = { "user" })
+    public void testDeleteUser_withPurge() throws Exception {
+        Integer userId = 2;
+
+        mockMvc.perform(delete("/api/users/" + userId)
+                .param("purge", "true")) // hard-delete
+                .andExpect(status().isOk());
+        assertAuditLogs("users", userId.longValue(), "DELETE");
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = { "user" })
+    public void testDeleteUser_withPurge_afterSoftDelete() throws Exception {
+        Integer userId = 2;
+        mockMvc.perform(delete("/api/users/" + userId)) // soft-delete
+                .andExpect(status().isOk());
+
+        mockMvc.perform(delete("/api/users/" + userId)
+                .param("purge", "true")) // hard-delete
+                .andExpect(status().isOk());
+        assertAuditLogs("users", userId.longValue(), "DELETE");
     }
 
     @Test
@@ -335,7 +410,8 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
     public void testDeleteUser_caseReferenceHandling() throws Exception {
         Integer userId = 2;
 
-        mockMvc.perform(delete("/api/users/" + userId))
+        mockMvc.perform(delete("/api/users/" + userId)
+                .param("purge", "true")) // hard-delete
                 .andExpect(status().isOk());
         assertAuditLogs("users", userId.longValue(), "DELETE");
     }

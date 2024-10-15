@@ -50,8 +50,11 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteUser(@NotNull @Min(1) @PathVariable("id") Integer userId) {
-        userService.deleteUser(userId);
-        return ResponseEntity.ok(ApiResponse.success(null, "User deleted successfully"));
+    public ResponseEntity<ApiResponse<Void>> deleteUser(
+            @NotNull @Min(1) @PathVariable("id") Integer userId,
+            @RequestParam(value = "purge", defaultValue = "false") boolean purge) {
+        userService.deleteUser(userId, purge);
+        String respMessage = purge ? "User deleted permanently" : "User deleted successfully";
+        return ResponseEntity.ok(ApiResponse.success(null, respMessage));
     }
 }

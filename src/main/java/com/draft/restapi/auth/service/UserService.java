@@ -13,5 +13,5 @@ public interface UserService {
 
     UserDto updateUser(Integer userId, UserDto userDetails);
 
-    void deleteUser(Integer userId);
+    void deleteUser(Integer userId, boolean purge);
 }

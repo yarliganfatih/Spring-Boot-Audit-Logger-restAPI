@@ -32,6 +32,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public PageDto<UserDto> getAllUsers(UserDto.Filter filter, Pageable pageable) {
         User probe = userMapper.toEntity(filter);
+        probe.setDeleted(false);
         ExampleMatcher matcher = ExampleMatcher.matching()
                 .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING)
                 .withIgnoreCase()
@@ -47,6 +48,7 @@ public class UserServiceImpl implements UserService {
         if (userId == null)
             throw new IllegalArgumentException("Id cannot be null");
         return userRepository.findById(userId)
+                .filter(u -> !u.getDeleted())
                 .map(userMapper::toDto)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
     }
@@ -65,6 +67,7 @@ public class UserServiceImpl implements UserService {
         if (userId == null)
             throw new IllegalArgumentException("Id cannot be null");
         User user = userRepository.findById(userId)
+                .filter(u -> !u.getDeleted())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 
         userMapper.updateUserFromDto(userDto, user);
@@ -77,12 +80,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(Integer userId) {
+    public void deleteUser(Integer userId, boolean purge) {
         if (userId == null)
             throw new IllegalArgumentException("Id cannot be null");
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 
-        userRepository.delete(user);
+        if (purge) {
+            userRepository.delete(user);
+        } else {
+            user.setDeleted(true);
+            user.setEnabled(false); // to prevent authenticate
+            userRepository.save(user);
+        }
     }
 }
