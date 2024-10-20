@@ -97,7 +97,8 @@ public class ValidationError {
     }
 
     public void customizeErrorMsg(TypeMismatchException typeEx) {
-        String requiredType = typeEx.getRequiredType() != null ? typeEx.getRequiredType().getSimpleName() : "Unknown";
+        Class<?> requiredTypeClass = typeEx.getRequiredType();
+        String requiredType = requiredTypeClass != null ? requiredTypeClass.getSimpleName() : "Unknown";
         this.message = "Invalid value for parameter, expected type: " + requiredType;
     }
 

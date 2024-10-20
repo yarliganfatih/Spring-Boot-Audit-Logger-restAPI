@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.springframework.http.MediaType;
 
+@SuppressWarnings("null")
 public class TokenEndpointIntegrationTest extends BaseIntegrationTest {
 
     @Test

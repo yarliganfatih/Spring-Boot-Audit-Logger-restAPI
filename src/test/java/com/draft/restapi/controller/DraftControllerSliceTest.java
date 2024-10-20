@@ -25,10 +25,10 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@SuppressWarnings("null")
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(value = DraftController.class)
 @MockBean(JpaMetamodelMappingContext.class) // Override EnableJpaAuditing on the main class
@@ -62,7 +62,7 @@ public class DraftControllerSliceTest {
     public void testIndexEndpoint() throws Exception {
         mockMvc.perform(get("/api/draft"))
                 .andExpect(status().isOk())
-                .andExpect(content().json("{\"message\":\"Hello World!\"}"));
+                .andExpect(jsonPath("$.message").value("Hello World!"));
     }
 
     @Test
@@ -70,7 +70,7 @@ public class DraftControllerSliceTest {
     public void testErrorEndpoint() throws Exception {
         mockMvc.perform(get("/api/draft/error"))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().json("{\"message\":\"Bad Request\"}"));
+                .andExpect(jsonPath("$.message").value("Bad Request"));
     }
 
     @Test
@@ -78,7 +78,7 @@ public class DraftControllerSliceTest {
     public void testParamEndpoint() throws Exception {
         mockMvc.perform(get("/api/draft/param?id=5"))
                 .andExpect(status().isOk())
-                .andExpect(content().json("{\"message\":\"param is 5\"}"));
+                .andExpect(jsonPath("$.message").value("param is 5"));
     }
 
     @Test
@@ -104,7 +104,7 @@ public class DraftControllerSliceTest {
     public void testPathEndpoint() throws Exception {
         mockMvc.perform(get("/api/draft/path/sample/10"))
                 .andExpect(status().isOk())
-                .andExpect(content().json("{\"message\":\"sample is 10\"}"));
+                .andExpect(jsonPath("$.message").value("sample is 10"));
     }
 
     @Test
@@ -125,7 +125,7 @@ public class DraftControllerSliceTest {
                 .param("field", "value")
                 .with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(content().json("{\"message\":\"key is 1, field is value\"}"));
+                .andExpect(jsonPath("$.message").value("key is 1, field is value"));
     }
 
     @Test
@@ -168,7 +168,7 @@ public class DraftControllerSliceTest {
                 .param("description", "A text file")
                 .with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(content().json("{\"message\":\"File test.txt uploaded with description: A text file\"}"));
+                .andExpect(jsonPath("$.message").value("File test.txt uploaded with description: A text file"));
     }
 
     @Test
@@ -209,7 +209,7 @@ public class DraftControllerSliceTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(reqBody))
                 .andExpect(status().isOk())
-                .andExpect(content().json("{\"message\":\"key is 1, field is value\"}"));
+                .andExpect(jsonPath("$.message").value("key is 1, field is value"));
     }
 
     @Test
@@ -246,7 +246,7 @@ public class DraftControllerSliceTest {
     public void testAdminEndpoint() throws Exception {
         mockMvc.perform(get("/api/draft/admin"))
                 .andExpect(status().isOk())
-                .andExpect(content().json("{\"message\":\"Hello admin\"}"));
+                .andExpect(jsonPath("$.message").value("Hello admin"));
     }
 
     @Test
@@ -254,7 +254,7 @@ public class DraftControllerSliceTest {
     public void testModEndpoint() throws Exception {
         mockMvc.perform(get("/api/draft/mod"))
                 .andExpect(status().isOk())
-                .andExpect(content().json("{\"message\":\"Hello mod\"}"));
+                .andExpect(jsonPath("$.message").value("Hello mod"));
     }
 
     @Test
@@ -263,7 +263,7 @@ public class DraftControllerSliceTest {
     public void testModEndpointWithAdminUser() throws Exception {
         mockMvc.perform(get("/api/draft/mod"))
                 .andExpect(status().isOk())
-                .andExpect(content().json("{\"message\":\"Hello mod\"}"));
+                .andExpect(jsonPath("$.message").value("Hello mod"));
     }
 
     @Test
@@ -271,6 +271,6 @@ public class DraftControllerSliceTest {
     public void testChosenEndpoint() throws Exception {
         mockMvc.perform(get("/api/draft/chosen"))
                 .andExpect(status().isOk())
-                .andExpect(content().json("{\"message\":\"Hello chosen one\"}"));
+                .andExpect(jsonPath("$.message").value("Hello chosen one"));
     }
 }

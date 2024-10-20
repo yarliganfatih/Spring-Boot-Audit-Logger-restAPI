@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.domain.Sort;
 
+@SuppressWarnings("null")
 @RestController
 @Validated
 @RequestMapping("/api/users")

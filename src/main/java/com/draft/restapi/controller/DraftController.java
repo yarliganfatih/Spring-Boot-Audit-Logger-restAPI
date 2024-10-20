@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
@@ -25,49 +29,22 @@ import javax.validation.constraints.Size;
 @RequestMapping("/api/draft")
 public class DraftController {
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
     public static class ReqData {
         @Min(1)
         private Integer key;
         
         @Size(min = 3, max = 100)
         private String field;
-
-        public ReqData(Integer key, String field) {
-            this.key = key;
-            this.field = field;
-        }
-
-        public Integer getKey() {
-            return key;
-        }
-
-        public void setKey(Integer key) {
-            this.key = key;
-        }
-
-        public String getField() {
-            return field;
-        }
-
-        public void setField(String field) {
-            this.field = field;
-        }
     }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
     private static class ResData {
         private String message;
-
-        public ResData(String message) {
-            this.message = message;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public void setMessage(String message) {
-            this.message = message;
-        }
     }
 
     @GetMapping

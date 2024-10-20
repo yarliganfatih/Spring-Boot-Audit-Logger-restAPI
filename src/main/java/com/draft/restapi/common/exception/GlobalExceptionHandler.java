@@ -23,6 +23,8 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import com.draft.restapi.audit.entity.ErrorLog;
 import com.draft.restapi.audit.repository.ErrorLogRepository;
@@ -119,7 +121,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @Override
-    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
+    @NonNull
+    protected ResponseEntity<Object> handleExceptionInternal(@NonNull Exception ex, @Nullable Object body, @NonNull HttpHeaders headers, @NonNull HttpStatus status, @NonNull WebRequest request) {
         LOGGER.warn(ex.getMessage());
         String errorMessage = ErrorMessageConstants.EXCEPTION_MESSAGES.getOrDefault(
                 ex.getClass().getSimpleName(),

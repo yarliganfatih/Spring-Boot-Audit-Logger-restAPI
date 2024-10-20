@@ -2,6 +2,7 @@ package com.draft.restapi.audit.controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,14 +15,13 @@ import com.draft.restapi.audit.service.LogService;
 
 import com.draft.restapi.common.payload.ApiResponse;
 
-import lombok.RequiredArgsConstructor;
-
+@SuppressWarnings("null")
 @RestController
 @RequestMapping("/api/logs")
-@RequiredArgsConstructor
 public class LogController {
 
-	private final LogService logService;
+	@Autowired
+	private LogService logService;
 
 	@GetMapping("/entity/")
 	public ResponseEntity<ApiResponse<List<EntityLog>>> getEntities() {

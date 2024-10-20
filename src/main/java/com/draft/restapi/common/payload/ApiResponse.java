@@ -26,8 +26,9 @@ public class ApiResponse<T> {
         return new ApiResponse<>(true, null, data);
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"}) // to overcome the generics restriction
     public static <T> ApiResponse<T> success(PageDto<T> pageDto) {
-        ApiResponse response = new ApiResponse<>(true, null, pageDto.getContent());
+        ApiResponse response = new ApiResponse(true, null, pageDto.getContent());
         pageDto.setContent(null);
         response.setPage(pageDto);
         return response;

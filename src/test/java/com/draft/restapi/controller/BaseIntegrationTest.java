@@ -15,6 +15,7 @@ import java.util.List;
 import com.draft.restapi.audit.entity.EntityLog;
 import com.draft.restapi.audit.repository.EntityLogRepository;
 import com.draft.restapi.RestapiApplication;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = RestapiApplication.class)
@@ -23,6 +24,9 @@ public abstract class BaseIntegrationTest {
 
     @Autowired
     protected MockMvc mockMvc;
+    
+    @Autowired
+    protected ObjectMapper objectMapper;
  
     @Autowired
     protected EntityLogRepository entityLogRepository;
@@ -33,5 +37,13 @@ public abstract class BaseIntegrationTest {
         assertTrue(logs.size() > 0, "Should have audit logs");
         boolean hasOperation = logs.stream().anyMatch(log -> expectedOperation.equals(log.getOperation()));
         assertTrue(hasOperation, "Should have " + expectedOperation + " operation log");
+    }
+
+    protected String asJsonString(final Object obj) {
+        try {
+            return objectMapper.writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
