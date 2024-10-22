@@ -12,6 +12,10 @@ import org.springframework.data.domain.ExampleMatcher;
 import com.draft.restapi.auth.entity.User;
 import com.draft.restapi.auth.repository.UserRepository;
 
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.CacheEvict;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -44,6 +48,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Cacheable(value = "users", key = "#userId")
     public UserDto getUserById(Integer userId) {
         if (userId == null)
             throw new IllegalArgumentException("Id cannot be null");
@@ -54,6 +59,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @CachePut(value = "users", key = "#result.id")
     public UserDto createUser(UserDto userDto) {
         User user = userMapper.toEntity(userDto);
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
@@ -63,6 +69,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @CachePut(value = "users", key = "#userId")
     public UserDto updateUser(Integer userId, UserDto userDto) {
         if (userId == null)
             throw new IllegalArgumentException("Id cannot be null");
@@ -80,6 +87,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @CacheEvict(value = "users", key = "#userId")
     public void deleteUser(Integer userId, boolean purge) {
         if (userId == null)
             throw new IllegalArgumentException("Id cannot be null");

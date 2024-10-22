@@ -1,6 +1,7 @@
 package com.draft.restapi.controller;
 
 import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -129,7 +130,7 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
         MvcResult result = mockMvc.perform(post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(createUserJson(email, username, password)))
-                .andExpect(status().isCreated())
+                .andExpect(status().isCreated()) // cache.doPut
                 .andExpect(jsonPath("$.data.email").value(email))
                 .andExpect(jsonPath("$.data.username").value(username))
                 .andReturn();
@@ -141,7 +142,7 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
         mockMvc.perform(get("/api/users?id=" + userId))
                 .andExpect(res -> Assumptions.assumeTrue(res.getResponse().getStatus() == 200)) // skip if failed
                 .andExpect(jsonPath("$.data.length()").value(1));
-        mockMvc.perform(get("/api/users/" + userId))
+        mockMvc.perform(get("/api/users/" + userId)) // from cache.doGet
                 .andExpect(res -> Assumptions.assumeTrue(res.getResponse().getStatus() == 200)) // skip if failed
                 .andExpect(jsonPath("$.data.id").value(userId))
                 .andExpect(jsonPath("$.data.email").value(email))
@@ -253,6 +254,7 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @Order(2) // to detect flaky tests
     @WithMockUser(username = "user", roles = { "user" })
     public void testGetUser() throws Exception {
         Integer userId = 2;
@@ -266,6 +268,23 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(username = "user", roles = { "user" })
+    public void testGetUser_fromCache() throws Exception {
+        Integer userId = 2;
+
+        mockMvc.perform(get("/api/users/" + userId))
+                .andExpect(status().isOk()); // cache.doPut
+        Mockito.verify(userMapper, Mockito.times(1)).toDto(Mockito.any(User.class)); // executed once in service layer
+
+        mockMvc.perform(get("/api/users/" + userId))
+                .andExpect(status().isOk()) // from cache.doGet
+                .andExpect(jsonPath("$.data.id").value(userId))
+                .andExpect(jsonPath("$.data.email").value("mockUser@example.com"))
+                .andExpect(jsonPath("$.data.username").value("mockUser"));
+        Mockito.verify(userMapper, Mockito.times(1)).toDto(Mockito.any(User.class)); // not executed again because of caching
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = { "user" })
     public void testGetUser_caseNotFound() throws Exception {
         Integer userId = 999;
 
@@ -275,6 +294,7 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @Order(1) // to detect flaky tests
     @WithMockUser(username = "user", roles = { "user" })
     public void testUpdateUser() throws Exception {
         String email = "updatedUser@example.com";
@@ -303,7 +323,7 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
         mockMvc.perform(patch("/api/users/" + userId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(createUserJson(email, username, password)))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk()) // cache.doPut
                 .andExpect(jsonPath("$.data.id").value(userId))
                 .andExpect(jsonPath("$.data.email").value(email))
                 .andExpect(jsonPath("$.data.username").value(username));
@@ -313,7 +333,7 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
         mockMvc.perform(get("/api/users?id=" + userId))
                 .andExpect(res -> Assumptions.assumeTrue(res.getResponse().getStatus() == 200)) // skip if failed
                 .andExpect(jsonPath("$.data.length()").value(1));
-        mockMvc.perform(get("/api/users/" + userId))
+        mockMvc.perform(get("/api/users/" + userId)) // from cache.doGet
                 .andExpect(res -> Assumptions.assumeTrue(res.getResponse().getStatus() == 200)) // skip if failed
                 .andExpect(jsonPath("$.data.id").value(userId))
                 .andExpect(jsonPath("$.data.email").value(email))
@@ -424,14 +444,14 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
         Integer userId = 2;
 
         mockMvc.perform(delete("/api/users/" + userId))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk()); // cache.doEvict
         assertAuditLogs("users", userId.longValue(), "UPDATE"); // soft-delete
 
         // double-check for data integrity after data manipulation
         mockMvc.perform(get("/api/users?id=" + userId))
                 .andExpect(res -> Assumptions.assumeTrue(res.getResponse().getStatus() == 200)) // skip if failed
                 .andExpect(jsonPath("$.data.length()").value(0));
-        mockMvc.perform(get("/api/users/" + userId))
+        mockMvc.perform(get("/api/users/" + userId)) // from database, not cache
                 .andExpect(status().isNotFound());
         mockMvc.perform(patch("/api/users/" + userId)
                 .contentType(MediaType.APPLICATION_JSON).content("{}"))
@@ -505,7 +525,7 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
         MvcResult result = mockMvc.perform(post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(createUserJson(email, username, password)))
-                .andExpect(status().isCreated())
+                .andExpect(status().isCreated()) // cache.doPut
                 .andExpect(jsonPath("$.data.email").value(email))
                 .andExpect(jsonPath("$.data.username").value(username))
                 .andReturn();
@@ -520,7 +540,7 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
 
         // get the user to verify creation
         mockMvc.perform(get("/api/users/" + userId))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk()) // from cache.doGet
                 .andExpect(jsonPath("$.data.id").value(userId))
                 .andExpect(jsonPath("$.data.email").value(email))
                 .andExpect(jsonPath("$.data.username").value(username));
@@ -530,7 +550,7 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
         mockMvc.perform(patch("/api/users/" + userId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(createUserJson(null, updatedUsername, null)))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk()) // cache.doPut
                 .andExpect(jsonPath("$.data.id").value(userId))
                 .andExpect(jsonPath("$.data.email").value(email))
                 .andExpect(jsonPath("$.data.username").value(updatedUsername));
@@ -543,14 +563,14 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
 
         // get the user to verify update
         mockMvc.perform(get("/api/users/" + userId))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk()) // from cache.doGet
                 .andExpect(jsonPath("$.data.id").value(userId))
                 .andExpect(jsonPath("$.data.email").value(email))
                 .andExpect(jsonPath("$.data.username").value(updatedUsername));
 
         // then, delete the user
         mockMvc.perform(delete("/api/users/" + userId)) // soft-delete
-                .andExpect(status().isOk());
+                .andExpect(status().isOk()); // cache.doEvict
         assertAuditLogs("users", userId.longValue(), "UPDATE");
 
         // try to find the user after deletion
@@ -560,7 +580,7 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
         
         // try to get the user after deletion
         mockMvc.perform(get("/api/users/" + userId))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound()); // from database, not cache
 
         // try to update the user after deletion
         mockMvc.perform(patch("/api/users/" + userId)
