@@ -115,7 +115,11 @@ public class RateLimitingIntegrationTest extends BaseIntegrationTest {
     @WithMockUser
     public void testRateLimiting_caseInsensitiveIp() throws Exception {
         // first, send a request from one IP
-        mockMvc.perform(get("/api/draft").header("X-Forwarded-For", "192.168.0.1"))
+        mockMvc.perform(get("/api/draft")
+            .with(request -> {
+                request.setRemoteAddr("127.0.0.1");
+                return request;
+            }))
             .andExpect(status().isOk())
             .andExpect(result -> {
                 String remaining = result.getResponse().getHeader("X-Rate-Limit-Remaining");
@@ -123,7 +127,11 @@ public class RateLimitingIntegrationTest extends BaseIntegrationTest {
             });
 
         // then, send a request from another IP
-        mockMvc.perform(get("/api/draft").header("X-Forwarded-For", "192.168.0.2"))
+        mockMvc.perform(get("/api/draft")
+            .with(request -> {
+                request.setRemoteAddr("127.0.0.2");
+                return request;
+            }))
             .andExpect(status().isOk())
             .andExpect(result -> {
                 String remaining = result.getResponse().getHeader("X-Rate-Limit-Remaining");

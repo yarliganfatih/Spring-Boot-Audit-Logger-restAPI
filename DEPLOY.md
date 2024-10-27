@@ -65,10 +65,18 @@ Send your project files to the server and build the Docker image there. This con
 1.  **Transfer Files:** Copy your project folder to the server (using SCP, FileZilla, or Git Clone).
 2.  **Run with Build:**
     On the server, inside the project folder, run:
+    
+    **For Standard Single-Instance Deployment:**
     ```bash
     docker-compose up -d --build
     ```
-    *Note: Ensure your `docker-compose.yml` on the server has `build: .` instead of `image: ...`.*
+
+    **For Load Balanced Deployment (Nginx + Multi-instance):**
+    ```bash
+    docker-compose -f docker-compose-lb.yml up -d --build
+    ```
+
+    *Note: Ensure your `docker-compose.yml` (or `docker-compose-lb.yml`) on the server has `build: .` instead of `image: ...`.*
 
 ### Option B: Transfer Image as File (docker save/load)
 Build the image locally, save it significantly as a `.tar` file, upload it, and load it on the server. Best for air-gapped servers (no internet).
@@ -83,14 +91,22 @@ Build the image locally, save it significantly as a `.tar` file, upload it, and 
     ```
 
 2.  **Transfer File:**
-    Upload `restapi_image.tar` and `docker-compose.yml` to your server.
+    Upload `restapi_image.tar` and `docker-compose.yml` (or `docker-compose-lb.yml`) to your server.
 
 3.  **Load & Run (Server):**
     ```bash
     # Load the image from the file
     docker load -i restapi_image.tar
-
-    # Update docker-compose.yml to use 'image: restapi_offline:latest'
-    # Then run:
+    ```
+    
+    3.1. **For Standard Single-Instance Deployment:**
+    Update `docker-compose.yml` to use `image: restapi_offline:latest` instead of `build: .`
+    ```bash
     docker-compose up -d
+    ```
+
+    3.2. **For Load Balanced Deployment:**
+    Update `docker-compose-lb.yml` to use `image: restapi_offline:latest` for both `api-instance-1` and `api-instance-2` instead of `build: .`
+    ```bash
+    docker-compose -f docker-compose-lb.yml up -d
     ```

@@ -18,7 +18,7 @@ public class RateLimitInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) throws Exception {
-        String clientIp = getClientIP(request);
+        String clientIp = request.getRemoteAddr(); // XFF handling by SERVER_FORWARD_HEADERS_STRATEGY
         Bucket tokenBucket = rateLimitingService.resolveBucket(clientIp);
         ConsumptionProbe probe = tokenBucket.tryConsumeAndReturnRemaining(1);
 
@@ -31,13 +31,5 @@ public class RateLimitInterceptor implements HandlerInterceptor {
             response.sendError(HttpStatus.TOO_MANY_REQUESTS.value(), "You have exhausted your API Request Quota");
             return false;
         }
-    }
-
-    private String getClientIP(HttpServletRequest request) {
-        String xffHeader = request.getHeader("X-Forwarded-For");
-        if (xffHeader == null) {
-            return request.getRemoteAddr();
-        }
-        return xffHeader.split(",")[0];
     }
 }
