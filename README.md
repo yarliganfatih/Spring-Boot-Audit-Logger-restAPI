@@ -5,7 +5,7 @@ Postman Documentation => https://documenter.getpostman.com/view/14869995/2sA35Jy
 ## Get Started
 Clone repository and run this command :
 ```
-docker-compose up -d mysqldb
+docker-compose up -d mysqldb redis
 ./mvnw spring-boot:run
 ```
 

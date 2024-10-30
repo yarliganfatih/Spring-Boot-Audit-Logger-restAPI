@@ -1,29 +1,50 @@
 package com.draft.restapi.common.ratelimit;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
+import io.github.bucket4j.BucketConfiguration;
 import io.github.bucket4j.Refill;
+import io.github.bucket4j.distributed.proxy.ProxyManager;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class RateLimitingService {
 
-    private final Cache<String, Bucket> cache = Caffeine.newBuilder()
-            .expireAfterAccess(Duration.ofHours(1))
-            .build();
+    @Value("${spring.application.ratelimit.capacity:20}")
+    private int capacity;
 
-    public Bucket resolveBucket(String ipAddress) {
-        return cache.get(ipAddress, this::newBucket);
+    @Value("${spring.application.ratelimit.time-to-refill:60s}")
+    private String timeToRefill;
+
+    private final ProxyManager<byte[]> proxyManager;
+
+    private final ConcurrentHashMap<String, Bucket> localBuckets = new ConcurrentHashMap<>();
+
+    public RateLimitingService(@Autowired(required = false) ProxyManager<byte[]> proxyManager) {
+        this.proxyManager = proxyManager;
     }
 
-    private Bucket newBucket(String ipAddress) {
-        // Defines the rate limit: 20 requests per minute
-        return Bucket.builder()
-                .addLimit(Bandwidth.classic(20, Refill.intervally(20, Duration.ofMinutes(1))))
+    public Bucket resolveBucket(String ipAddress) {
+        Duration refillDuration = Duration.parse("PT" + timeToRefill.toUpperCase());
+        BucketConfiguration configuration = BucketConfiguration.builder()
+                .addLimit(Bandwidth.classic(capacity, Refill.intervally(capacity, refillDuration)))
                 .build();
+
+        if (proxyManager != null) {
+            return proxyManager.builder().build(ipAddress.getBytes(StandardCharsets.UTF_8), configuration);
+        } else {
+            return localBuckets.computeIfAbsent(ipAddress, key -> Bucket.builder().addLimit(Bandwidth.classic(capacity, Refill.intervally(capacity, refillDuration))).build());
+        }
+    }
+
+    public void clearLocalBuckets() {
+        this.localBuckets.clear();
     }
 }

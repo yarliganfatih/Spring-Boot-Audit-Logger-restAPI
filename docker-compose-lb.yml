@@ -12,18 +12,26 @@ services:
     volumes:
       - db_data:/var/lib/mysql
 
+  redis:
+    image: redis:alpine
+    container_name: redis_cache
+    ports:
+      - "6379:6379"
+
   api-instance-1:
     build: .
     container_name: restapi_app_1
     restart: on-failure
     depends_on:
       - mysqldb
+      - redis
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/restapi?useSSL=false&serverTimezone=UTC&createDatabaseIfNotExist=true
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SERVER_FORWARD_HEADERS_STRATEGY: framework # for X-Forwarded-For
+      SPRING_REDIS_HOST: redis
 
   api-instance-2:
     build: .
@@ -31,12 +39,14 @@ services:
     restart: on-failure
     depends_on:
       - mysqldb
+      - redis
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/restapi?useSSL=false&serverTimezone=UTC&createDatabaseIfNotExist=true
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SERVER_FORWARD_HEADERS_STRATEGY: framework # for X-Forwarded-For
+      SPRING_REDIS_HOST: redis
 
   # Nginx Load Balancer
   nginx:

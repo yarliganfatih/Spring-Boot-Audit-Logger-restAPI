@@ -12,6 +12,12 @@ services:
     volumes:
       - db_data:/var/lib/mysql
 
+  redis:
+    image: redis:alpine
+    container_name: redis_cache
+    ports:
+      - "6379:6379"
+
   app:
     build: .
     container_name: restapi_app
@@ -20,11 +26,13 @@ services:
       - "8080:8080"
     depends_on:
       - mysqldb
+      - redis
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/restapi?useSSL=false&serverTimezone=UTC&createDatabaseIfNotExist=true
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_REDIS_HOST: redis
 
 volumes:
   db_data:

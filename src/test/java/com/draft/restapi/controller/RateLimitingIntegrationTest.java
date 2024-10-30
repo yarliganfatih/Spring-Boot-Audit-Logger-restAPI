@@ -5,33 +5,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 
-import io.github.bucket4j.Bandwidth;
-import io.github.bucket4j.Bucket;
-import io.github.bucket4j.Refill;
+import com.draft.restapi.RestapiApplication;
 
+@SpringBootTest(classes = RestapiApplication.class, properties = { 
+        "spring.application.ratelimit.capacity=2",
+        "spring.application.ratelimit.time-to-refill=3s" })
 public class RateLimitingIntegrationTest extends BaseIntegrationTest {
-
-    private Map<String, Bucket> testBuckets;
-
-    @BeforeEach
-    public void setupRateLimit() {
-        testBuckets = new HashMap<>();
-        Mockito.when(rateLimitingService.resolveBucket(Mockito.anyString())).thenAnswer(invocation -> {
-            String ipAddress = invocation.getArgument(0);
-            return testBuckets.computeIfAbsent(ipAddress, key -> Bucket.builder()
-                    .addLimit(Bandwidth.classic(2, Refill.intervally(2, Duration.ofSeconds(3))))
-                    .build());
-        });
-    }
 
     @Test
     @WithMockUser

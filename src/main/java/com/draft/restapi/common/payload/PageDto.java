@@ -7,11 +7,14 @@ import org.springframework.data.domain.Page;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.List;
+import java.io.Serializable;
 
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PageDto<T> {
+public class PageDto<T> implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private List<T> content;
     private int pageNumber;
     private int pageSize;

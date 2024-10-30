@@ -14,6 +14,7 @@ import org.mapstruct.ReportingPolicy;
 public interface UserMapper {
 
     @Mapping(target = "password", ignore = true)
+    @Mapping(target = "id", ignore = true)
     User toEntity(UserDto userDto);
 
     User toEntity(UserDto.Filter filter);

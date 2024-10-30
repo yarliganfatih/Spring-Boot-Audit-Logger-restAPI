@@ -11,11 +11,13 @@ import javax.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @Getter
 @Setter
-public class UserDto {
+public class UserDto implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Integer id;
 
     @NotBlank(groups = {ValidationGroups.OnCreate.class})
@@ -36,7 +38,8 @@ public class UserDto {
     
     @Getter
     @Setter
-    public static class Filter {
+    public static class Filter implements Serializable {
+        private static final long serialVersionUID = 1L;
         private Integer id;
         private String username;
         private String email;
