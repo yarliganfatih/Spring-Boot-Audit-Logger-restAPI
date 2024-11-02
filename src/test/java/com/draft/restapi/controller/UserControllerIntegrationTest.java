@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.HashMap;
 
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
@@ -31,6 +33,9 @@ import com.jayway.jsonpath.JsonPath;
 @Sql(scripts = {"classpath:db/sql/insert-user-data.sql" }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(scripts = {"classpath:db/sql/insert-user-data-rollback.sql" }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class UserControllerIntegrationTest extends BaseIntegrationTest {
+
+    @SpyBean
+    private CacheManager cacheManager;
 
     @SpyBean
     private UserMapper userMapper;
@@ -281,6 +286,26 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.data.email").value("mockUser@example.com"))
                 .andExpect(jsonPath("$.data.username").value("mockUser"));
         Mockito.verify(userMapper, Mockito.times(1)).toDto(Mockito.any(User.class)); // not executed again because of caching
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = { "user" })
+    public void testGetUser_fromCache_redisFailover() throws Exception {
+        Integer userId = 2;
+
+        // simulate redis failure for caching is not usable, fallback to normal process (Source of Truth)
+        Cache mockCache = Mockito.mock(Cache.class);
+        Mockito.when(cacheManager.getCache(Mockito.anyString())).thenReturn(mockCache);
+        Mockito.when(mockCache.get(Mockito.any())).thenThrow(new RuntimeException("Redis connection timed out"));
+        Mockito.doThrow(new RuntimeException("Redis connection timed out")).when(mockCache).put(Mockito.any(), Mockito.any());
+
+        mockMvc.perform(get("/api/users/" + userId))
+                .andExpect(status().isOk()); // cache.doPut is not executed due to redis failure
+        Mockito.verify(userMapper, Mockito.times(1)).toDto(Mockito.any(User.class)); // executed once in service layer
+
+        mockMvc.perform(get("/api/users/" + userId))
+                .andExpect(status().isOk()); // from database, not cache
+        Mockito.verify(userMapper, Mockito.times(2)).toDto(Mockito.any(User.class)); // executed again because of non-cachable
     }
 
     @Test
