@@ -1,6 +1,5 @@
 package com.draft.restapi.common.ratelimit;
 
-import io.github.bucket4j.Bucket;
 import io.github.bucket4j.ConsumptionProbe;
 import lombok.RequiredArgsConstructor;
 
@@ -24,15 +23,7 @@ public class RateLimitInterceptor implements HandlerInterceptor {
     public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) throws Exception {
         String clientIp = request.getRemoteAddr(); // XFF handling by SERVER_FORWARD_HEADERS_STRATEGY
 
-        ConsumptionProbe probe;
-        try {
-            Bucket tokenBucket = rateLimitingService.resolveBucket(clientIp);
-            probe = tokenBucket.tryConsumeAndReturnRemaining(1);
-        } catch (Exception e) {
-            LOGGER.warn("Redis rate limiting failed for IP: {}. Falling back to local bucket.", clientIp);
-            Bucket localBucket = rateLimitingService.resolveLocalBucket(clientIp);
-            probe = localBucket.tryConsumeAndReturnRemaining(1);
-        }
+        ConsumptionProbe probe = rateLimitingService.consumeToken(clientIp);
 
         if (probe.isConsumed()) {
             response.addHeader("X-Rate-Limit-Remaining", String.valueOf(probe.getRemainingTokens()));

@@ -5,6 +5,8 @@ import io.github.bucket4j.Bucket;
 import io.github.bucket4j.BucketConfiguration;
 import io.github.bucket4j.Refill;
 import io.github.bucket4j.distributed.proxy.ProxyManager;
+import io.github.bucket4j.ConsumptionProbe;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -25,7 +27,7 @@ public class RateLimitingService {
     private int capacity;
 
     @Value("${spring.application.ratelimit.time-to-refill:60s}")
-    private String timeToRefill;
+    private Duration timeToRefill;
 
     private final ObjectProvider<ProxyManager<byte[]>> proxyManagerProvider;
 
@@ -35,29 +37,33 @@ public class RateLimitingService {
         this.proxyManagerProvider = proxyManagerProvider;
     }
 
+    @CircuitBreaker(name = "redisRateLimiter", fallbackMethod = "consumeFallback")
+    public ConsumptionProbe consumeToken(String ipAddress) {
+        Bucket tokenBucket = resolveBucket(ipAddress);
+        return tokenBucket.tryConsumeAndReturnRemaining(1);
+    }
+
+    public ConsumptionProbe consumeFallback(String ipAddress, Exception e) {
+        LOGGER.warn("Redis rate limiting failed for IP: {}. Falling back to local bucket.", ipAddress);
+        Bucket localBucket = resolveLocalBucket(ipAddress);
+        return localBucket.tryConsumeAndReturnRemaining(1);
+    }
+
+    private Bandwidth getLimit() {
+        return Bandwidth.classic(capacity, Refill.intervally(capacity, timeToRefill));
+    }
+
     public Bucket resolveBucket(String ipAddress) {
-        Duration refillDuration = Duration.parse("PT" + timeToRefill.toUpperCase());
-        BucketConfiguration configuration = BucketConfiguration.builder()
-                .addLimit(Bandwidth.classic(capacity, Refill.intervally(capacity, refillDuration)))
-                .build();
-
-        ProxyManager<byte[]> proxyManager = null;
-        try {
-            proxyManager = proxyManagerProvider.getIfAvailable();
-        } catch (Exception e) {
-            LOGGER.debug("Redis ProxyManager is not available, falling back to local buckets. Reason: {}", e.getMessage());
-        }
-
+        ProxyManager<byte[]> proxyManager = proxyManagerProvider.getIfAvailable();
         if (proxyManager != null) {
-            return proxyManager.builder().build(ipAddress.getBytes(StandardCharsets.UTF_8), configuration);
-        } else {
-            return resolveLocalBucket(ipAddress);
+            BucketConfiguration config = BucketConfiguration.builder().addLimit(getLimit()).build();
+            return proxyManager.builder().build(ipAddress.getBytes(StandardCharsets.UTF_8), config);
         }
+        return resolveLocalBucket(ipAddress);
     }
 
     public Bucket resolveLocalBucket(String ipAddress) {
-        Duration refillDuration = Duration.parse("PT" + timeToRefill.toUpperCase());
-        return localBuckets.computeIfAbsent(ipAddress, key -> Bucket.builder().addLimit(Bandwidth.classic(capacity, Refill.intervally(capacity, refillDuration))).build());
+        return localBuckets.computeIfAbsent(ipAddress, k -> Bucket.builder().addLimit(getLimit()).build());
     }
 
     public void clearLocalBuckets() {

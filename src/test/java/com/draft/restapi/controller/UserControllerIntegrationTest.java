@@ -1,5 +1,6 @@
 package com.draft.restapi.controller;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -25,9 +27,13 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MvcResult;
 
 import com.draft.restapi.auth.mapper.UserMapper;
+import com.draft.restapi.common.cache.CircuitBreakerCache;
 import com.draft.restapi.auth.entity.User;
 import com.draft.restapi.auth.entity.dto.UserDto;
 import com.jayway.jsonpath.JsonPath;
+
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 
 @SuppressWarnings("null")
 @Sql(scripts = {"classpath:db/sql/insert-user-data.sql" }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -39,6 +45,9 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
 
     @SpyBean
     private UserMapper userMapper;
+
+    @Autowired
+    private CircuitBreakerRegistry circuitBreakerRegistry;
 
     private String createUserJson( String email, String username, String password) {
         Map<String, String> request = new HashMap<>();
@@ -306,6 +315,52 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
         mockMvc.perform(get("/api/users/" + userId))
                 .andExpect(status().isOk()); // from database, not cache
         Mockito.verify(userMapper, Mockito.times(2)).toDto(Mockito.any(User.class)); // executed again because of non-cachable
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = { "user" })
+    // Controller -> cache.doGet -> service.getUserById -> cache.doPut => Response (200)
+    public void testGetUser_fromCache_redisFailover_withCircuitBreaker() throws Exception {
+        Integer userId = 2;
+        CircuitBreaker circuitBreaker = circuitBreakerRegistry.circuitBreaker("redisCache");
+        Assumptions.assumeTrue(CircuitBreaker.State.CLOSED == circuitBreaker.getState());
+
+        // simulate redis failure with circuit breaking for caching is not usable, fallback to normal process (Source of Truth)
+        Cache mockCache = Mockito.mock(Cache.class);
+        Cache circuitBreakerCache = new CircuitBreakerCache(mockCache, circuitBreaker);
+        Mockito.when(cacheManager.getCache(Mockito.anyString())).thenReturn(circuitBreakerCache);
+        Mockito.when(mockCache.get(Mockito.any())).thenThrow(new RuntimeException("Redis connection timed out"));
+        Mockito.doThrow(new RuntimeException("Redis connection timed out")).when(mockCache).put(Mockito.any(), Mockito.any());
+
+        try {
+            // trigger consecutive failures with 5 requests to reach redisCache.minimum-number-of-calls (10) (5+5)
+            for (int i = 0; i < 5; i++) {
+                mockMvc.perform(get("/api/users/" + userId)); // each request calls 1 cache.doGet and 1 cache.doPut
+            }
+            Assertions.assertEquals(CircuitBreaker.State.OPEN, circuitBreaker.getState());
+            verifyCachableWithCallTimes(mockCache, 5, 5, 5);
+
+            // caching methods should NOT be called since circuit breaker is OPEN
+            mockMvc.perform(get("/api/users/" + userId)); // short-circuited
+            Assertions.assertEquals(CircuitBreaker.State.OPEN, circuitBreaker.getState());
+            verifyCachableWithCallTimes(mockCache, 5, 6, 5);
+
+            // wait for redisCache.wait-duration-in-open-state (3s)
+            Thread.sleep(3000);
+            
+            // caching methods should be called since circuit breaker is NOT OPEN
+            mockMvc.perform(get("/api/users/" + userId)); // not short-circuited
+            Assertions.assertEquals(CircuitBreaker.State.HALF_OPEN, circuitBreaker.getState());
+            verifyCachableWithCallTimes(mockCache, 6, 7, 6);
+        } finally {
+            circuitBreaker.transitionToClosedState();
+        }
+    }
+
+    private void verifyCachableWithCallTimes(Cache mockCache, int doGetCount, int invokeCount, int doPutCount) {
+        Mockito.verify(mockCache, Mockito.times(doGetCount)).get(Mockito.any()); // return cached data if exists
+        Mockito.verify(userMapper, Mockito.times(invokeCount)).toDto(Mockito.any(User.class)); // get daha from DB
+        Mockito.verify(mockCache, Mockito.times(doPutCount)).put(Mockito.any(), Mockito.any()); // save data to cache
     }
 
     @Test

@@ -5,8 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -17,6 +19,8 @@ import io.github.bucket4j.BucketConfiguration;
 import io.github.bucket4j.distributed.BucketProxy;
 import io.github.bucket4j.distributed.proxy.ProxyManager;
 import io.github.bucket4j.distributed.proxy.RemoteBucketBuilder;
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 
 @SuppressWarnings("unchecked")
 @SpringBootTest(classes = RestapiApplication.class, properties = { 
@@ -26,6 +30,9 @@ public class RateLimitingIntegrationTest extends BaseIntegrationTest {
 
     @MockBean
     private ProxyManager<byte[]> proxyManager;
+
+    @Autowired
+    private CircuitBreakerRegistry circuitBreakerRegistry;
 
     @Test
     @WithMockUser
@@ -178,5 +185,44 @@ public class RateLimitingIntegrationTest extends BaseIntegrationTest {
                 String remaining = result.getResponse().getHeader("X-Rate-Limit-Remaining");
                 assertEquals("1", remaining);
             });
+    }
+
+    @Test
+    @WithMockUser
+    public void testRateLimiting_redisFailover_withCircuitBreaker() throws Exception {
+        CircuitBreaker circuitBreaker = circuitBreakerRegistry.circuitBreaker("redisRateLimiter");
+        Assumptions.assumeTrue(CircuitBreaker.State.CLOSED == circuitBreaker.getState());
+
+        // simulate Redis failure with circuit breaking during consumption, fallback to local bucket
+        RemoteBucketBuilder<byte[]> mockBuilder = Mockito.mock(RemoteBucketBuilder.class);
+        BucketProxy mockBucket = Mockito.mock(BucketProxy.class);
+        Mockito.when(proxyManager.builder()).thenReturn(mockBuilder);
+        Mockito.when(mockBuilder.build(Mockito.any(byte[].class), Mockito.any(BucketConfiguration.class))).thenReturn(mockBucket);
+        Mockito.when(mockBucket.tryConsumeAndReturnRemaining(1))
+               .thenThrow(new RuntimeException("Redis connection timed out"));
+
+        try {
+            // trigger consecutive failures with 5 requests to reach redisRateLimiter.minimum-number-of-calls (5)
+            for (int i = 0; i < 5; i++) {
+                mockMvc.perform(get("/api/draft"));
+            }
+            assertEquals(CircuitBreaker.State.OPEN, circuitBreaker.getState());
+            Mockito.verify(mockBucket, Mockito.times(5)).tryConsumeAndReturnRemaining(1);
+
+            // redis bucket should NOT be called since circuit breaker is OPEN
+            mockMvc.perform(get("/api/draft")); // short-circuited
+            assertEquals(CircuitBreaker.State.OPEN, circuitBreaker.getState());
+            Mockito.verify(mockBucket, Mockito.times(5)).tryConsumeAndReturnRemaining(1);
+
+            // wait for redisRateLimiter.wait-duration-in-open-state (3s)
+            Thread.sleep(3000);
+
+            // redis bucket should be called since circuit breaker is NOT OPEN
+            mockMvc.perform(get("/api/draft")); // not short-circuited
+            assertEquals(CircuitBreaker.State.HALF_OPEN, circuitBreaker.getState());
+            Mockito.verify(mockBucket, Mockito.times(6)).tryConsumeAndReturnRemaining(1);
+        } finally {
+            circuitBreaker.transitionToClosedState();
+        }
     }
 }
