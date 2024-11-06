@@ -2,12 +2,16 @@ package com.draft.restapi.common.payload;
 
 import lombok.Getter;
 import lombok.Setter;
+
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
 @Setter
-public class ApiResponse<T> {
+public class ApiResponse<T> implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private boolean success;
     private String message;
     private T data;

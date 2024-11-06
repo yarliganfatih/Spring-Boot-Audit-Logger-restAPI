@@ -6,7 +6,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -20,9 +20,9 @@ public class RestapiApplication extends SpringBootServletInitializer {
         return application.sources(RestapiApplication.class);
     }
 	
-    @RequestMapping("/")
-    String running() {
-        return "restAPI is running!";
+    @GetMapping("/")
+    Boolean healthCheck() {
+        return true;
     }
 
 	public static void main(String[] args) {

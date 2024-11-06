@@ -1,6 +1,8 @@
 package com.draft.restapi.common.payload;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.domain.Page;
 
@@ -11,6 +13,8 @@ import java.io.Serializable;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PageDto<T> implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -21,8 +25,6 @@ public class PageDto<T> implements Serializable {
     private long totalElements;
     private int totalPages;
     private boolean last;
-
-    public PageDto() {}
 
     public PageDto(Page<T> page) {
         this.content = page.getContent();

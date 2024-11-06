@@ -8,11 +8,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class AuditorBaseEntity {
 	private Integer id = 0; // must be assignable to Serializable!
 
@@ -24,10 +28,6 @@ public class AuditorBaseEntity {
 
 	@JsonIgnore
 	private JsonNode jsonObject;
-
-	public void setJsonObject(JsonNode jsonObject) {
-		this.jsonObject = jsonObject;
-	}
 
 	public JsonNode transformJsonObject() {
 		ObjectMapper mapper = new ObjectMapper();

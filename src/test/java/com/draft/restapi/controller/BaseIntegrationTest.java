@@ -59,7 +59,7 @@ public abstract class BaseIntegrationTest {
     }
 
     protected void assertAuditLogs(String entityName, Long entityId, String expectedOperation) {
-        List<EntityLog> logs = entityLogRepository.getEntitiyLogs(entityName, entityId);
+        List<EntityLog> logs = entityLogRepository.getEntityLogs(entityName, entityId);
         assertNotNull(logs);
         assertTrue(logs.size() > 0, "Should have audit logs");
         boolean hasOperation = logs.stream().anyMatch(log -> expectedOperation.equals(log.getOperation()));

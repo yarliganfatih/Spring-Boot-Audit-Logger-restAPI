@@ -1,6 +1,7 @@
 package com.draft.restapi.auth.service.impl;
 
 import com.draft.restapi.auth.entity.dto.UserDto;
+import com.draft.restapi.auth.entity.dto.UserFilter;
 import com.draft.restapi.auth.mapper.UserMapper;
 import com.draft.restapi.auth.service.UserService;
 import com.draft.restapi.common.exception.ResourceNotFoundException;
@@ -34,7 +35,7 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     @Override
-    public PageDto<UserDto> getAllUsers(UserDto.Filter filter, Pageable pageable) {
+    public PageDto<UserDto> getAllUsers(UserFilter filter, Pageable pageable) {
         User probe = userMapper.toEntity(filter);
         probe.setDeleted(false);
         ExampleMatcher matcher = ExampleMatcher.matching()

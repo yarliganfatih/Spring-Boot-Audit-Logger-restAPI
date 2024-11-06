@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import com.draft.restapi.auth.entity.User;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,7 +21,6 @@ import lombok.Setter;
 @Entity
 @Table(name = "audit_error_logs")
 public class ErrorLog implements Serializable {
-
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -63,7 +63,7 @@ public class ErrorLog implements Serializable {
 	@Column(name = "occurred_at")
 	@Temporal(TemporalType.TIMESTAMP)
 	@CreationTimestamp
-	private java.util.Date occurredAt;
+	private Date occurredAt;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "occurred_by_user_id", nullable = true)

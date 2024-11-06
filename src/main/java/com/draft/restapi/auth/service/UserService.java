@@ -1,11 +1,12 @@
 package com.draft.restapi.auth.service;
 
 import com.draft.restapi.auth.entity.dto.UserDto;
+import com.draft.restapi.auth.entity.dto.UserFilter;
 import com.draft.restapi.common.payload.PageDto;
 import org.springframework.data.domain.Pageable;
 
 public interface UserService {
-    PageDto<UserDto> getAllUsers(UserDto.Filter filter, Pageable pageable);
+    PageDto<UserDto> getAllUsers(UserFilter filter, Pageable pageable);
 
     UserDto getUserById(Integer userId);
 

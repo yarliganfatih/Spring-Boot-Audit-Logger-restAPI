@@ -13,6 +13,6 @@ import com.draft.restapi.audit.entity.UpdateLog;
 public interface UpdateLogRepository extends JpaRepository<UpdateLog, Integer> {
 
     @Query(value = "SELECT * FROM audit_update_logs aul JOIN audit_entity_logs ael ON ael.id = aul.log_id WHERE ael.entity_name = :entity_name AND ael.entity_id = :entity_id AND aul.path = :path", nativeQuery = true)
-    public List<UpdateLog> getEntitiyPathUpdateLogs(@Param("entity_name") String entity_name, @Param("entity_id") Long entity_id, @Param("path") String path);
+    public List<UpdateLog> getEntityPathUpdateLogs(@Param("entity_name") String entityName, @Param("entity_id") Long entityId, @Param("path") String path);
 
 }

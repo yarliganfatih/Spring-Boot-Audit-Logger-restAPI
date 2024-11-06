@@ -63,7 +63,7 @@ public class User extends AuditorBaseEntity implements Serializable {
         inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
     private List<Role> roles;
 
-    @OneToMany(mappedBy = "operated_by", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "operatedBy", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EntityLog> entityLogs;
 	
     public User() {

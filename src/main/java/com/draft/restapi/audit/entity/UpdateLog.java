@@ -5,16 +5,19 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.Serializable;
-import lombok.Getter;
-import lombok.Setter;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "audit_update_logs")
 public class UpdateLog implements Serializable {
-
 	private static final long serialVersionUID = 2L;
 
 	@Id
@@ -31,12 +34,9 @@ public class UpdateLog implements Serializable {
 
 	@Column(name = "path")
 	private String path;
-	
+
 	@Column(name = "previous_value")
 	private String previousValue;
-	
-    public UpdateLog() {
-    }
 
     public UpdateLog(EntityLog entityLog, String op, String path, String previousValue) {
 		this.entityLog = entityLog;

@@ -74,7 +74,7 @@ public class AuditListener {
     @Transactional
     public void postOperation(AuditorBaseEntity entity) {
         EntityLog entityLog = entity.getEntityLog();
-        entityLog.setEntity_id(entity.getId()); // for PostPersist
+        entityLog.setEntityId(entity.getId()); // for PostPersist
         entityLog = entityLogRepository.save(entityLog);
     }
 }

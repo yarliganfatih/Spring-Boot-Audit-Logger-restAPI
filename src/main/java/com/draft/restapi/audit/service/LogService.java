@@ -8,7 +8,7 @@ import com.draft.restapi.audit.entity.UpdateLog;
 public interface LogService {
     List<EntityLog> getEntities();
 
-    List<EntityLog> getEntitiyLogs(String entityName, Long entityId);
+    List<EntityLog> getEntityLogs(String entityName, Long entityId);
 
-    List<UpdateLog> getEntitiyPathUpdateLogs(String entityName, Long entityId, String path);
+    List<UpdateLog> getEntityPathUpdateLogs(String entityName, Long entityId, String path);
 }

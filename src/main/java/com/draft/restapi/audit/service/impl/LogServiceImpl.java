@@ -26,12 +26,12 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public List<EntityLog> getEntitiyLogs(String entityName, Long entityId) {
-        return entityLogRepository.getEntitiyLogs(entityName, entityId);
+    public List<EntityLog> getEntityLogs(String entityName, Long entityId) {
+        return entityLogRepository.getEntityLogs(entityName, entityId);
     }
 
     @Override
-    public List<UpdateLog> getEntitiyPathUpdateLogs(String entityName, Long entityId, String path) {
-        return updateLogRepository.getEntitiyPathUpdateLogs(entityName, entityId, path);
+    public List<UpdateLog> getEntityPathUpdateLogs(String entityName, Long entityId, String path) {
+        return updateLogRepository.getEntityPathUpdateLogs(entityName, entityId, path);
     }
 }

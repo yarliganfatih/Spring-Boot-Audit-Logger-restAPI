@@ -8,6 +8,8 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
+import java.io.Serializable;
+
 import javax.validation.ConstraintViolation;
 
 import com.draft.restapi.common.enums.ConstraintPattern;
@@ -16,62 +18,68 @@ import com.draft.restapi.common.exception.ForeignKeyException;
 import com.draft.restapi.common.exception.NotNullableException;
 import com.draft.restapi.common.helper.RegexHelper;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class ValidationError {
+@AllArgsConstructor
+@NoArgsConstructor
+public class ValidationError implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private String field;
     private Object rejectedValue;
     private String code;
     private String message;
 
     public ValidationError(FieldError fieldError) {
-        this.field = fieldError.getField();
-        this.rejectedValue = fieldError.getRejectedValue();
-        this.code = fieldError.getCode();
-        this.message = fieldError.getDefaultMessage();
+        this.setField(fieldError.getField());
+        this.setRejectedValue(fieldError.getRejectedValue());
+        this.setCode(fieldError.getCode());
+        this.setMessage(fieldError.getDefaultMessage());
         if (fieldError.contains(TypeMismatchException.class)) {
             customizeErrorMsg(fieldError.unwrap(TypeMismatchException.class));
         }
     }
 
     public ValidationError(ConstraintViolation<?> violation) {
-        this.field = violation.getPropertyPath().toString();
-        this.rejectedValue = violation.getInvalidValue();
-        this.code = violation.getConstraintDescriptor().getAnnotation().annotationType().getSimpleName();
-        this.message = violation.getMessage();
+        this.setField(violation.getPropertyPath().toString());
+        this.setRejectedValue(violation.getInvalidValue());
+        this.setCode(violation.getConstraintDescriptor().getAnnotation().annotationType().getSimpleName());
+        this.setMessage(violation.getMessage());
     }
 
     public ValidationError(PropertyReferenceException ex) {
-        this.field = "sort";
-        this.rejectedValue = ex.getPropertyName();
-        this.code = "invalidProperty";
-        this.message = ex.getMessage();
+        this.setField("sort");
+        this.setRejectedValue(ex.getPropertyName());
+        this.setCode("invalidProperty");
+        this.setMessage(ex.getMessage());
     }
 
     public ValidationError(DuplicateKeyException duplicateKeyEx) {
-        this.setFieldByEx(duplicateKeyEx);
-        this.setRejectedValueByEx(duplicateKeyEx);
+        this.populateFieldFrom(duplicateKeyEx);
+        this.populateRejectedValueFrom(duplicateKeyEx);
         this.setCode("duplicate");
         this.setMessage("Value already exists");
     }
 
     public ValidationError(ForeignKeyException foreignKeyEx) {
-        this.setFieldByEx(foreignKeyEx);
+        this.populateFieldFrom(foreignKeyEx);
         this.setCode("referenceViolation");
         this.setMessage("Cannot be performed because of reference");
     }
 
     public ValidationError(NotNullableException notNullableEx) {
-        this.setFieldByEx(notNullableEx);
+        this.populateFieldFrom(notNullableEx);
         this.setCode("notNullable");
         this.setMessage("Missing required field");
     }
 
     public ValidationError(DataTruncationException truncationEx) {
-        this.setFieldByEx(truncationEx);
+        this.populateFieldFrom(truncationEx);
         this.setCode("dataTruncation");
         this.setMessage("Cannot exceed maximum length");
     }
@@ -89,25 +97,25 @@ public class ValidationError {
     }
 
     public ValidationError(MethodArgumentTypeMismatchException typeEx) {
-        this.field = typeEx.getName();
-        this.rejectedValue = typeEx.getValue();
-        this.code = "typeMismatch";
-        this.message = typeEx.getMessage();
+        this.setField(typeEx.getName());
+        this.setRejectedValue(typeEx.getValue());
+        this.setCode("typeMismatch");
+        this.setMessage(typeEx.getMessage());
         customizeErrorMsg(typeEx);
     }
 
-    public void customizeErrorMsg(TypeMismatchException typeEx) {
+    private void customizeErrorMsg(TypeMismatchException typeEx) {
         Class<?> requiredTypeClass = typeEx.getRequiredType();
         String requiredType = requiredTypeClass != null ? requiredTypeClass.getSimpleName() : "Unknown";
         this.message = "Invalid value for parameter, expected type: " + requiredType;
     }
 
-    public void setFieldByEx(DuplicateKeyException duplicateKeyEx) {
+    private void populateFieldFrom(DuplicateKeyException duplicateKeyEx) {
         org.hibernate.exception.ConstraintViolationException cvEx = (org.hibernate.exception.ConstraintViolationException) duplicateKeyEx.getCause();
         this.field = RegexHelper.extractKey(cvEx.getConstraintName(), ConstraintPattern.UNIQUE_KEY.getRegexPattern(), 2);
     }
 
-    public void setFieldByEx(ForeignKeyException foreignKeyEx) {
+    private void populateFieldFrom(ForeignKeyException foreignKeyEx) {
         org.hibernate.exception.ConstraintViolationException cvEx = (org.hibernate.exception.ConstraintViolationException) foreignKeyEx.getCause();
         String constraintName = cvEx.getConstraintName();
         if (constraintName == null) { // Fallback to parsing the message if constraintName is not available
@@ -118,7 +126,7 @@ public class ValidationError {
         this.field = tableName + "." + fieldName;
     }
 
-    public void setFieldByEx(NotNullableException notNullableEx) {
+    private void populateFieldFrom(NotNullableException notNullableEx) {
         String dbErrorMessage = notNullableEx.getMostSpecificCause().getMessage();
         this.field = RegexHelper.extractKey(dbErrorMessage, "Column '(.*?)' cannot be null", 1); // for MySQL
         if (this.field == null) { // Fallback to another pattern if the first one doesn't match
@@ -126,7 +134,7 @@ public class ValidationError {
         }
     }
 
-    public void setFieldByEx(DataTruncationException truncationEx) {
+    private void populateFieldFrom(DataTruncationException truncationEx) {
         String dbErrorMessage = truncationEx.getMostSpecificCause().getMessage();
         this.field = RegexHelper.extractKey(dbErrorMessage, "Data too long for column '(.*?)' at row", 1); // for MySQL
         if (this.field == null) { // Fallback to another pattern if the first one doesn't match
@@ -134,7 +142,7 @@ public class ValidationError {
         }
     }
 
-    public void setRejectedValueByEx(DuplicateKeyException duplicateKeyEx) {
+    private void populateRejectedValueFrom(DuplicateKeyException duplicateKeyEx) {
         String dbErrorMessage = duplicateKeyEx.getMostSpecificCause().getMessage();
         this.rejectedValue = RegexHelper.extractKey(dbErrorMessage, "Duplicate entry '(.*?)' for key", 1);
     }

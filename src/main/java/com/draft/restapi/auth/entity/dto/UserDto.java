@@ -8,13 +8,17 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserDto implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -35,13 +39,4 @@ public class UserDto implements Serializable {
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$", message = "Password must be at least 8 characters long and contain both letters and numbers")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
-    
-    @Getter
-    @Setter
-    public static class Filter implements Serializable {
-        private static final long serialVersionUID = 1L;
-        private Integer id;
-        private String username;
-        private String email;
-    }
 }

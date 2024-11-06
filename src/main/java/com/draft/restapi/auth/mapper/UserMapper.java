@@ -1,6 +1,7 @@
 package com.draft.restapi.auth.mapper;
 
 import com.draft.restapi.auth.entity.dto.UserDto;
+import com.draft.restapi.auth.entity.dto.UserFilter;
 import com.draft.restapi.auth.entity.User;
 
 import org.mapstruct.Mapper;
@@ -17,7 +18,7 @@ public interface UserMapper {
     @Mapping(target = "id", ignore = true)
     User toEntity(UserDto userDto);
 
-    User toEntity(UserDto.Filter filter);
+    User toEntity(UserFilter filter);
 
     UserDto toDto(User entity);
 
