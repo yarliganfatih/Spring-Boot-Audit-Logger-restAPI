@@ -27,6 +27,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
 				.sessionManagement().disable()
 				.authorizeRequests()
 					.antMatchers("/api/draft/**").permitAll()
+					.antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 					.antMatchers("/api/**").authenticated()
 			;
 	}
