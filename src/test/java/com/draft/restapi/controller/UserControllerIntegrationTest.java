@@ -206,6 +206,35 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(username = "user", roles = { "user" })
+    public void testCreateUser_withIdempotencyKey_preventsDuplicateAndReturnsCache() throws Exception {
+        String email = "createdUser@example.com";
+        String username = "createdUser";
+        String password = "createdUser123";
+        String idempotencyKey = "unique-idempotency-key-8899";
+
+        // first request locked the execution to prevent race condition
+        mockMvc.perform(post("/api/users")
+                .header("Idempotency-Key", idempotencyKey) // unique key for idempotency (by client app)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createUserJson(email, username, password)))
+                .andExpect(status().isCreated()) // cache.doPut
+                .andExpect(jsonPath("$.data.email").value(email))
+                .andExpect(jsonPath("$.data.username").value(username));
+        Mockito.verify(userMapper, Mockito.times(1)).toDto(Mockito.any(User.class)); // executed once in service layer
+
+        // duplicate calls return the cached result, concurrent callers wait for the first run instead of racing
+        mockMvc.perform(post("/api/users")
+                .header("Idempotency-Key", idempotencyKey) // same key as before
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createUserJson(email, username, password)))
+                .andExpect(status().isCreated()) // cache.doGet
+                .andExpect(jsonPath("$.data.email").value(email))
+                .andExpect(jsonPath("$.data.username").value(username));
+        Mockito.verify(userMapper, Mockito.times(1)).toDto(Mockito.any(User.class)); // not executed again because of caching
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = { "user" })
     public void testCreateUser_afterSoftDelete() throws Exception {
         Integer existingUserId = 2;
         String email = "mockUser@example.com"; // because of sending existing value

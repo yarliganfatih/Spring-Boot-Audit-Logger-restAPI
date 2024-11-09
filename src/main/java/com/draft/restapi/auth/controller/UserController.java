@@ -12,6 +12,7 @@ import javax.validation.constraints.NotNull;
 import com.draft.restapi.auth.entity.dto.UserDto;
 import com.draft.restapi.auth.entity.dto.UserFilter;
 import com.draft.restapi.auth.service.UserService;
+import com.draft.restapi.common.idempotency.Idempotency;
 import com.draft.restapi.common.payload.ApiResponse;
 import com.draft.restapi.common.validation.ValidationGroups;
 
@@ -41,6 +42,7 @@ public class UserController {
         return ApiResponse.success(userService.getUserById(userId));
     }
 
+    @Idempotency
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<UserDto> createUser(
