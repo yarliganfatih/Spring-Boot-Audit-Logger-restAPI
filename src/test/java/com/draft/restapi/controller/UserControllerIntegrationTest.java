@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -25,6 +26,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 
 import com.draft.restapi.auth.mapper.UserMapper;
 import com.draft.restapi.common.cache.CircuitBreakerCache;
@@ -327,8 +330,9 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @ExtendWith(OutputCaptureExtension.class)
     @WithMockUser(username = "user", roles = { "user" })
-    public void testGetUser_fromCache_redisFailover() throws Exception {
+    public void testGetUser_fromCache_redisFailover(CapturedOutput output) throws Exception {
         Integer userId = 2;
 
         // simulate redis failure for caching is not usable, fallback to normal process (Source of Truth)
@@ -344,12 +348,16 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
         mockMvc.perform(get("/api/users/" + userId))
                 .andExpect(status().isOk()); // from database, not cache
         Mockito.verify(userMapper, Mockito.times(2)).toDto(Mockito.any(User.class)); // executed again because of non-cachable
+
+        // Verify that Spring's CacheErrorHandler (CachingConfig) was triggered (Line Protection 2)
+        Assertions.assertTrue(output.getOut().contains("Cache GET failed for cache 'null', ignoring and executing method..."));
     }
 
     @Test
+    @ExtendWith(OutputCaptureExtension.class)
     @WithMockUser(username = "user", roles = { "user" })
     // Controller -> cache.doGet -> service.getUserById -> cache.doPut => Response (200)
-    public void testGetUser_fromCache_redisFailover_withCircuitBreaker() throws Exception {
+    public void testGetUser_fromCache_redisFailover_withCircuitBreaker(CapturedOutput output) throws Exception {
         Integer userId = 2;
         CircuitBreaker circuitBreaker = circuitBreakerRegistry.circuitBreaker("redisCache");
         Assumptions.assumeTrue(CircuitBreaker.State.CLOSED == circuitBreaker.getState());
@@ -381,6 +389,9 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
             mockMvc.perform(get("/api/users/" + userId)); // not short-circuited
             Assertions.assertEquals(CircuitBreaker.State.HALF_OPEN, circuitBreaker.getState());
             verifyCachableWithCallTimes(mockCache, 6, 7, 6);
+
+            // Verify that CircuitBreakerCache was triggered directly bypassing Spring's CacheErrorHandler (Line Protection 1)
+            Assertions.assertTrue(output.getOut().contains("Redis cache GET failed for key '2' on cache 'null'. Falling back without cache."));
         } finally {
             circuitBreaker.transitionToClosedState();
         }

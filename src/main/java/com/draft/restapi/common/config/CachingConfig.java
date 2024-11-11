@@ -45,7 +45,7 @@ public class CachingConfig extends CachingConfigurerSupport {
 
     @Override
     public CacheErrorHandler errorHandler() {
-        // Caching failover: If Redis is down, continue without caching
+        // Caching failover & Defense-in-Depth safety net: If an unwrapped cache implementation fails, ignore errors and continue without caching
         return new CacheErrorHandler() {
             @Override
             public void handleCacheGetError(@NonNull RuntimeException exception, @NonNull Cache cache, @NonNull Object key) {
