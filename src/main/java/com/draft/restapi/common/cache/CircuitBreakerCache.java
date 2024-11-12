@@ -49,6 +49,10 @@ public class CircuitBreakerCache implements Cache {
     public <T> T get(@NonNull Object key, @NonNull Callable<T> valueLoader) {
         try {
             return circuitBreaker.executeSupplier(() -> delegate.get(key, valueLoader));
+        } catch (Cache.ValueRetrievalException e) {
+            // Business logic threw an exception during a cache miss.
+            // This is NOT a cache failure. Rethrow it directly.
+            throw e;
         } catch (Exception e) {
             if (!(e instanceof CallNotPermittedException)) {
                 LOGGER.warn("Redis cache read failed for key '{}' on cache '{}'. Falling back to database/method execution without cache. Reason: {}", key, delegate.getName(), e.getMessage());
@@ -57,7 +61,7 @@ public class CircuitBreakerCache implements Cache {
                 // If cache is down (Redis timeout/connection error or open circuit breaker), invoke valueLoader directly to keep high-availability without 500 error
                 return valueLoader.call();
             } catch (Exception ex) {
-                throw new ValueRetrievalException(key, valueLoader, ex);
+                throw new Cache.ValueRetrievalException(key, valueLoader, ex);
             }
         }
     }

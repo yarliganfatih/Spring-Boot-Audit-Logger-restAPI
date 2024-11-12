@@ -11,7 +11,8 @@ import java.lang.annotation.*;
     value = "idempotency",
     keyGenerator = "idempotencyKeyGenerator",
     condition = "@idempotencyKeyGenerator.hasKey()",
-    sync = true // TODO implement redisson to support distributed locking for idempotency
+    cacheManager = "idempotencyCacheManager", // Utilizes Redisson Distributed Locks
+    sync = true
 )
 public @interface Idempotency {
 }

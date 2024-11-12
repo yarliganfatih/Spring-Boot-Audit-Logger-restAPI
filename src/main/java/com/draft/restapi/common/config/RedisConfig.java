@@ -28,15 +28,15 @@ public class RedisConfig {
     @Value("${spring.redis.port:6379}")
     private int redisPort;
 
-    @Value("${spring.redis.max-timeout-millis:500}")
-    private int maxTimeoutMillis;
+    @Value("${spring.redis.max-timeout:500ms}")
+    private Duration maxTimeout;
 
     @Bean
     public RedisClient redisClient() {
         RedisURI redisURI = RedisURI.builder()
                 .withHost(redisHost)
                 .withPort(redisPort)
-                .withTimeout(Duration.ofMillis(maxTimeoutMillis)) // fast connection timeout
+                .withTimeout(maxTimeout) // fast connection timeout
                 .build();
                 
         RedisClient client = RedisClient.create(redisURI);
@@ -44,8 +44,8 @@ public class RedisConfig {
         ClientOptions clientOptions = ClientOptions.builder()
                 .disconnectedBehavior(ClientOptions.DisconnectedBehavior.REJECT_COMMANDS) // fail fast instead of queueing
                 .autoReconnect(true)
-                .socketOptions(SocketOptions.builder().connectTimeout(Duration.ofMillis(maxTimeoutMillis)).build())
-                .timeoutOptions(TimeoutOptions.builder().fixedTimeout(Duration.ofMillis(maxTimeoutMillis)).build())
+                .socketOptions(SocketOptions.builder().connectTimeout(maxTimeout).build())
+                .timeoutOptions(TimeoutOptions.builder().fixedTimeout(maxTimeout).build())
                 .build();
                 
         client.setOptions(clientOptions);
@@ -65,11 +65,11 @@ public class RedisConfig {
         return clientConfigurationBuilder -> {
             ClientOptions clientOptions = ClientOptions.builder()
                     .disconnectedBehavior(ClientOptions.DisconnectedBehavior.REJECT_COMMANDS)
-                    .socketOptions(SocketOptions.builder().connectTimeout(Duration.ofMillis(maxTimeoutMillis)).build())
-                    .timeoutOptions(TimeoutOptions.builder().fixedTimeout(Duration.ofMillis(maxTimeoutMillis)).build())
+                    .socketOptions(SocketOptions.builder().connectTimeout(maxTimeout).build())
+                    .timeoutOptions(TimeoutOptions.builder().fixedTimeout(maxTimeout).build())
                     .build();
             clientConfigurationBuilder.clientOptions(clientOptions);
-            clientConfigurationBuilder.commandTimeout(Duration.ofMillis(maxTimeoutMillis));
+            clientConfigurationBuilder.commandTimeout(maxTimeout);
         };
     }
 }
