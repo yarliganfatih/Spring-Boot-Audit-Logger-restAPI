@@ -2,13 +2,10 @@ package com.draft.restapi.audit.service;
 
 import java.util.List;
 
-import com.draft.restapi.audit.entity.EntityLog;
-import com.draft.restapi.audit.entity.UpdateLog;
+import com.draft.restapi.audit.document.AuditLogDocument;
 
 public interface LogService {
-    List<EntityLog> getEntities();
+    Iterable<AuditLogDocument> getAuditLogs();
 
-    List<EntityLog> getEntityLogs(String entityName, Long entityId);
-
-    List<UpdateLog> getEntityPathUpdateLogs(String entityName, Long entityId, String path);
+    List<AuditLogDocument> getEntityLogs(String entityName, Integer entityId);
 }

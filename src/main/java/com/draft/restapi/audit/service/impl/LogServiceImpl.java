@@ -2,36 +2,26 @@ package com.draft.restapi.audit.service.impl;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.draft.restapi.audit.entity.EntityLog;
-import com.draft.restapi.audit.entity.UpdateLog;
-import com.draft.restapi.audit.repository.EntityLogRepository;
-import com.draft.restapi.audit.repository.UpdateLogRepository;
+import com.draft.restapi.audit.document.AuditLogDocument;
+import com.draft.restapi.audit.repository.AuditLogElasticRepository;
 import com.draft.restapi.audit.service.LogService;
 
-import lombok.RequiredArgsConstructor;
-
 @Service
-@RequiredArgsConstructor
 public class LogServiceImpl implements LogService {
 
-    private final EntityLogRepository entityLogRepository;
-
-    private final UpdateLogRepository updateLogRepository;
+    @Autowired
+    private AuditLogElasticRepository auditLogRepository;
 
     @Override
-    public List<EntityLog> getEntities() {
-        return entityLogRepository.findAll();
+    public Iterable<AuditLogDocument> getAuditLogs() {
+        return auditLogRepository.findAll();
     }
 
     @Override
-    public List<EntityLog> getEntityLogs(String entityName, Long entityId) {
-        return entityLogRepository.getEntityLogs(entityName, entityId);
-    }
-
-    @Override
-    public List<UpdateLog> getEntityPathUpdateLogs(String entityName, Long entityId, String path) {
-        return updateLogRepository.getEntityPathUpdateLogs(entityName, entityId, path);
+    public List<AuditLogDocument> getEntityLogs(String entityName, Integer entityId) {
+        return auditLogRepository.findByEntityNameAndEntityIdOrderByTimestampDesc(entityName, entityId);
     }
 }

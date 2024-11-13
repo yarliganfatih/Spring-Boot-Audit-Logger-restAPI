@@ -8,8 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.draft.restapi.audit.entity.EntityLog;
-import com.draft.restapi.audit.entity.UpdateLog;
+import com.draft.restapi.audit.document.AuditLogDocument;
 import com.draft.restapi.audit.service.LogService;
 
 import com.draft.restapi.common.payload.ApiResponse;
@@ -22,23 +21,15 @@ public class LogController {
 	@Autowired
 	private LogService logService;
 
-	@GetMapping("/entity/")
-	public ApiResponse<List<EntityLog>> getEntities() {
-		return ApiResponse.success(logService.getEntities());
+	@GetMapping("/audit/")
+	public ApiResponse<Iterable<AuditLogDocument>> getAuditLogs() {
+		return ApiResponse.success(logService.getAuditLogs());
 	}
 
-	@GetMapping("/entity/{entity_name}/{entity_id}")
-	public ApiResponse<List<EntityLog>> getEntitiyLogs(
+	@GetMapping("/audit/{entity_name}/{entity_id}")
+	public ApiResponse<List<AuditLogDocument>> getEntityLogs(
 			@PathVariable(name = "entity_name") String entityName, 
-			@PathVariable(name = "entity_id") Long entityId) {
+			@PathVariable(name = "entity_id") Integer entityId) {
 		return ApiResponse.success(logService.getEntityLogs(entityName, entityId));
-	}
-
-	@GetMapping("/entity/{entity_name}/{entity_id}/updates/{path}")
-	public ApiResponse<List<UpdateLog>> getEntityPathUpdateLogs(
-			@PathVariable(name = "entity_name") String entityName, 
-			@PathVariable(name = "entity_id") Long entityId, 
-			@PathVariable(name = "path") String path) {
-		return ApiResponse.success(logService.getEntityPathUpdateLogs(entityName, entityId, path));
 	}
 }

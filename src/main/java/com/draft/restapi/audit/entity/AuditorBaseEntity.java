@@ -21,12 +21,6 @@ public class AuditorBaseEntity {
 	private Integer id = 0; // must be assignable to Serializable!
 
 	@JsonIgnore
-	private Integer logId;
-
-	@JsonIgnore
-	private EntityLog entityLog;
-
-	@JsonIgnore
 	private JsonNode jsonObject;
 
 	public JsonNode transformJsonObject() {

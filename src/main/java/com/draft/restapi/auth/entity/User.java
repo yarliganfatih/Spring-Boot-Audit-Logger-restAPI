@@ -12,7 +12,6 @@ import javax.persistence.*;
 
 import com.draft.restapi.audit.AuditListener;
 import com.draft.restapi.audit.entity.AuditorBaseEntity;
-import com.draft.restapi.audit.entity.EntityLog;
 import com.draft.restapi.auth.AuthUserDetail;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -62,9 +61,6 @@ public class User extends AuditorBaseEntity implements Serializable {
         joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")}, 
         inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
     private List<Role> roles;
-
-    @OneToMany(mappedBy = "operatedBy", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<EntityLog> entityLogs;
 	
     public User() {
     }
@@ -90,6 +86,7 @@ public class User extends AuditorBaseEntity implements Serializable {
             } else if (principal instanceof org.springframework.security.core.userdetails.User) {
                 User mockUser = new User();
                 mockUser.setId(1);
+                mockUser.setUsername(((org.springframework.security.core.userdetails.User) principal).getUsername());
                 return mockUser;  
             }
             return null;

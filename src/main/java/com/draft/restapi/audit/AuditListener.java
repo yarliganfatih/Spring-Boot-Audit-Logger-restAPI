@@ -6,75 +6,64 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreRemove;
 import javax.persistence.PreUpdate;
 
-import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.flipkart.zjsonpatch.JsonDiff;
-import lombok.RequiredArgsConstructor;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import com.draft.restapi.audit.entity.AuditorBaseEntity;
-import com.draft.restapi.audit.entity.EntityLog;
-import com.draft.restapi.audit.entity.UpdateLog;
-import com.draft.restapi.audit.repository.EntityLogRepository;
-import com.draft.restapi.audit.repository.UpdateLogRepository;
+import com.draft.restapi.audit.dto.AuditLogEvent;
 import com.draft.restapi.auth.entity.User;
-import com.fasterxml.jackson.databind.JsonNode;
 
-@RequiredArgsConstructor
 public class AuditListener {
-    
-	private final EntityLogRepository entityLogRepository;
-
-	private final UpdateLogRepository updateLogRepository;
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuditListener.class);
+    private static final Logger AUDIT_LOGGER = LoggerFactory.getLogger("AUDIT_LOGGER");
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
+        .registerModule(new JavaTimeModule())
+        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
     @PostLoad
     public void postRead(final AuditorBaseEntity entity){
         entity.setJsonObject(entity.transformJsonObject()); // for PreUpdate
-        // entity = preOperation(entity, "READ"); // for record READ operations
+        // logEvent(entity, "READ", null); // for record READ operations
     }
-        
+
     public JsonNode getChanges(JsonNode beforeNode, JsonNode afterNode){
         return JsonDiff.asJson(afterNode, beforeNode);
     }
 
     @PreUpdate
     public void preUpdate(AuditorBaseEntity entity) {
-        entity = preOperation(entity, "UPDATE");
-        EntityLog entityLog = entity.getEntityLog();
         JsonNode changes = getChanges(entity.getJsonObject(), entity.transformJsonObject());
-        
-        changes.forEach(change -> {
-            UpdateLog updateLog = new UpdateLog();
-            updateLog.setEntityLog(entityLog);
-            updateLog.setOp(change.get("op").asText());
-            String changedPath = change.get("path").asText();
-            updateLog.setPath(changedPath.substring(changedPath.lastIndexOf("/") + 1));
-            updateLog.setPreviousValue(change.get("value").asText());
-            updateLogRepository.save(updateLog);
-        });
-    }
-    
-    @PrePersist
-    public void preCreate(AuditorBaseEntity entity) {
-        entity = preOperation(entity, "CREATE");
-    }
-    
-    @PreRemove
-    public void preDelete(AuditorBaseEntity entity) {
-        entity = preOperation(entity, "DELETE");
+        logEvent(entity, "UPDATE", changes);
     }
 
-    public AuditorBaseEntity preOperation(AuditorBaseEntity entity, String operation) {
-        EntityLog entityLog = new EntityLog(entity.getTableName(), entity.getId(), operation, User.getLoggedUser());
-        entityLog = entityLogRepository.save(entityLog);
-        entity.setEntityLog(entityLog); // for usable on postOperation
-        return entity;
+    @PrePersist
+    public void preCreate(AuditorBaseEntity entity) {
+        // Handled in PostPersist to have the generated ID
+    }
+
+    @PreRemove
+    public void preDelete(AuditorBaseEntity entity) {
+        logEvent(entity, "DELETE", null);
     }
 
     @PostPersist
-    @Transactional
-    public void postOperation(AuditorBaseEntity entity) {
-        EntityLog entityLog = entity.getEntityLog();
-        entityLog.setEntityId(entity.getId()); // for PostPersist
-        entityLog = entityLogRepository.save(entityLog);
+    public void postCreate(AuditorBaseEntity entity) {
+        logEvent(entity, "CREATE", null);
+    }
+
+    private void logEvent(AuditorBaseEntity entity, String operation, JsonNode changes) {
+        try {
+            User loggedUser = User.getLoggedUser();
+            AuditLogEvent event = AuditLogEvent.create(entity, operation, loggedUser, changes);
+            AUDIT_LOGGER.info(OBJECT_MAPPER.writeValueAsString(event));
+        } catch (Exception e) {
+            LoggerFactory.getLogger(AuditListener.class).error("Error writing audit log", e);
+        }
     }
 }

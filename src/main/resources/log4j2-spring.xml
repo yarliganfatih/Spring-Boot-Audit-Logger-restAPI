@@ -10,14 +10,42 @@
         <Console name="ConsoleAppender" target="SYSTEM_OUT" follow="true">
             <PatternLayout pattern="${LOG_PATTERN}"/>
         </Console>
+
+        <RollingFile name="AppFileAppender" fileName="logs/info.log" filePattern="logs/info-%d{yyyy-MM-dd}.log">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="AuditFileAppender" fileName="logs/audit.json" filePattern="logs/audit-%d{yyyy-MM-dd}.json">
+            <!-- For audit logs we just write the raw JSON message -->
+            <PatternLayout pattern="%m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
+
+        <Async name="AsyncAuditAppender">
+            <AppenderRef ref="AuditFileAppender"/>
+        </Async>
     </Appenders>
 
     <Loggers>
         <Root level="info">
             <AppenderRef ref="ConsoleAppender"/>
+            <SpringProfile name="!test">
+                <AppenderRef ref="AppFileAppender"/>
+            </SpringProfile>
         </Root>
         <Logger name="com.draft.restapi" level="debug" additivity="false">
             <AppenderRef ref="ConsoleAppender"/>
+            <SpringProfile name="!test">
+                <AppenderRef ref="AppFileAppender"/>
+            </SpringProfile>
+        </Logger>
+        <Logger name="AUDIT_LOGGER" level="info" additivity="false">
+            <AppenderRef ref="AsyncAuditAppender"/>
         </Logger>
     </Loggers>
 </Configuration>

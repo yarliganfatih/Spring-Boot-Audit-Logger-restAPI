@@ -22,6 +22,8 @@ services:
     build: .
     container_name: restapi_app_1
     restart: on-failure
+    volumes:
+      - ./logs:/app/logs
     depends_on:
       - mysqldb
       - redis
@@ -32,11 +34,14 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SERVER_FORWARD_HEADERS_STRATEGY: framework # for X-Forwarded-For
       SPRING_REDIS_HOST: redis
+      SPRING_ELASTICSEARCH_URIS: http://elasticsearch:9200
 
   api-instance-2:
     build: .
     container_name: restapi_app_2
     restart: on-failure
+    volumes:
+      - ./logs:/app/logs
     depends_on:
       - mysqldb
       - redis
@@ -47,6 +52,38 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SERVER_FORWARD_HEADERS_STRATEGY: framework # for X-Forwarded-For
       SPRING_REDIS_HOST: redis
+      SPRING_ELASTICSEARCH_URIS: http://elasticsearch:9200
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.10
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.10
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:7.17.10
+    container_name: filebeat
+    user: root
+    command: filebeat -e -strict.perms=false
+    volumes:
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - ./logs:/usr/share/filebeat/logs:ro
+    depends_on:
+      - elasticsearch
 
   # Nginx Load Balancer
   nginx:
