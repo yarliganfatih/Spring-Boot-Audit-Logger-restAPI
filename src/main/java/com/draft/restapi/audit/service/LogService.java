@@ -1,11 +1,11 @@
 package com.draft.restapi.audit.service;
 
-import java.util.List;
+import com.draft.restapi.common.payload.PageDto;
+import org.springframework.data.domain.Pageable;
 
-import com.draft.restapi.audit.document.AuditLogDocument;
+import com.draft.restapi.audit.dto.AuditLogDto;
+import com.draft.restapi.audit.dto.AuditLogFilter;
 
 public interface LogService {
-    Iterable<AuditLogDocument> getAuditLogs();
-
-    List<AuditLogDocument> getEntityLogs(String entityName, Integer entityId);
+    PageDto<AuditLogDto> getAuditLogs(AuditLogFilter filter, Pageable pageable);
 }
