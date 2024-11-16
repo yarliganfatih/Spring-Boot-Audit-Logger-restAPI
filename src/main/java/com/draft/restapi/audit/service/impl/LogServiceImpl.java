@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -26,8 +27,10 @@ import org.springframework.data.util.ClassTypeInformation;
 import org.springframework.stereotype.Service;
 
 import com.draft.restapi.audit.document.AuditLogDocument;
+import com.draft.restapi.audit.document.FieldChange;
 import com.draft.restapi.audit.dto.AuditLogDto;
 import com.draft.restapi.audit.dto.AuditLogFilter;
+import com.draft.restapi.audit.dto.UpdateHistoryDto;
 import com.draft.restapi.audit.mapper.AuditLogMapper;
 import com.draft.restapi.audit.service.LogService;
 import com.draft.restapi.common.payload.PageDto;
@@ -78,6 +81,39 @@ public class LogServiceImpl implements LogService {
         return new PageDto<>(page);
     }
 
+    @Override
+    public PageDto<UpdateHistoryDto> getEntityFieldUpdateLogs(Pageable pageable, String entityName, Integer entityId, String fieldName) {
+        pageable = validateAndFixPageable(pageable, Sort.by(Sort.Order.desc("timestamp")));
+        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery()
+                .must(QueryBuilders.wildcardQuery("entityName", entityName.toLowerCase()))
+                .must(QueryBuilders.termQuery("entityId", entityId))
+                .must(QueryBuilders.wildcardQuery("changes.fieldName.keyword", fieldName.toLowerCase()));
+
+        NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder()
+                .withQuery(boolQuery)
+                .withPageable(pageable);
+
+        SearchHits<AuditLogDocument> searchHits = elasticsearchOperations.search(queryBuilder.build(), AuditLogDocument.class);
+
+        List<UpdateHistoryDto> dtoList = searchHits.getSearchHits().stream()
+                .map(SearchHit::getContent)
+                .map(doc -> mapToUpdateHistoryDto(fieldName, doc))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        Page<UpdateHistoryDto> page = new PageImpl<>(dtoList, pageable, searchHits.getTotalHits());
+        return new PageDto<>(page);
+    }
+
+    private UpdateHistoryDto mapToUpdateHistoryDto(String fieldName, AuditLogDocument doc) {
+        FieldChange specificChange = doc.getChanges().stream()
+                .filter(change -> fieldName.equals(change.getFieldName()))
+                .findFirst()
+                .orElse(null);
+        if (specificChange == null) return null;
+        return auditLogMapper.toUpdateHistoryDto(doc, specificChange.getPreviousValue());
+    }
+
     private QueryBuilder buildQueryByFilter(AuditLogFilter filter) {
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 
@@ -124,5 +160,10 @@ public class LogServiceImpl implements LogService {
             esCompatibleOrders.add(new Sort.Order(order.getDirection(), ORDERABLE_FIELD_MAP.get(order.getProperty())));
         }
         return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(esCompatibleOrders));
+    }
+
+    private Pageable validateAndFixPageable(Pageable pageable, Sort defaultSort) {
+        Pageable pageableWithDefaultSort = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), defaultSort);
+        return validateAndFixPageable(pageableWithDefaultSort);
     }
 }
