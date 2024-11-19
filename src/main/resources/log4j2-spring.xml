@@ -26,8 +26,19 @@
             </Policies>
         </RollingFile>
 
+        <RollingFile name="ErrorFileAppender" fileName="logs/error.json" filePattern="logs/error-%d{yyyy-MM-dd}.json">
+            <PatternLayout pattern="%m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
+
         <Async name="AsyncAuditAppender">
             <AppenderRef ref="AuditFileAppender"/>
+        </Async>
+        
+        <Async name="AsyncErrorAppender">
+            <AppenderRef ref="ErrorFileAppender"/>
         </Async>
     </Appenders>
 
@@ -46,6 +57,9 @@
         </Logger>
         <Logger name="AUDIT_LOGGER" level="info" additivity="false">
             <AppenderRef ref="AsyncAuditAppender"/>
+        </Logger>
+        <Logger name="ERROR_LOGGER" level="info" additivity="false">
+            <AppenderRef ref="AsyncErrorAppender"/>
         </Logger>
     </Loggers>
 </Configuration>

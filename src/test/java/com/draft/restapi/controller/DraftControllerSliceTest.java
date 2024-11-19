@@ -18,7 +18,6 @@ import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.draft.restapi.audit.repository.ErrorLogRepository;
 import com.draft.restapi.auth.repository.RoleRepository;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -53,9 +52,6 @@ public class DraftControllerSliceTest {
 
     @MockBean
     private RoleRepository roleRepository;
-
-    @MockBean
-    private ErrorLogRepository errorLogRepository;
 
     @Test
     @WithMockUser

@@ -6,11 +6,23 @@ filebeat.inputs:
   json.keys_under_root: true
   json.add_error_key: true
   json.message_key: "message"
+  fields:
+    index_name: "audit-logs"
+
+- type: log
+  enabled: true
+  paths:
+    - /usr/share/filebeat/logs/error.json
+  json.keys_under_root: true
+  json.add_error_key: true
+  json.message_key: "message"
+  fields:
+    index_name: "error-logs"
 
 output.elasticsearch:
   hosts: ["elasticsearch:9200"]
-  index: "audit-logs"
+  index: "%{[fields.index_name]}"
 
 setup.ilm.enabled: false
 setup.template.name: "audit-logs"
-setup.template.pattern: "audit-logs-*"
+setup.template.pattern: "*-logs-*"

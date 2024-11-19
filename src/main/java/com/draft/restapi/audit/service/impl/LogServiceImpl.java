@@ -28,10 +28,14 @@ import org.springframework.stereotype.Service;
 
 import com.draft.restapi.audit.document.AuditLogDocument;
 import com.draft.restapi.audit.document.FieldChange;
+import com.draft.restapi.audit.document.ErrorLogDocument;
 import com.draft.restapi.audit.dto.AuditLogDto;
 import com.draft.restapi.audit.dto.AuditLogFilter;
+import com.draft.restapi.audit.dto.ErrorLogDto;
+import com.draft.restapi.audit.dto.ErrorLogFilter;
 import com.draft.restapi.audit.dto.UpdateHistoryDto;
 import com.draft.restapi.audit.mapper.AuditLogMapper;
+import com.draft.restapi.audit.mapper.ErrorLogMapper;
 import com.draft.restapi.audit.service.LogService;
 import com.draft.restapi.common.payload.PageDto;
 
@@ -41,6 +45,7 @@ import java.util.stream.Collectors;
 public class LogServiceImpl implements LogService {
 
     public static final Map<String, String> ORDERABLE_FIELD_MAP;
+    public static final Map<String, String> ERROR_ORDERABLE_FIELD_MAP;
     static {
         Map<String, String> tempMap = new HashMap<>();
         tempMap.put("id", "_id");
@@ -52,6 +57,18 @@ public class LogServiceImpl implements LogService {
         tempMap.put("traceId", "traceId.keyword");
         tempMap.put("timestamp", "timestamp");
         ORDERABLE_FIELD_MAP = Collections.unmodifiableMap(tempMap);
+
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("id", "_id");
+        errorMap.put("endpointUrl", "endpointUrl.keyword");
+        errorMap.put("httpMethod", "httpMethod.keyword");
+        errorMap.put("errorType", "errorType.keyword");
+        errorMap.put("httpStatusCode", "httpStatusCode");
+        errorMap.put("traceId", "traceId.keyword");
+        errorMap.put("occurredById", "occurredById");
+        errorMap.put("occurredByUsername", "occurredByUsername.keyword");
+        errorMap.put("timestamp", "timestamp");
+        ERROR_ORDERABLE_FIELD_MAP = Collections.unmodifiableMap(errorMap);
     }
 
     @Autowired
@@ -59,6 +76,9 @@ public class LogServiceImpl implements LogService {
 
     @Autowired
     private AuditLogMapper auditLogMapper;
+
+    @Autowired
+    private ErrorLogMapper errorLogMapper;
 
     @Override
     public PageDto<AuditLogDto> getAuditLogs(AuditLogFilter filter, Pageable pageable) {
@@ -78,6 +98,27 @@ public class LogServiceImpl implements LogService {
         List<AuditLogDto> dtoList = auditLogMapper.toDtoList(logs);
 
         Page<AuditLogDto> page = new PageImpl<>(dtoList, pageable, searchHits.getTotalHits());
+        return new PageDto<>(page);
+    }
+
+    @Override
+    public PageDto<ErrorLogDto> getErrorLogs(ErrorLogFilter filter, Pageable pageable) {
+        pageable = validateAndFixPageableForErrorLog(pageable);
+        QueryBuilder filterQuery = buildErrorQueryByFilter(filter);
+
+        NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder()
+                .withPageable(pageable)
+                .withQuery(filterQuery);
+
+        Query query = queryBuilder.build();
+        SearchHits<ErrorLogDocument> searchHits = elasticsearchOperations.search(query, ErrorLogDocument.class);
+        List<ErrorLogDocument> logs = searchHits.getSearchHits().stream()
+                .map(SearchHit::getContent)
+                .collect(Collectors.toList());
+
+        List<ErrorLogDto> dtoList = errorLogMapper.toDtoList(logs);
+
+        Page<ErrorLogDto> page = new PageImpl<>(dtoList, pageable, searchHits.getTotalHits());
         return new PageDto<>(page);
     }
 
@@ -151,6 +192,46 @@ public class LogServiceImpl implements LogService {
 
         return boolQuery.hasClauses() ? boolQuery : QueryBuilders.matchAllQuery();
     }
+    private QueryBuilder buildErrorQueryByFilter(ErrorLogFilter filter) {
+        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+
+        if (filter.getId() != null) {
+            boolQuery.must(QueryBuilders.termQuery("_id", filter.getId()));
+        }
+        if (filter.getEndpointUrl() != null) {
+            boolQuery.must(QueryBuilders.wildcardQuery("endpointUrl", filter.getEndpointUrl().toLowerCase()));
+        }
+        if (filter.getHttpMethod() != null) {
+            boolQuery.must(QueryBuilders.wildcardQuery("httpMethod", filter.getHttpMethod().toLowerCase()));
+        }
+        if (filter.getErrorType() != null) {
+            boolQuery.must(QueryBuilders.wildcardQuery("errorType", filter.getErrorType().toLowerCase()));
+        }
+        if (filter.getHttpStatusCode() != null) {
+            boolQuery.must(QueryBuilders.termQuery("httpStatusCode", filter.getHttpStatusCode()));
+        }
+        if (filter.getTraceId() != null) {
+            boolQuery.must(QueryBuilders.termQuery("traceId", filter.getTraceId()));
+        }
+        if (filter.getOccurredById() != null) {
+            boolQuery.must(QueryBuilders.termQuery("occurredById", filter.getOccurredById()));
+        }
+        if (filter.getOccurredByUsername() != null) {
+            boolQuery.must(QueryBuilders.wildcardQuery("occurredByUsername", filter.getOccurredByUsername().toLowerCase()));
+        }
+        if (filter.getStartTime() != null) {
+            RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("timestamp");
+            rangeQuery.gte(filter.getStartTime());
+            boolQuery.must(rangeQuery);
+        }
+        if (filter.getEndTime() != null) {
+            RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("timestamp");
+            rangeQuery.lte(filter.getEndTime());
+            boolQuery.must(rangeQuery);
+        }
+
+        return boolQuery.hasClauses() ? boolQuery : QueryBuilders.matchAllQuery();
+    }
 
     private Pageable validateAndFixPageable(Pageable pageable) {
         List<Sort.Order> esCompatibleOrders = new ArrayList<>();
@@ -158,6 +239,16 @@ public class LogServiceImpl implements LogService {
             if (!ORDERABLE_FIELD_MAP.containsKey(order.getProperty()))
                 throw new PropertyReferenceException(order.getProperty(), ClassTypeInformation.from(AuditLogDocument.class), Collections.emptyList());
             esCompatibleOrders.add(new Sort.Order(order.getDirection(), ORDERABLE_FIELD_MAP.get(order.getProperty())));
+        }
+        return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(esCompatibleOrders));
+    }
+
+    private Pageable validateAndFixPageableForErrorLog(Pageable pageable) {
+        List<Sort.Order> esCompatibleOrders = new ArrayList<>();
+        for (Sort.Order order : pageable.getSort()) {
+            if (!ERROR_ORDERABLE_FIELD_MAP.containsKey(order.getProperty()))
+                throw new PropertyReferenceException(order.getProperty(), ClassTypeInformation.from(ErrorLogDocument.class), Collections.emptyList());
+            esCompatibleOrders.add(new Sort.Order(order.getDirection(), ERROR_ORDERABLE_FIELD_MAP.get(order.getProperty())));
         }
         return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(esCompatibleOrders));
     }

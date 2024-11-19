@@ -26,20 +26,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
-import com.draft.restapi.audit.entity.ErrorLog;
-import com.draft.restapi.audit.repository.ErrorLogRepository;
+import com.draft.restapi.audit.dto.ErrorLogEvent;
 import com.draft.restapi.auth.entity.User;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.mapping.PropertyReferenceException;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.time.LocalDateTime;
 
 import org.slf4j.MDC;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.util.Collections;
 import java.util.List;
@@ -48,9 +49,11 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private static final Logger ERROR_LOGGER = LoggerFactory.getLogger("ERROR_LOGGER");
 
-    @Autowired
-    private ErrorLogRepository errorLogRepository;
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
+            .registerModule(new JavaTimeModule())
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiResponse<Object>> handleResourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
@@ -160,27 +163,33 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     private void saveErrorLog(Exception ex, HttpServletRequest servletRequest, Object responseObj, HttpStatus status) {
-        ObjectMapper mapper = new ObjectMapper();
         try {
-            ErrorLog errorLog = new ErrorLog();
+            ErrorLogEvent errorLog = new ErrorLogEvent();
             errorLog.setEndpointUrl(servletRequest.getRequestURI());
             errorLog.setHttpMethod(servletRequest.getMethod());
             errorLog.setErrorMessage(ex.getMessage());
             errorLog.setErrorType(ex.getClass().getName());
             errorLog.setHttpStatusCode(status.value());
-            errorLog.setXTraceId(MDC.get(TraceFilter.TRACE_ID));
-            errorLog.setOccurredBy(User.getLoggedUser());
+            errorLog.setTraceId(MDC.get(TraceFilter.TRACE_ID));
+            
+            User user = User.getLoggedUser();
+            if (user != null) {
+                errorLog.setOccurredById(user.getId());
+                errorLog.setOccurredByUsername(user.getUsername());
+            }
+
             errorLog.setRequestParams(servletRequest.getQueryString());
+            errorLog.setTimestamp(LocalDateTime.now());
 
             try {
-                errorLog.setResponseBody(mapper.writeValueAsString(responseObj));
+                errorLog.setResponseBody(OBJECT_MAPPER.writeValueAsString(responseObj));
             } catch (Exception ignore) {
                 LOGGER.warn("Failed to serialize response body: {}", ignore.getMessage());
                 errorLog.setResponseBody("[Unserializable Response]");
             }
 
             try {
-                errorLog.setRequestHeaders(mapper.writeValueAsString(RequestHelper.getRequestHeaders(servletRequest)));
+                errorLog.setRequestHeaders(OBJECT_MAPPER.writeValueAsString(RequestHelper.getRequestHeaders(servletRequest)));
             } catch (Exception ignore) {
                 LOGGER.warn("Failed to serialize request headers: {}", ignore.getMessage());
                 errorLog.setRequestHeaders("[Unserializable Headers]");
@@ -198,9 +207,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             ex.printStackTrace(pw);
             errorLog.setErrorStackTrace(sw.toString());
 
-            errorLogRepository.save(errorLog);
+            ERROR_LOGGER.info(OBJECT_MAPPER.writeValueAsString(errorLog));
         } catch (Exception e) { // do not affect main flow if errorLog saving fails
-            LOGGER.error("Failed to save ErrorLog to Database: {}", e.getMessage());
+            LOGGER.error("Failed to write ErrorLog to file: {}", e.getMessage());
         }
     }
 }
