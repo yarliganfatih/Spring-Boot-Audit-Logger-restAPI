@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 @Data
 @Builder
@@ -19,6 +21,7 @@ public class ErrorLogEvent {
     private String requestParams;
     private String requestBody;
     private String responseBody;
+    private List<Map<String, String>> methodArguments;
     private String errorMessage;
     private String errorStackTrace;
     private String errorType;

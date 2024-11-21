@@ -33,6 +33,9 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.mapping.PropertyReferenceException;
 
 import javax.servlet.http.HttpServletRequest;
+
+import static com.draft.restapi.common.aspect.MethodArgumentCaptureAspect.CAPTURED_ARGS_KEY;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
@@ -44,6 +47,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
@@ -171,7 +175,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             errorLog.setErrorType(ex.getClass().getName());
             errorLog.setHttpStatusCode(status.value());
             errorLog.setTraceId(MDC.get(TraceFilter.TRACE_ID));
-            
+            errorLog.setMethodArguments((List<Map<String, String>>) servletRequest.getAttribute(CAPTURED_ARGS_KEY));
+
             User user = User.getLoggedUser();
             if (user != null) {
                 errorLog.setOccurredById(user.getId());

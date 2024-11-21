@@ -10,6 +10,8 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 @Data
 @Builder
@@ -38,6 +40,9 @@ public class ErrorLogDocument {
 
     @Field(type = FieldType.Text)
     private String responseBody;
+
+    @Field(type = FieldType.Object)
+    private List<Map<String, String>> methodArguments;
 
     @Field(type = FieldType.Text)
     private String errorMessage;
