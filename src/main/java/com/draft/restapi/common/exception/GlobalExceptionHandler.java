@@ -45,6 +45,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -210,7 +211,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             ex.printStackTrace(pw);
-            errorLog.setErrorStackTrace(sw.toString());
+            errorLog.setErrorStackTrace(
+                    Arrays.asList(sw.toString()
+                            .replaceAll("\tat ", "")
+                            .replaceAll("\t", "")
+                            .replaceAll("\r", "")
+                            .split("\n")));
 
             ERROR_LOGGER.info(OBJECT_MAPPER.writeValueAsString(errorLog));
         } catch (Exception e) { // do not affect main flow if errorLog saving fails

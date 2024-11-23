@@ -37,6 +37,7 @@ import com.draft.restapi.audit.dto.UpdateHistoryDto;
 import com.draft.restapi.audit.mapper.AuditLogMapper;
 import com.draft.restapi.audit.mapper.ErrorLogMapper;
 import com.draft.restapi.audit.service.LogService;
+import com.draft.restapi.common.helper.RequestHelper;
 import com.draft.restapi.common.payload.PageDto;
 
 import java.util.stream.Collectors;
@@ -117,9 +118,23 @@ public class LogServiceImpl implements LogService {
                 .collect(Collectors.toList());
 
         List<ErrorLogDto> dtoList = errorLogMapper.toDtoList(logs);
+        if (filter.isSimplified()) {
+            simplifyErrorLogs(dtoList);
+        }
 
         Page<ErrorLogDto> page = new PageImpl<>(dtoList, pageable, searchHits.getTotalHits());
         return new PageDto<>(page);
+    }
+
+    private void simplifyErrorLogs(List<ErrorLogDto> dtoList) {
+        dtoList.forEach(dto -> {
+            if (dto.getErrorStackTrace() != null && dto.getErrorStackTrace().size() > 2) {
+                dto.setErrorStackTrace(dto.getErrorStackTrace().subList(0, 2));
+            }
+            if (dto.getRequestHeaders() != null) {
+                dto.setRequestHeaders(RequestHelper.simplifyHeaders(dto.getRequestHeaders()));
+            }
+        });
     }
 
     @Override

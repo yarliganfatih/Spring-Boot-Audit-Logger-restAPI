@@ -17,4 +17,6 @@ public class ErrorLogFilter implements Serializable {
     private String occurredByUsername;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    
+    private boolean simplified = true;
 }

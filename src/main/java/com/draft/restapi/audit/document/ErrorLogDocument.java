@@ -47,8 +47,8 @@ public class ErrorLogDocument {
     @Field(type = FieldType.Text)
     private String errorMessage;
 
-    @Field(type = FieldType.Text)
-    private String errorStackTrace;
+    @Field(type = FieldType.Object)
+    private List<String> errorStackTrace;
 
     @Field(type = FieldType.Keyword)
     private String errorType;

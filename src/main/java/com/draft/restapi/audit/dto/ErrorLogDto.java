@@ -23,7 +23,7 @@ public class ErrorLogDto {
     private String responseBody;
     private List<Map<String, String>> methodArguments;
     private String errorMessage;
-    private String errorStackTrace;
+    private List<String> errorStackTrace;
     private String errorType;
     private Integer httpStatusCode;
     private String traceId;
