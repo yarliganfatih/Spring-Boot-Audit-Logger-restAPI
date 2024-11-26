@@ -4,6 +4,7 @@ import com.draft.restapi.common.filter.TraceFilter;
 import com.draft.restapi.common.payload.ApiResponse;
 import com.draft.restapi.common.payload.ValidationError;
 import com.draft.restapi.common.helper.RequestHelper;
+import com.draft.restapi.common.masking.MaskUtils;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -188,21 +189,21 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             errorLog.setTimestamp(LocalDateTime.now());
 
             try {
-                errorLog.setResponseBody(OBJECT_MAPPER.writeValueAsString(responseObj));
+                errorLog.setResponseBody(MaskUtils.maskJsonFields(OBJECT_MAPPER.writeValueAsString(responseObj)));
             } catch (Exception ignore) {
                 LOGGER.warn("Failed to serialize response body: {}", ignore.getMessage());
                 errorLog.setResponseBody("[Unserializable Response]");
             }
 
             try {
-                errorLog.setRequestHeaders(OBJECT_MAPPER.writeValueAsString(RequestHelper.getRequestHeaders(servletRequest)));
+                errorLog.setRequestHeaders(MaskUtils.maskJsonFields(OBJECT_MAPPER.writeValueAsString(RequestHelper.getRequestHeaders(servletRequest))));
             } catch (Exception ignore) {
                 LOGGER.warn("Failed to serialize request headers: {}", ignore.getMessage());
                 errorLog.setRequestHeaders("[Unserializable Headers]");
             }
 
             try {
-                errorLog.setRequestBody(RequestHelper.getRequestBody(servletRequest));
+                errorLog.setRequestBody(MaskUtils.maskJsonFields(RequestHelper.getRequestBody(servletRequest)));
             } catch (Exception ignore) {
                 LOGGER.warn("Failed to serialize request body: {}", ignore.getMessage());
                 errorLog.setRequestBody("[Unsupported Encoding]");

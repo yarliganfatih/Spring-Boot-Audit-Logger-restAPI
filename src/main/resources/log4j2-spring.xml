@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="WARN">
+<Configuration status="WARN" packages="com.draft.restapi.common.masking">
     <Properties>
         <Property name="LOG_PATTERN">
             %d{yyyy-MM-dd HH:mm:ss.SSS} %5p ${hostName} --- [%15.15t] [traceId=%X{x-traceId}] %-40.40c{1.} : %m%n%ex
@@ -20,14 +20,14 @@
 
         <RollingFile name="AuditFileAppender" fileName="logs/audit.json" filePattern="logs/audit-%d{yyyy-MM-dd}.json">
             <!-- For audit logs we just write the raw JSON message -->
-            <PatternLayout pattern="%m%n"/>
+            <PatternLayout pattern="%maskedJson%n"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
             </Policies>
         </RollingFile>
 
         <RollingFile name="ErrorFileAppender" fileName="logs/error.json" filePattern="logs/error-%d{yyyy-MM-dd}.json">
-            <PatternLayout pattern="%m%n"/>
+            <PatternLayout pattern="%maskedJson%n"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
             </Policies>

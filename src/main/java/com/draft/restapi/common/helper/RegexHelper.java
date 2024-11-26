@@ -3,8 +3,10 @@ package com.draft.restapi.common.helper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class RegexHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(RegexHelper.class);
@@ -25,5 +27,15 @@ public class RegexHelper {
             LOGGER.error("Error extracting key with regex: {}", regex, e);
             return null;
         }
+    }
+
+    public static String getJsonPattern(String fieldName) {
+        return "(?i)(\"" + Pattern.quote(fieldName) + "\"\\s*:\\s*\")([^\"]+)(\")";
+    }
+
+    public static String getJsonPattern(Set<String> fieldNames) {
+        String fieldNamesPatternMatch = fieldNames.stream().map(Pattern::quote)
+                .collect(Collectors.joining("|")); // OR operator for regex
+        return "(?i)(\"(" + fieldNamesPatternMatch + ")\"\\s*:\\s*\")([^\"]+)(\")";
     }
 }
