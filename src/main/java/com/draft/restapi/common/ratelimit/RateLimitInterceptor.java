@@ -2,20 +2,18 @@ package com.draft.restapi.common.ratelimit;
 
 import io.github.bucket4j.ConsumptionProbe;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+@Slf4j
 @RequiredArgsConstructor
 public class RateLimitInterceptor implements HandlerInterceptor {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RateLimitInterceptor.class);
 
     private final RateLimitingService rateLimitingService;
 

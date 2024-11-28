@@ -1,15 +1,14 @@
 package com.draft.restapi.common.helper;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class RegexHelper {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RegexHelper.class);
 
     private RegexHelper() {
         // Private constructor to prevent instantiation of static helper class
@@ -24,7 +23,7 @@ public class RegexHelper {
             }
             return null;
         } catch (Exception e) {
-            LOGGER.error("Error extracting key with regex: {}", regex, e);
+            log.warn("Error extracting key with regex: {}", regex, e);
             return null;
         }
     }

@@ -5,6 +5,7 @@ import com.draft.restapi.auth.entity.dto.UserFilter;
 import com.draft.restapi.auth.mapper.UserMapper;
 import com.draft.restapi.auth.service.UserService;
 import com.draft.restapi.common.exception.ResourceNotFoundException;
+import com.draft.restapi.common.masking.MaskType;
 import com.draft.restapi.common.payload.PageDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,11 +18,13 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.CacheEvict;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -62,10 +65,15 @@ public class UserServiceImpl implements UserService {
     @Override
     @CachePut(value = "users", key = "#result.id")
     public UserDto createUser(UserDto userDto) {
+        log.debug("Creating user with username: {}, email: {}", 
+                userDto.getUsername(), MaskType.PARTIAL_EMAIL.mask(userDto.getEmail()));
+
         User user = userMapper.toEntity(userDto);
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
         User savedUser = userRepository.save(user);
+        log.info("Created user with id: {}", savedUser.getId());
+
         return userMapper.toDto(savedUser);
     }
 
@@ -77,6 +85,8 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId)
                 .filter(u -> !u.getDeleted())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+        log.debug("Updating user with id: {}, username: {}, email: {}", 
+                userId, userDto.getUsername(), MaskType.PARTIAL_EMAIL.mask(userDto.getEmail()));
 
         userMapper.updateUserFromDto(userDto, user);
         if (!StringUtils.isEmpty(userDto.getPassword())) {
@@ -84,6 +94,8 @@ public class UserServiceImpl implements UserService {
         }
 
         User updatedUser = userRepository.save(user);
+        log.info("Updated user with ID: {}", updatedUser.getId());
+
         return userMapper.toDto(updatedUser);
     }
 
@@ -94,13 +106,17 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Id cannot be null");
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+        log.debug("Deleting user with id: {}, username: {}, email: {}", 
+                userId, user.getUsername(), MaskType.PARTIAL_EMAIL.mask(user.getEmail()));
 
         if (purge) {
             userRepository.delete(user);
+            log.info("Deleted (hard-delete) user with id: {}", userId);
         } else {
             user.setDeleted(true);
             user.setEnabled(false); // to prevent authenticate
             userRepository.save(user);
+            log.info("Deleted (soft-delete) user with id: {}", userId);
         }
     }
 }

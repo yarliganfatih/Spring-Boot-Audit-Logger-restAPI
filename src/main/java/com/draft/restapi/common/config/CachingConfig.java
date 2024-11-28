@@ -13,8 +13,7 @@ import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
 import org.redisson.spring.cache.CacheConfig;
 import org.redisson.spring.cache.RedissonSpringCacheManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import com.draft.restapi.common.cache.CircuitBreakerCacheManager;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
@@ -32,9 +31,9 @@ import java.util.Map;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.beans.factory.annotation.Value;
 
+@Slf4j
 @Configuration
 public class CachingConfig extends CachingConfigurerSupport {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CachingConfig.class);
 
     @Value("${spring.cache.redis.time-to-live:60m}")
     private Duration timeToLive;
@@ -92,7 +91,7 @@ public class CachingConfig extends CachingConfigurerSupport {
                             
                         delegate = new CircuitBreakerCacheManager(redissonCacheManager, circuitBreakerRegistry);
                     } catch (Exception e) {
-                        LOGGER.warn("Redisson connection failed: {}. Falling back to NoOpCache for idempotency.", e.getMessage());
+                        log.warn("Redisson connection failed: {}. Falling back to NoOpCache for idempotency.", e.getMessage());
                         return new NoOpCacheManager();
                     }
                 }
@@ -131,22 +130,22 @@ public class CachingConfig extends CachingConfigurerSupport {
         return new CacheErrorHandler() {
             @Override
             public void handleCacheGetError(@NonNull RuntimeException exception, @NonNull Cache cache, @NonNull Object key) {
-                LOGGER.warn("Cache GET failed for cache '{}', ignoring and executing method... Reason: {}", cache.getName(), exception.getMessage());
+                log.warn("Cache GET failed for cache '{}', ignoring and executing method... Reason: {}", cache.getName(), exception.getMessage());
             }
 
             @Override
             public void handleCachePutError(@NonNull RuntimeException exception, @NonNull Cache cache, @NonNull Object key, @Nullable Object value) {
-                LOGGER.warn("Cache PUT failed for cache '{}'. Reason: {}", cache.getName(), exception.getMessage());
+                log.warn("Cache PUT failed for cache '{}'. Reason: {}", cache.getName(), exception.getMessage());
             }
 
             @Override
             public void handleCacheEvictError(@NonNull RuntimeException exception, @NonNull Cache cache, @NonNull Object key) {
-                LOGGER.warn("Cache EVICT failed for cache '{}'. Reason: {}", cache.getName(), exception.getMessage());
+                log.warn("Cache EVICT failed for cache '{}'. Reason: {}", cache.getName(), exception.getMessage());
             }
 
             @Override
             public void handleCacheClearError(@NonNull RuntimeException exception, @NonNull Cache cache) {
-                LOGGER.warn("Cache CLEAR failed for cache '{}'. Reason: {}", cache.getName(), exception.getMessage());
+                log.warn("Cache CLEAR failed for cache '{}'. Reason: {}", cache.getName(), exception.getMessage());
             }
         };
     }

@@ -46,15 +46,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
-    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
     private static final Logger ERROR_LOGGER = LoggerFactory.getLogger("ERROR_LOGGER");
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
@@ -81,7 +83,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(PropertyReferenceException.class)
     public ResponseEntity<ApiResponse<Object>> handlePropertyReferenceException(PropertyReferenceException ex, WebRequest request) {
-        LOGGER.warn(ex.getMessage());
+        log.warn(ex.getMessage());
         ApiResponse<Object> response = ApiResponse.error("Invalid request, Please check your input and try again.");
         response.setValidationErrors(Collections.singletonList(new ValidationError(ex)));
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
@@ -89,7 +91,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ApiResponse<Object>> handleConstraintViolationException(ConstraintViolationException ex, WebRequest request) {
-        LOGGER.warn(ex.getMessage());
+        log.warn(ex.getMessage());
         ApiResponse<Object> response = ApiResponse.error("Invalid request, Please check your input and try again.");
         List<ValidationError> validationErrors = ex.getConstraintViolations().stream()
                 .map(ValidationError::new).collect(Collectors.toList());
@@ -99,7 +101,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ApiResponse<Object>> handleDataIntegrityViolationException(DataIntegrityViolationException ex, WebRequest request) {
-        LOGGER.warn(ex.getMessage());
+        log.warn(ex.getMessage());
         ApiResponse<Object> response = ApiResponse.error("Invalid request, There is data integrity violation.");
         HttpStatus status = HttpStatus.BAD_REQUEST;
         String dbErrorMessage = ex.getMostSpecificCause().getMessage();
@@ -132,7 +134,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     @NonNull
     protected ResponseEntity<Object> handleExceptionInternal(@NonNull Exception ex, @Nullable Object body, @NonNull HttpHeaders headers, @NonNull HttpStatus status, @NonNull WebRequest request) {
-        LOGGER.warn(ex.getMessage());
+        log.warn(ex.getMessage());
         String errorMessage = ErrorMessageConstants.EXCEPTION_MESSAGES.getOrDefault(
                 ex.getClass().getSimpleName(),
                 "Invalid request, Please check your input and try again.");
@@ -162,15 +164,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class) // rest of unhandled exceptions
     public ResponseEntity<ApiResponse<Object>> handleExceptions(Exception ex, WebRequest request, HttpServletRequest servletRequest) {
-        LOGGER.error("An unexpected error occurred: {}", ex.getMessage());
+        log.error("An unexpected error occurred: {}", ex.getMessage());
         ApiResponse<Object> response = ApiResponse.error("An unexpected error occurred, Please try again later");
         saveErrorLog(ex, servletRequest, response, HttpStatus.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private void saveErrorLog(Exception ex, HttpServletRequest servletRequest, Object responseObj, HttpStatus status) {
+        ErrorLogEvent errorLog = new ErrorLogEvent();
         try {
-            ErrorLogEvent errorLog = new ErrorLogEvent();
             errorLog.setEndpointUrl(servletRequest.getRequestURI());
             errorLog.setHttpMethod(servletRequest.getMethod());
             errorLog.setErrorMessage(ex.getMessage());
@@ -191,21 +193,21 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             try {
                 errorLog.setResponseBody(MaskUtils.maskJsonFields(OBJECT_MAPPER.writeValueAsString(responseObj)));
             } catch (Exception ignore) {
-                LOGGER.warn("Failed to serialize response body: {}", ignore.getMessage());
+                log.warn("Failed to serialize response body: {}", ignore.getMessage());
                 errorLog.setResponseBody("[Unserializable Response]");
             }
 
             try {
                 errorLog.setRequestHeaders(MaskUtils.maskJsonFields(OBJECT_MAPPER.writeValueAsString(RequestHelper.getRequestHeaders(servletRequest))));
             } catch (Exception ignore) {
-                LOGGER.warn("Failed to serialize request headers: {}", ignore.getMessage());
+                log.warn("Failed to serialize request headers: {}", ignore.getMessage());
                 errorLog.setRequestHeaders("[Unserializable Headers]");
             }
 
             try {
                 errorLog.setRequestBody(MaskUtils.maskJsonFields(RequestHelper.getRequestBody(servletRequest)));
             } catch (Exception ignore) {
-                LOGGER.warn("Failed to serialize request body: {}", ignore.getMessage());
+                log.warn("Failed to serialize request body: {}", ignore.getMessage());
                 errorLog.setRequestBody("[Unsupported Encoding]");
             }
 
@@ -219,9 +221,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                             .replaceAll("\r", "")
                             .split("\n")));
 
-            ERROR_LOGGER.info(OBJECT_MAPPER.writeValueAsString(errorLog));
+            ERROR_LOGGER.error(OBJECT_MAPPER.writeValueAsString(errorLog));
         } catch (Exception e) { // do not affect main flow if errorLog saving fails
-            LOGGER.error("Failed to write ErrorLog to file: {}", e.getMessage());
+            log.warn("Failed to write errorLog to file: {}", e.getMessage(), e);
+            log.debug("Missing errorLog details: {}", errorLog);
         }
     }
 }

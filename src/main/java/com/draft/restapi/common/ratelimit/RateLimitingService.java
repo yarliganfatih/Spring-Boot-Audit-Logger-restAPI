@@ -7,6 +7,7 @@ import io.github.bucket4j.Refill;
 import io.github.bucket4j.distributed.proxy.ProxyManager;
 import io.github.bucket4j.ConsumptionProbe;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -16,12 +17,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.ObjectProvider;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 public class RateLimitingService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RateLimitingService.class);
 
     @Value("${spring.application.ratelimit.capacity:20}")
     private int capacity;
@@ -44,7 +44,7 @@ public class RateLimitingService {
     }
 
     public ConsumptionProbe consumeFallback(String ipAddress, Exception e) {
-        LOGGER.warn("Redis rate limiting failed for IP: {}. Falling back to local bucket.", ipAddress);
+        log.warn("Redis rate limiting failed for IP: {}. Falling back to local bucket.", ipAddress);
         Bucket localBucket = resolveLocalBucket(ipAddress);
         return localBucket.tryConsumeAndReturnRemaining(1);
     }

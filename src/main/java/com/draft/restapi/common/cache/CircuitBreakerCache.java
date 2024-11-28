@@ -2,8 +2,7 @@ package com.draft.restapi.common.cache;
 
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -11,8 +10,8 @@ import org.springframework.lang.Nullable;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
+@Slf4j
 public class CircuitBreakerCache implements Cache {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CircuitBreakerCache.class);
 
     private final Cache delegate;
 
@@ -55,7 +54,7 @@ public class CircuitBreakerCache implements Cache {
             throw e;
         } catch (Exception e) {
             if (!(e instanceof CallNotPermittedException)) {
-                LOGGER.warn("Redis cache read failed for key '{}' on cache '{}'. Falling back to database/method execution without cache. Reason: {}", key, delegate.getName(), e.getMessage());
+                log.warn("Redis cache read failed for key '{}' on cache '{}'. Falling back to database/method execution without cache. Reason: {}", key, delegate.getName(), e.getMessage());
             }
             try {
                 // If cache is down (Redis timeout/connection error or open circuit breaker), invoke valueLoader directly to keep high-availability without 500 error
@@ -91,7 +90,7 @@ public class CircuitBreakerCache implements Cache {
             return circuitBreaker.executeSupplier(supplier);
         } catch (Exception e) {
             if (!(e instanceof CallNotPermittedException)) {
-                LOGGER.warn("Redis cache {} failed for key '{}' on cache '{}'. Falling back without cache. Reason: {}", operation, key, delegate.getName(), e.getMessage());
+                log.warn("Redis cache {} failed for key '{}' on cache '{}'. Falling back without cache. Reason: {}", operation, key, delegate.getName(), e.getMessage());
             }
             return fallback;
         }
@@ -102,7 +101,7 @@ public class CircuitBreakerCache implements Cache {
             circuitBreaker.executeRunnable(runnable);
         } catch (Exception e) {
             if (!(e instanceof CallNotPermittedException)) {
-                LOGGER.warn("Redis cache {} failed for key '{}' on cache '{}'. Ignoring error to maintain application availability. Reason: {}", operation, key, delegate.getName(), e.getMessage());
+                log.warn("Redis cache {} failed for key '{}' on cache '{}'. Ignoring error to maintain application availability. Reason: {}", operation, key, delegate.getName(), e.getMessage());
             }
             // Ignore exception so API request completes successfully without 500 server error
         }

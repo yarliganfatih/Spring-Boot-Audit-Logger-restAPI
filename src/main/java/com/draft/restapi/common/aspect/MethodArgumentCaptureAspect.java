@@ -4,8 +4,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -16,10 +15,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Aspect
 @Component
 public class MethodArgumentCaptureAspect {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MethodArgumentCaptureAspect.class);
 
     public static final String CAPTURED_ARGS_KEY = "capturedMethodArgs";
 
@@ -46,7 +45,7 @@ public class MethodArgumentCaptureAspect {
             capturedMethods.add(capturedMethod);
             attributes.getRequest().setAttribute(CAPTURED_ARGS_KEY, capturedMethods);
         } catch (Exception e) {
-            LOGGER.warn("Failed to capture method arguments on exception", e);
+            log.warn("Failed to capture method arguments on exception", e);
         }
     }
 }

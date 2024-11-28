@@ -1,7 +1,6 @@
 package com.draft.restapi.common.helper;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,8 +17,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+@Slf4j
 public class RequestHelper {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RequestHelper.class);
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
         .registerModule(new JavaTimeModule())
@@ -57,7 +56,7 @@ public class RequestHelper {
             });
             return OBJECT_MAPPER.writeValueAsString(simplifiedHeaders);
         } catch (Exception e) {
-            LOGGER.warn("Failed to serialize simplified headers", e);
+            log.warn("Failed to serialize simplified headers", e);
             return requestHeaders;
         }
     }

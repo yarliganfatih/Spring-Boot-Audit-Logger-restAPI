@@ -40,8 +40,11 @@ import com.draft.restapi.audit.service.LogService;
 import com.draft.restapi.common.helper.RequestHelper;
 import com.draft.restapi.common.payload.PageDto;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class LogServiceImpl implements LogService {
 
@@ -207,6 +210,7 @@ public class LogServiceImpl implements LogService {
 
         return boolQuery.hasClauses() ? boolQuery : QueryBuilders.matchAllQuery();
     }
+
     private QueryBuilder buildErrorQueryByFilter(ErrorLogFilter filter) {
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 
