@@ -2,15 +2,9 @@ package com.draft.restapi.auth.entity.dto;
 
 import java.io.Serializable;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@Data 
 public class UserFilter implements Serializable {
     private static final long serialVersionUID = 1L;
 

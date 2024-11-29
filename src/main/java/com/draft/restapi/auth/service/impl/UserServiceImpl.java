@@ -65,8 +65,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @CachePut(value = "users", key = "#result.id")
     public UserDto createUser(UserDto userDto) {
-        log.debug("Creating user with username: {}, email: {}", 
-                userDto.getUsername(), MaskType.PARTIAL_EMAIL.mask(userDto.getEmail()));
+        log.debug("Creating user with data: {}", userDto);
 
         User user = userMapper.toEntity(userDto);
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
@@ -85,8 +84,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId)
                 .filter(u -> !u.getDeleted())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
-        log.debug("Updating user with id: {}, username: {}, email: {}", 
-                userId, userDto.getUsername(), MaskType.PARTIAL_EMAIL.mask(userDto.getEmail()));
+        log.debug("Updating user with id: {}, data: {}", userId, userDto);
 
         userMapper.updateUserFromDto(userDto, user);
         if (!StringUtils.isEmpty(userDto.getPassword())) {

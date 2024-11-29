@@ -37,4 +37,16 @@ public class RegexHelper {
                 .collect(Collectors.joining("|")); // OR operator for regex
         return "(?i)(\"(" + fieldNamesPatternMatch + ")\"\\s*:\\s*\")([^\"]+)(\")";
     }
+
+    private static final String AUTH_SCHEMES = "(?:Bearer|Basic|Digest|OAuth|Token)";
+
+    public static String getLogPattern(String fieldName) {
+        return "(?i)(\\b" + Pattern.quote(fieldName) + "\\b)(\\s*[=:]\\s*|\\s+)(['\"]?)(" + AUTH_SCHEMES + "\\s+[^\\s,)\\]]+|[^\\s,)\\]]+|.*?)\\3(?=[,)\\]]|\\s|$)";
+    }
+
+    public static String getLogPattern(Set<String> fieldNames) {
+        String fieldNamesPatternMatch = fieldNames.stream().map(Pattern::quote)
+                .collect(Collectors.joining("|")); // OR operator for regex
+        return "(?i)\\b(" + fieldNamesPatternMatch + ")(\\s*[=:]\\s*|\\s+)(['\"]?)(" + AUTH_SCHEMES + "\\s+[^\\s,)\\]]+|[^\\s,)\\]]+|.*?)\\3(?=[,)\\]]|\\s|$)";
+    }
 }

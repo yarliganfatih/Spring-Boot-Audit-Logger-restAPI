@@ -67,4 +67,31 @@ public final class MaskUtils {
         m.appendTail(sb);
         return sb.toString();
     }
+
+    public static String maskLogField(String logString, String fieldName, MaskType maskType) {
+        if (logString == null || logString.isEmpty()) return logString;
+        Matcher m = Pattern.compile(RegexHelper.getLogPattern(fieldName)).matcher(logString);
+        StringBuffer sb = new StringBuffer();
+        while (m.find()) {
+            String originalValue = m.group(4);
+            String maskedValue = maskType.mask(originalValue);
+            m.appendReplacement(sb, m.group(1) + m.group(2) + m.group(3) + Matcher.quoteReplacement(maskedValue) + m.group(3));
+        }
+        m.appendTail(sb);
+        return sb.toString();
+    }
+
+    public static String maskLogFields(String logString) {
+        if (logString == null || logString.isEmpty()) return logString;
+        Matcher m = Pattern.compile(RegexHelper.getLogPattern(ALL_MASKED_FIELDS)).matcher(logString);
+        StringBuffer sb = new StringBuffer();
+        while (m.find()) {
+            String fieldName = m.group(1);
+            String originalValue = m.group(4);
+            String maskedValue = MaskType.by(fieldName).mask(originalValue);
+            m.appendReplacement(sb, m.group(1) + m.group(2) + m.group(3) + Matcher.quoteReplacement(maskedValue) + m.group(3));
+        }
+        m.appendTail(sb);
+        return sb.toString();
+    }
 }

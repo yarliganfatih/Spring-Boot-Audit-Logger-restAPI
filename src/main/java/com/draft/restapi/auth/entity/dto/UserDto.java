@@ -9,16 +9,16 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.io.Serializable;
 
-@Getter
-@Setter
-@AllArgsConstructor
+@Data
+@Builder 
 @NoArgsConstructor
+@AllArgsConstructor
 public class UserDto implements Serializable {
     private static final long serialVersionUID = 1L;
 
