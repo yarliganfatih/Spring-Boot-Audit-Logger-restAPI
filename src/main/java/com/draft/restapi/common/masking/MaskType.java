@@ -5,6 +5,8 @@ import static com.draft.restapi.common.masking.MaskUtils.MASKED_VALUE;
 import java.util.Collections;
 import java.util.Set;
 
+import com.draft.restapi.common.enums.CasePattern;
+
 public enum MaskType {
     FULL(MaskUtils.FULL_MASKED_FIELDS) {
         @Override
@@ -55,7 +57,7 @@ public enum MaskType {
     public static MaskType by(String fieldName) {
         if (fieldName == null) return NONE;
         for (MaskType type : MaskType.values()) {
-            if (type.maskedFields.contains(fieldName.toLowerCase())) {
+            if (type.maskedFields.stream().anyMatch(maskedField -> CasePattern.equalsIgnoreCase(maskedField, fieldName))) {
                 return type;
             }
         }

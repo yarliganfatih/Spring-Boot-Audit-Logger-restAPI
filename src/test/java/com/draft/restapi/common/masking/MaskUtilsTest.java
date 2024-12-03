@@ -7,12 +7,12 @@ class MaskUtilsTest {
 
     @Test
     void testMaskJsonField() {
-        String jsonString = "{\"username\":\"admin\", \"password\":\"secret\", \"email\":\"abcd@test.com\"}";
+        String jsonString = "{\"email\":\"abcd@test.com\", \"password\":\"secret\", \"username\":\"admin\"}";
 
         // Test FULL mask on password field
         String fullMaskedJson = MaskUtils.maskJsonField(jsonString, "password", MaskType.FULL);
         assertTrue(fullMaskedJson.contains("\"password\":\"******\""));
-        assertTrue(fullMaskedJson.contains("\"username\":\"admin\"")); 
+        assertTrue(fullMaskedJson.contains("\"username\":\"admin\"")); // to ensure no masking after password value
 
         // Test PARTIAL mask on username field
         String partialMaskedJson = MaskUtils.maskJsonField(jsonString, "username", MaskType.PARTIAL);
@@ -41,13 +41,31 @@ class MaskUtilsTest {
     }
 
     @Test
-    void testMaskJsonFields() {
-        String jsonString = "{\"username\":\"admin\", \"password\":\"secret\", \"cookie\":\"JSESSIONID=123\", \"email\":\"abcd@test.com\"}";
+    void testMaskJsonField_withExactMatch() {
+        String logString = "{\"userEmail\":\"abcd@test.com\", \"user-email\":\"bcda@test.com\", \"user_email\":\"cdab@test.com\"}";
+        String fullMaskedLog = MaskUtils.maskJsonField(logString, "user-email", MaskType.PARTIAL_EMAIL, true);
+        assertFalse(fullMaskedLog.contains("\"userEmail\":\"ab******d@test.com\""));
+        assertTrue(fullMaskedLog.contains("\"user-email\":\"bc******a@test.com\""));
+        assertFalse(fullMaskedLog.contains("\"user_email\":\"cd******b@test.com\""));
+    }
 
-        String allMaskedJson = MaskUtils.maskJsonFields(jsonString);
+    @Test
+    void testMaskJsonField_withFuzzyMatch() {
+        String logString = "{\"userEmail\":\"abcd@test.com\", \"user-email\":\"bcda@test.com\", \"user_email\":\"cdab@test.com\"}";
+        String fullMaskedLog = MaskUtils.maskJsonField(logString, "user-email", MaskType.PARTIAL_EMAIL, false);
+        assertTrue(fullMaskedLog.contains("\"userEmail\":\"ab******d@test.com\""));
+        assertTrue(fullMaskedLog.contains("\"user-email\":\"bc******a@test.com\""));
+        assertTrue(fullMaskedLog.contains("\"user_email\":\"cd******b@test.com\""));
+    }
+
+    @Test
+    void testMaskJsonFields() {
+        String jsonString = "{\"email\":\"abcd@test.com\", \"password\":\"secret\", \"username\":\"admin\", \"access_token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\"}";
+
+        String allMaskedJson = MaskUtils.maskJsonFields(jsonString); // default fuzzyMatch
 
         assertTrue(allMaskedJson.contains("\"password\":\"******\""));
-        assertTrue(allMaskedJson.contains("\"cookie\":\"******\""));
+        assertTrue(allMaskedJson.contains("\"access_token\":\"******\"")); // FULL_MASKED_FIELDS has access-token normally
         assertTrue(allMaskedJson.contains("\"username\":\"admin\""));
         assertTrue(allMaskedJson.contains("\"email\":\"ab******d@test.com\""));
 
@@ -57,12 +75,12 @@ class MaskUtilsTest {
 
     @Test
     void testMaskLogField() {
-        String logString = "UserDto(username:admin, password:secret, email:abcd@test.com)";
+        String logString = "UserDto(email:abcd@test.com, password:secret, username:admin)";
 
         // Test FULL mask on password field
         String fullMaskedLog = MaskUtils.maskLogField(logString, "password", MaskType.FULL);
         assertTrue(fullMaskedLog.contains("password:******"));
-        assertTrue(fullMaskedLog.contains("username:admin")); 
+        assertTrue(fullMaskedLog.contains("username:admin")); // to ensure no masking after password value
 
         // Test PARTIAL mask on username field
         String partialMaskedLog = MaskUtils.maskLogField(logString, "username", MaskType.PARTIAL);
@@ -73,7 +91,7 @@ class MaskUtilsTest {
         assertTrue(partialEmailMaskedLog.contains("email:ab******d@test.com"));
 
         // Test PARTIAL_AUTH mask on a hypothetical authorization field
-        String authLogString = "{authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9}";
+        String authLogString = "authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9";
         String partialAuthMaskedLog = MaskUtils.maskLogField(authLogString, "authorization", MaskType.PARTIAL_AUTH);
         assertTrue(partialAuthMaskedLog.contains("authorization:Bearer ******"));
 
@@ -96,6 +114,24 @@ class MaskUtilsTest {
     }
 
     @Test
+    void testMaskLogField_withExactMatch() {
+        String logString = "userEmail:abcd@test.com, user-email:bcda@test.com, user_email:cdab@test.com";
+        String fullMaskedLog = MaskUtils.maskLogField(logString, "user-email", MaskType.PARTIAL_EMAIL, true);
+        assertFalse(fullMaskedLog.contains("userEmail:ab******d@test.com"));
+        assertTrue(fullMaskedLog.contains("user-email:bc******a@test.com"));
+        assertFalse(fullMaskedLog.contains("user_email:cd******b@test.com"));
+    }
+
+    @Test
+    void testMaskLogField_withFuzzyMatch() {
+        String logString = "userEmail:abcd@test.com, user-email:bcda@test.com, user_email:cdab@test.com";
+        String fullMaskedLog = MaskUtils.maskLogField(logString, "user-email", MaskType.PARTIAL_EMAIL, false);
+        assertTrue(fullMaskedLog.contains("userEmail:ab******d@test.com"));
+        assertTrue(fullMaskedLog.contains("user-email:bc******a@test.com"));
+        assertTrue(fullMaskedLog.contains("user_email:cd******b@test.com"));
+    }
+
+    @Test
     void testMaskLogField_caseLogWithQuotes() {
         // Test with key 'value' format
         String logWithSingleQuotes = "authorization 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9'";
@@ -111,14 +147,14 @@ class MaskUtilsTest {
     @Test
     void testMaskLogFields() {
         // Test with key:value format
-        String logWithColon = "UserDto(username:admin, password:secret, email:abcd@test.com)";
+        String logWithColon = "UserDto(email:abcd@test.com, password:secret, username:admin)";
         String maskedColon = MaskUtils.maskLogFields(logWithColon);
         assertTrue(maskedColon.contains("password:******"));
         assertTrue(maskedColon.contains("username:admin")); 
         assertTrue(maskedColon.contains("email:ab******d@test.com"));
 
         // Test with key=value format
-        String logString = "UserDto(username=admin, password=secret, email=abcd@test.com)";
+        String logString = "UserDto(email=abcd@test.com, password=secret, username=admin)";
         String maskedAll = MaskUtils.maskLogFields(logString);
         assertTrue(maskedAll.contains("password=******"));
         assertTrue(maskedAll.contains("username=admin")); 
@@ -131,14 +167,14 @@ class MaskUtilsTest {
     @Test
     void testMaskLogFields_caseLogWithQuotes() {
         // Test for key 'value' format
-        String logWithSingleQuotes = "UserDto(username 'admin' password 'password with blank' email 'abcd@test.com')";
+        String logWithSingleQuotes = "UserDto(email 'abcd@test.com' password 'password with blank' username 'admin')";
         String maskedLogWithSingleQuotes = MaskUtils.maskLogFields(logWithSingleQuotes);
         assertTrue(maskedLogWithSingleQuotes.contains("password '******'"));
         assertTrue(maskedLogWithSingleQuotes.contains("username 'admin'"));
         assertTrue(maskedLogWithSingleQuotes.contains("email 'ab******d@test.com'"));
 
         // Test for key "value" format
-        String logWithDoubleQuotes = "UserDto(username \"admin\" password \"password with blank\" email \"abcd@test.com\")";
+        String logWithDoubleQuotes = "UserDto(email \"abcd@test.com\" password \"password with blank\" username \"admin\")";
         String maskedLogWithDoubleQuotes = MaskUtils.maskLogFields(logWithDoubleQuotes);
         assertTrue(maskedLogWithDoubleQuotes.contains("password \"******\""));
         assertTrue(maskedLogWithDoubleQuotes.contains("username \"admin\""));
