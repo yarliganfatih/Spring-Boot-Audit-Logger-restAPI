@@ -65,12 +65,20 @@ class MaskUtilsTest {
         String allMaskedJson = MaskUtils.maskJsonFields(jsonString); // default fuzzyMatch
 
         assertTrue(allMaskedJson.contains("\"password\":\"******\""));
-        assertTrue(allMaskedJson.contains("\"access_token\":\"******\"")); // FULL_MASKED_FIELDS has access-token normally
+        assertTrue(allMaskedJson.contains("\"access_token\":\"******\"")); // FULL_MASKED_FIELDS has *-token
         assertTrue(allMaskedJson.contains("\"username\":\"admin\""));
         assertTrue(allMaskedJson.contains("\"email\":\"ab******d@test.com\""));
 
         assertEquals("", MaskUtils.maskJsonFields(""));
         assertNull(MaskUtils.maskJsonFields(null));
+    }
+
+    @Test
+    void testMaskJsonFields_withWildcardAndExclusion() {
+        String json = "{\"api-key\":\"secretToken\", \"key\":\"commonToken\"}";
+        String maskedJson = MaskUtils.maskJsonFields(json);
+        assertTrue(maskedJson.contains("\"api-key\":\"******\"")); // FULL_MASKED_FIELDS has *-key
+        assertTrue(maskedJson.contains("\"key\":\"commonToken\"")); // UNMASKED_FIELDS has key
     }
 
     @Test
@@ -162,6 +170,14 @@ class MaskUtilsTest {
 
         assertEquals("", MaskUtils.maskLogFields(""));
         assertNull(MaskUtils.maskLogFields(null));
+    }
+
+    @Test
+    void testMaskLogFields_withWildcardAndExclusion() {
+        String json = "apiKey=secretToken, key:commonToken";
+        String maskedJson = MaskUtils.maskLogFields(json);
+        assertTrue(maskedJson.contains("apiKey=******")); // FULL_MASKED_FIELDS has *-key
+        assertTrue(maskedJson.contains("key:commonToken")); // UNMASKED_FIELDS has key
     }
 
     @Test

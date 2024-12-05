@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.util.StringUtils;
 
+import com.draft.restapi.common.helper.RegexHelper;
+
 public enum CasePattern {
     FLAT_CASE("^[a-z]+([a-z0-9]+)*$", "", false),                   // flatcase
     UPPER_FLAT_CASE("^[A-Z]+([A-Z0-9]+)*$", "", true),              // UPPERFLATCASE
@@ -17,8 +19,6 @@ public enum CasePattern {
     KEBAB_CASE("^[a-z]+(-[a-z0-9]+)*$", "-", false),                // kebab-case
     COBOL_CASE("^[A-Z]+(-[A-Z0-9]+)*$", "-", true),                 // COBOL-CASE
     NONE("", "", false);
-
-    public static final String COMMON_SEPERATORS = "[-_]";
 
     private final String pattern;
     private final String separator;
@@ -34,7 +34,7 @@ public enum CasePattern {
         return input != null && input.matches(pattern);
     }
 
-    private String joinWords(List<String> words) {
+    public String of(List<String> words) {
         if (words == null || words.isEmpty()) return "";
         if (hasUpperCase) {
             words = words.stream().map(word -> word.toUpperCase(Locale.ENGLISH)).collect(Collectors.toList());
@@ -52,8 +52,8 @@ public enum CasePattern {
 
     public String of(String input) {
         if (input == null || input.isEmpty()) return input;
-        List<String> words = Arrays.asList(input.split(COMMON_SEPERATORS));
-        return this.joinWords(words);
+        List<String> words = Arrays.asList(input.split(RegexHelper.CASE_SEPERATORS));
+        return this.of(words);
     }
 
     public static CasePattern by(String input) {
@@ -67,8 +67,6 @@ public enum CasePattern {
 
     public static boolean equalsIgnoreCase(String str1, String str2) {
         if (str1 == null || str2 == null) return false;
-        String flatStr1 = str1.replaceAll(COMMON_SEPERATORS, "").toLowerCase(Locale.ENGLISH);
-        String flatStr2 = str2.replaceAll(COMMON_SEPERATORS, "").toLowerCase(Locale.ENGLISH);
-        return flatStr1.equals(flatStr2);
+        return FLAT_CASE.of(str1).equals(FLAT_CASE.of(str2));
     }
 }

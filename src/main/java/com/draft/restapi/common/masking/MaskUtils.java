@@ -16,22 +16,25 @@ public final class MaskUtils {
     public static final String MASKED_VALUE = "******";
 
     public static final Set<String> FULL_MASKED_FIELDS = new HashSet<>(Arrays.asList(
-            "cookie", "set-cookie", "session", "session-id", "csrf", "csrf-token", 
-            "api-key", "api-token", "access-token", "refresh-token", "auth-token", "token",
-            "password", "secret", "otp", "pin", "signature", "auth", "private-key", "public-key"
+            "cookie", "set-cookie", "session", "session-id", "csrf", "*-token", 
+            "password", "secret", "otp", "pin", "signature", "auth", "*-key"
     ));
 
     public static final Set<String> PARTIAL_MASKED_FIELDS = new HashSet<>(Arrays.asList(
             "first-name", "last-name", "address", "city", "state", "zip-code", "postal-code",
-            "phone-number", "mobile-number", "contact-number"
+            "phone", "*-phone-*", "mobile-number", "contact-number"
     ));
 
     public static final Set<String> PARTIAL_EMAIL_MASKED_FIELDS = new HashSet<>(Arrays.asList(
-            "email", "email-address", "user-email", "contact-email"
+            "email", "*-mail-*"
     ));
 
     public static final Set<String> PARTIAL_AUTH_MASKED_FIELDS = new HashSet<>(Arrays.asList(
-            "authorization", "proxy-authorization"
+            "authorization", "*-authorization"
+    ));
+
+    public static final Set<String> UNMASKED_FIELDS = new HashSet<>(Arrays.asList(
+            "key", "primary-key", "foreign-key", "cache-key", "idempotency-key"
     ));
 
     public static final Set<String> ALL_MASKED_FIELDS = new HashSet<>();
@@ -40,6 +43,7 @@ public final class MaskUtils {
         ALL_MASKED_FIELDS.addAll(PARTIAL_MASKED_FIELDS);
         ALL_MASKED_FIELDS.addAll(PARTIAL_AUTH_MASKED_FIELDS);
         ALL_MASKED_FIELDS.addAll(PARTIAL_EMAIL_MASKED_FIELDS);
+        ALL_MASKED_FIELDS.removeAll(UNMASKED_FIELDS);
     }
 
     private MaskUtils() {}

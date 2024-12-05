@@ -1,9 +1,39 @@
 package com.draft.restapi.common.masking;
 
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class MaskTypeTest {
+
+    @Test
+    void testBy() {
+        assertEquals(MaskType.NONE, MaskType.by("key"));                    // by UNMASKED_FIELDS
+        assertEquals(MaskType.FULL, MaskType.by("cookie"));                 // by FULL_MASKED_FIELDS
+        assertEquals(MaskType.PARTIAL, MaskType.by("first-name"));          // by PARTIAL_MASKED_FIELDS
+        assertEquals(MaskType.PARTIAL_EMAIL, MaskType.by("email"));         // by PARTIAL_EMAIL_MASKED_FIELDS
+        assertEquals(MaskType.PARTIAL_AUTH, MaskType.by("authorization"));  // by PARTIAL_AUTH_MASKED_FIELDS
+        assertEquals(MaskType.NONE, MaskType.by("nonExistent"));            // unmatched
+        assertEquals(MaskType.NONE, MaskType.by(""));                       // unmatched
+        assertEquals(MaskType.NONE, MaskType.by(null));                     // unmatched
+    }
+
+    @Test
+    void testBy_withWildcardMatch() {
+        assertEquals(MaskType.NONE, MaskType.by("idempotency-key")); // excluded masked field
+        assertEquals(MaskType.FULL, MaskType.by("access-token"));
+        assertEquals(MaskType.FULL, MaskType.by("encrypted-access-token"));
+        assertEquals(MaskType.PARTIAL_EMAIL, MaskType.by("email"));
+        assertEquals(MaskType.PARTIAL_EMAIL, MaskType.by("eMail"));
+        assertEquals(MaskType.PARTIAL_EMAIL, MaskType.by("e_mail"));
+        assertEquals(MaskType.PARTIAL_EMAIL, MaskType.by("email-address"));
+        assertEquals(MaskType.PARTIAL_EMAIL, MaskType.by("user-email"));
+        assertEquals(MaskType.PARTIAL_EMAIL, MaskType.by("user-email-address"));
+        assertEquals(MaskType.PARTIAL_EMAIL, MaskType.by("user_email"));
+        assertEquals(MaskType.PARTIAL_EMAIL, MaskType.by("userEmail"));
+        assertEquals(MaskType.PARTIAL_EMAIL, MaskType.by("user-e-mail"));
+        assertEquals(MaskType.PARTIAL_EMAIL, MaskType.by("user_eMail"));
+    }
 
     @Test
     void testFullMask() {
