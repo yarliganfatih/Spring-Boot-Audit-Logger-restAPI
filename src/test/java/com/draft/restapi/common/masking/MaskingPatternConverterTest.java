@@ -9,6 +9,8 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 
@@ -68,6 +70,23 @@ public class MaskingPatternConverterTest {
         assertFalse(output.getOut().contains("authorization: 'Bearer jwtToken'"));
         assertTrue(output.getOut().contains("authorization: 'Bearer ******'"));
         assertTrue(output.getOut().contains("User has authorization: 'Bearer ******' for access restAPI."));
+    }
+
+    @Test
+    void testLog_caseMaskingError(CapturedOutput output) {
+        try (MockedStatic<MaskUtils> mockedMaskUtils = Mockito.mockStatic(MaskUtils.class)) {
+            // simulate a masking error
+            mockedMaskUtils.when(() -> MaskUtils.maskJsonFields(Mockito.anyString()))
+                    .thenThrow(new RuntimeException("simulate exception during json mask"));
+            mockedMaskUtils.when(() -> MaskUtils.maskLogFields(Mockito.anyString()))
+                    .thenThrow(new RuntimeException("simulate exception during log mask"));
+
+            // logging should not be affected
+            mockService.logSensitiveData();
+
+            // output should contain the UNMASKED original string since masking crashed and was caught
+            assertTrue(output.getOut().contains("User has authorization: 'Bearer jwtToken' for access restAPI."));
+        }
     }
 
     @Slf4j

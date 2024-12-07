@@ -27,6 +27,8 @@ import com.draft.restapi.audit.document.FieldChange;
 import com.draft.restapi.audit.dto.AuditLogEvent;
 import com.draft.restapi.auth.entity.User;
 import com.draft.restapi.common.filter.TraceFilter;
+import com.draft.restapi.common.masking.MaskType;
+import com.draft.restapi.common.masking.MaskUtils;
 
 @Slf4j
 public class AuditListener {
@@ -88,12 +90,13 @@ public class AuditListener {
                     String changedPath = change.has("path") ? change.get("path").asText() : "ALL";
                     String fieldName = changedPath.substring(changedPath.lastIndexOf("/") + 1);
                     String previousValue = change.has("value") ? change.get("value").asText() : null;
-                    changesList.add(new FieldChange(fieldName, previousValue));
+                    String maskedPreviousValue = MaskType.by(fieldName).mask(previousValue);
+                    changesList.add(new FieldChange(fieldName, maskedPreviousValue));
                 }
             }
             auditLog.setChanges(changesList);
 
-            AUDIT_LOGGER.info(OBJECT_MAPPER.writeValueAsString(auditLog));
+            AUDIT_LOGGER.info(MaskUtils.maskJsonFields(OBJECT_MAPPER.writeValueAsString(auditLog)));
         } catch (Exception e) { // do not affect main flow if auditLog saving fails
             log.warn("Failed to write auditLog to file: {}", e.getMessage(), e);
             log.debug("Missing auditLog details: {}", auditLog);

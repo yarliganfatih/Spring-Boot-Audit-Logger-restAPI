@@ -1,6 +1,10 @@
 package com.draft.restapi.common.helper;
 
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -68,6 +72,17 @@ public class RequestHelper {
             if (buf.length > 0) {
                 return new String(buf, wrapper.getCharacterEncoding());
             }
+        }
+        return null;
+    }
+
+    public static HttpServletRequest getServletRequest() {
+        try {
+            RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
+            if (attrs instanceof ServletRequestAttributes) {
+                return ((ServletRequestAttributes) attrs).getRequest();
+            }
+        } catch (Exception ignore) {
         }
         return null;
     }

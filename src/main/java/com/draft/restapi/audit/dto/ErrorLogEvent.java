@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,4 +32,15 @@ public class ErrorLogEvent {
     private Integer occurredById;
     private String occurredByUsername;
     private LocalDateTime timestamp;
+
+    public void addMethodSignature(String methodName, Map<String, String> arguments) {
+        if (this.methodArguments == null) {
+            this.methodArguments = new ArrayList<>();
+        }
+
+        Map<String, String> item = new HashMap<>();
+        item.put("__method__", methodName);
+        item.putAll(arguments);
+        this.methodArguments.add(0, item);
+    }
 }

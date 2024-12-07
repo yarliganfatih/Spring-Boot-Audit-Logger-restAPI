@@ -1,9 +1,7 @@
 package com.draft.restapi.common.exception;
 
-import com.draft.restapi.common.filter.TraceFilter;
 import com.draft.restapi.common.payload.ApiResponse;
 import com.draft.restapi.common.payload.ValidationError;
-import com.draft.restapi.common.helper.RequestHelper;
 import com.draft.restapi.common.masking.MaskUtils;
 
 import org.springframework.http.HttpHeaders;
@@ -28,30 +26,21 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import com.draft.restapi.audit.dto.ErrorLogEvent;
-import com.draft.restapi.auth.entity.User;
+import com.draft.restapi.audit.util.ErrorLogUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.mapping.PropertyReferenceException;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static com.draft.restapi.common.aspect.MethodArgumentCaptureAspect.CAPTURED_ARGS_KEY;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.time.LocalDateTime;
-
-import org.slf4j.MDC;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -173,22 +162,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private void saveErrorLog(Exception ex, HttpServletRequest servletRequest, Object responseObj, HttpStatus status) {
         ErrorLogEvent errorLog = new ErrorLogEvent();
         try {
-            errorLog.setEndpointUrl(servletRequest.getRequestURI());
-            errorLog.setHttpMethod(servletRequest.getMethod());
-            errorLog.setErrorMessage(ex.getMessage());
-            errorLog.setErrorType(ex.getClass().getName());
+            errorLog = ErrorLogUtils.generateEvent(ex, servletRequest);
             errorLog.setHttpStatusCode(status.value());
-            errorLog.setTraceId(MDC.get(TraceFilter.TRACE_ID));
-            errorLog.setMethodArguments((List<Map<String, String>>) servletRequest.getAttribute(CAPTURED_ARGS_KEY));
-
-            User user = User.getLoggedUser();
-            if (user != null) {
-                errorLog.setOccurredById(user.getId());
-                errorLog.setOccurredByUsername(user.getUsername());
-            }
-
-            errorLog.setRequestParams(servletRequest.getQueryString());
-            errorLog.setTimestamp(LocalDateTime.now());
 
             try {
                 errorLog.setResponseBody(MaskUtils.maskJsonFields(OBJECT_MAPPER.writeValueAsString(responseObj)));
@@ -197,31 +172,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 errorLog.setResponseBody("[Unserializable Response]");
             }
 
-            try {
-                errorLog.setRequestHeaders(MaskUtils.maskJsonFields(OBJECT_MAPPER.writeValueAsString(RequestHelper.getRequestHeaders(servletRequest))));
-            } catch (Exception ignore) {
-                log.warn("Failed to serialize request headers: {}", ignore.getMessage());
-                errorLog.setRequestHeaders("[Unserializable Headers]");
-            }
-
-            try {
-                errorLog.setRequestBody(MaskUtils.maskJsonFields(RequestHelper.getRequestBody(servletRequest)));
-            } catch (Exception ignore) {
-                log.warn("Failed to serialize request body: {}", ignore.getMessage());
-                errorLog.setRequestBody("[Unsupported Encoding]");
-            }
-
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            ex.printStackTrace(pw);
-            errorLog.setErrorStackTrace(
-                    Arrays.asList(sw.toString()
-                            .replaceAll("\tat ", "")
-                            .replaceAll("\t", "")
-                            .replaceAll("\r", "")
-                            .split("\n")));
-
-            ERROR_LOGGER.error(OBJECT_MAPPER.writeValueAsString(errorLog));
+            String errorLogStr = OBJECT_MAPPER.writeValueAsString(errorLog);
+            errorLogStr = MaskUtils.maskJsonFields(errorLogStr);
+            errorLogStr = MaskUtils.maskLogFields(errorLogStr); // to ensure masking non-json errorMessage etc.
+            ERROR_LOGGER.error(errorLogStr);
         } catch (Exception e) { // do not affect main flow if errorLog saving fails
             log.warn("Failed to write errorLog to file: {}", e.getMessage(), e);
             log.debug("Missing errorLog details: {}", errorLog);
