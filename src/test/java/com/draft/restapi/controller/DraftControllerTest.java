@@ -10,6 +10,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.draft.restapi.RestapiApplication;
@@ -92,6 +93,17 @@ public class DraftControllerTest {
                 createURLWithPort("/api/draft/admin"),
                 HttpMethod.GET, entity, String.class);
         String expected = "{\"error\":\"unauthorized\",\"error_description\":\"Full authentication is required to access this resource\"}";
+        JSONAssert.assertEquals(expected, response.getBody(), false);
+    }
+    
+    @Test
+    @WithMockUser(username = "user", roles = "ROLE_admin")
+    public void testAdminEndpoint() throws Exception {
+        HttpEntity<String> entity = new HttpEntity<>(null, headers);
+        ResponseEntity<String> response = restTemplate.exchange(
+                createURLWithPort("/api/draft/admin"),
+                HttpMethod.GET, entity, String.class);
+        String expected = "{ \"message\": \"Hello admin\" }";
         JSONAssert.assertEquals(expected, response.getBody(), false);
     }
 }
