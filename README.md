@@ -17,19 +17,13 @@ Create a Database named "restapi_db" (Docker will create)
 All necessary tables are created with generate-ddl from entities/models
 
 #### Authentication
-Firstly we need a Client
-```sql
-INSERT INTO oauth_client_details (client_id, client_secret, web_server_redirect_uri, scope, access_token_validity, refresh_token_validity, resource_ids, authorized_grant_types, authorities, additional_information, autoapprove) VALUES
-('mobile', '{bcrypt}$2a$10$gPhlXZfms0EpNHX0.HHptOhoFD1AoxSr/yUIdTqA8vtjeP4zi0DDu', 'http://localhost:8080/code', 'READ,WRITE', 3600, 10000, 'microservice', 'authorization_code,password,refresh_token,implicit', NULL, '{}', NULL);
+Firstly we need a client by insterting into `oauth_client_details` table.
 
-```
+Then, we need a user by insterting into `users` table.
 
-Then, we need a user (password is also "user")
-```sql
-INSERT INTO users (email, enabled, password, username) VALUES ('user@gmail.com', '1', '{bcrypt}$2a$12$udISUXbLy9ng5wuFsrCMPeQIYzaKtAEXNJqzeprSuaty86N4m6emW', 'user');
-```
+**Liqubase** will create tables and insert demo datas (username=user, password=user).
 
-Now we can verify our identity using endpoint
+Now we can verify our identity using http://localhost:8080/oauth/token endpoint.
 
 Define the access_token we received from the auth/login endpoint in Postman as Bearer Token to the api collection. So all endpoints below the api collection will inherit
 
@@ -49,6 +43,8 @@ then assign a role for a user
 ```sql
 INSERT INTO user_roles (user_id, role_id) VALUES ('1', '1');
 ```
+
+Also these inserts are included by **Liquibase**.
 
 Now you can determine who can access what
 
